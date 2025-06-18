@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import {
   Card,
@@ -10,8 +10,35 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
+interface Name {
+  id: string;
+  name: string;
+}
+
 function App() {
   const [count, setCount] = useState(0);
+  const [names, setNames] = useState<Name[]>([]);
+
+  useEffect(() => {
+    const fetchNames = async () => {
+      const response = await fetch(
+        'https://tipr-backend.dcism.org/api/test.php',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: import.meta.env.VITE_API_KEY as string,
+          },
+        }
+      );
+      const data = await response.json();
+
+      return data.reports;
+    };
+
+    fetchNames().then((reports) => setNames(reports));
+  }, []);
+
   return (
     <div className="dark font-secondary bg-background antialiased">
       <div className="flex h-screen w-full items-center justify-center p-8">
@@ -29,9 +56,18 @@ function App() {
             >
               {count}
             </Button>
+
+            <ul>
+              {names.length > 0 &&
+                names.map((name, index) => (
+                  <li key={index} className="text-sm">
+                    {name.id} - {name.name}
+                  </li>
+                ))}
+            </ul>
           </CardContent>
           <CardFooter className="text-sm">
-            <p>© 2025, TIPR. All Rights Reserved.</p>
+            <p>testing testing testing</p>
           </CardFooter>
         </Card>
       </div>
