@@ -5,6 +5,8 @@ const Home = () => {
       <p>This is the main entry point of our application.</p>
       <p>Feel free to explore the features and functionalities we offer.</p>
       <p>Enjoy your stay!</p>
+
+      <div className="mt-10 w-[200px]"></div>
     </div>
   );
 };

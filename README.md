@@ -5,7 +5,7 @@
 
 ## Tech Stack
 
-![Tech Stack](https://skills-icons.vercel.app/api/icons?i=react,vite,tailwind,shadcnui,lucide)
+![Tech Stack](https://skills-icons.vercel.app/api/icons?i=react,ts,vite,tailwind,headlessui,lucide)
 
 ## Setup
 
