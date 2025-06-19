@@ -1,6 +1,6 @@
-# TIPR-site: Transit Integrated Payment and Routing
+# TRIP-site: Transit Routing & Integrated Payments
 
-- Frontend for TIPR
+- Frontend for TRIP
 - In Partial Fulfillment of the Requirements in Information Management II.
 
 ## Tech Stack
@@ -14,7 +14,7 @@ Quick setup guide for the application.
 1. Clone Repo
 
 ```bash
-git clone git@github.com:gian-gg/TIPR.git
+git clone <repo_url>
 ```
 
 2. Install dependencies:
@@ -32,7 +32,7 @@ npm run build
 4. Run with PM2 (and persist):
 
 ```bash
-npx pm2 start app.js --name tipr
+npx pm2 start app.js
 npx pm2 save
 ```
 

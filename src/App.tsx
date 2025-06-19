@@ -44,9 +44,9 @@ function App() {
       <div className="flex h-screen w-full items-center justify-center p-8">
         <Card className="h-auto w-full max-w-sm">
           <CardHeader>
-            <CardTitle className="font-primary font-extrabold">TIPR</CardTitle>
+            <CardTitle className="font-primary font-extrabold">TRIP</CardTitle>
             <CardDescription>
-              Transit Integrated Payment & Routing
+              Transit Routing & Integrated Payments
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
