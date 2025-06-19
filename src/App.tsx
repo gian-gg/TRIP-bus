@@ -1,22 +1,11 @@
 import { useState, useEffect } from 'react';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-
 interface Name {
   id: string;
   name: string;
 }
 
 function App() {
-  const [count, setCount] = useState(0);
   const [names, setNames] = useState<Name[]>([]);
 
   useEffect(() => {
@@ -42,34 +31,19 @@ function App() {
   return (
     <div className="dark font-secondary bg-background antialiased">
       <div className="flex h-screen w-full items-center justify-center p-8">
-        <Card className="h-auto w-full max-w-sm">
-          <CardHeader>
-            <CardTitle className="font-primary font-extrabold">TRIP</CardTitle>
-            <CardDescription>
-              Transit Routing & Integrated Payments
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-2">
-            <Button
-              className="w-full hover:cursor-pointer"
-              onClick={() => setCount((prev) => prev + 1)}
-            >
-              {count}
-            </Button>
-
-            <ul>
-              {names.length > 0 &&
-                names.map((name, index) => (
-                  <li key={index} className="text-sm">
-                    {name.id} - {name.name}
-                  </li>
-                ))}
-            </ul>
-          </CardContent>
-          <CardFooter className="text-sm">
-            <p>testing testing testing</p>
-          </CardFooter>
-        </Card>
+        <div>
+          <h1 className="font-black">TRIP</h1>
+          <p>Transit Routing & Integrated Payments</p>
+          <ul className="my-4 list-disc pl-5">
+            {names.length > 0 &&
+              names.map((name, index) => (
+                <li key={index} className="text-sm">
+                  {name.id} - {name.name}
+                </li>
+              ))}
+          </ul>
+          <p>This is a test.</p>
+        </div>
       </div>
     </div>
   );
