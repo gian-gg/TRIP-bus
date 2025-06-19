@@ -10,16 +10,13 @@ function App() {
 
   useEffect(() => {
     const fetchNames = async () => {
-      const response = await fetch(
-        'https://tipr-backend.dcism.org/api/test.php',
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Authorization: import.meta.env.VITE_API_KEY as string,
-          },
-        }
-      );
+      const response = await fetch('https://trip-api.dcism.org/api/test.php', {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: import.meta.env.VITE_API_KEY as string,
+        },
+      });
       const data = await response.json();
 
       return data.reports;
