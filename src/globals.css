@@ -1,2 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 @import 'tailwindcss';
 @import 'tw-animate-css';
+
+@theme {
+  --font-base: 'Poppins', sans-serif;
+
+  --color-primary: oklch(59.09% 0.19 261.81); /* #186cc7 */
+  --color-primary-light: oklch(95.24% 0.027 255.49); /* #e3f2fe */
+
+  --color-base: oklch(100% 0 0); /* #ffffff */
+  --color-neutral: oklch(95.04% 0.005 275.55); /* #f5f5f5 */
+
+  --color-text-main: oklch(35.36% 0.032 275.17); /* #3a3a3a */
+  --color-text-muted: oklch(61.37% 0.015 275.47); /* #7e7f81 */
+  --color-text-inverse: oklch(100% 0 0); /* #ffffff */
+}
