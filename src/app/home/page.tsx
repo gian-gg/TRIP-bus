@@ -1,10 +1,82 @@
+import { useState, useEffect } from 'react';
+
+import Container from '@/components/Container';
+
+import {
+  CardContainer,
+  CardHeader,
+  CardBody,
+  CardFooter,
+} from '@/components/Card';
+
+interface Name {
+  id: number;
+  name: string;
+}
+
 const Home = () => {
+  const [names, setNames] = useState<Name[]>([]);
+
+  useEffect(() => {
+    const fetchNames = async () => {
+      const response = await fetch('https://trip-api.dcism.org/api/test.php', {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: import.meta.env.VITE_API_KEY as string,
+        },
+      });
+      const data = await response.json();
+
+      return data.reports;
+    };
+
+    fetchNames().then((reports) => setNames(reports));
+  }, []);
   return (
     <div className="font-base bg-base flex h-screen flex-col items-center justify-center">
-      <h1>Welcome to the Home Page</h1>
-      <p>This is the main entry point of our application.</p>
-      <p>Feel free to explore the features and functionalities we offer.</p>
-      <p>Enjoy your stay!</p>
+      <CardContainer className="h-96">
+        <CardHeader>
+          <h1 className="text-xl font-semibold">TRIP</h1>
+          <p>Transit Routing & Integrated Payments</p>
+        </CardHeader>
+        <CardBody>
+          <h2 className="text-center font-semibold">
+            Backend Connection Test:
+          </h2>
+          <table className="border-outline mt-2 min-w-full border text-sm">
+            <thead>
+              <tr>
+                <th className="border-outline border px-2 py-1 text-left">
+                  ID
+                </th>
+                <th className="border-outline border px-2 py-1 text-left">
+                  Name
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {names.length > 0 ? (
+                names.map((name) => (
+                  <tr key={name.id} className="border-outline border">
+                    <td className="border-outline border px-2 py-1">
+                      {name.id}
+                    </td>
+                    <td className="px-2 py-1">{name.name}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={2} className="px-2 py-1 text-center">
+                    Connection unsuccessful.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </CardBody>
+        <CardFooter>© 2025, TRIP. All Rights Reserved.</CardFooter>
+      </CardContainer>
     </div>
   );
 };

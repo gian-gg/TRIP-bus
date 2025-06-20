@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from 'clsx';
 
 const CardContainer = (props: {
   children: React.ReactNode;
@@ -6,7 +7,10 @@ const CardContainer = (props: {
 }) => {
   return (
     <div
-      className={`border-neutral bg-base flex flex-col justify-between rounded-md border-1 ${props.className}`}
+      className={clsx(
+        'border-neutral bg-base flex flex-col justify-between rounded-md border-1',
+        props.className
+      )}
     >
       {props.children}
     </div>
@@ -15,7 +19,7 @@ const CardContainer = (props: {
 
 const CardHeader = (props: { children: React.ReactNode }) => {
   return (
-    <div className="bg-primary h-auto w-full rounded-t-md px-8 py-4">
+    <div className="bg-primary text-inverse h-auto w-full rounded-t-md px-8 py-4">
       {props.children}
     </div>
   );
@@ -27,7 +31,7 @@ const CardBody = (props: { children: React.ReactNode }) => {
 
 const CardFooter = (props: { children: React.ReactNode }) => {
   return (
-    <div className="bg-neutral h-auto w-full rounded-b-md px-8 py-4">
+    <div className="bg-neutral h-auto w-full rounded-b-md px-8 py-4 text-sm">
       {props.children}
     </div>
   );
