@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 
-const Callout = (props: { children: React.ReactNode; className: string }) => {
+const Callout = (props: { children: React.ReactNode; className?: string }) => {
   return (
     <div
       className={clsx(

@@ -3,15 +3,19 @@ import clsx from 'clsx';
 
 import { Button as HeadlessButton } from '@headlessui/react';
 
-const Button = (props: {
-  label: string;
-  variant: 'solid' | 'outline' | 'glass';
-  style?: React.CSSProperties;
-  className?: string;
-}) => {
+import type { ButtonProps } from '@headlessui/react';
+
+const Button = (
+  props: ButtonProps & {
+    children?: React.ReactNode;
+    variant: 'solid' | 'outline' | 'glass';
+  }
+) => {
+  const { children, variant, className, ...rest } = props;
+
   let variantClass = '';
 
-  switch (props.variant) {
+  switch (variant) {
     case 'solid':
       variantClass =
         'border-primary-light bg-primary text-inverse font-semibold hover:opacity-80';
@@ -28,13 +32,14 @@ const Button = (props: {
 
   return (
     <HeadlessButton
+      {...rest}
       className={clsx(
-        `${variantClass} cursor-pointer rounded-md border-1 p-2 transition-opacity duration-200`,
-        props.className
+        'cursor-pointer rounded-md border-1 p-2 transition-opacity duration-200',
+        variantClass,
+        className
       )}
-      style={props.style}
     >
-      {props.label}
+      {children}
     </HeadlessButton>
   );
 };

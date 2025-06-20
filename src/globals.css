@@ -6,9 +6,10 @@
 @theme {
   --font-base: 'Poppins', sans-serif;
 
-  --color-primary: oklch(59.09% 0.19 261.81); /* #186cc7 */
+  --color-primary: oklch(0.5169 0.1619 255.57); /* #186cc7 */
   --color-primary-light: oklch(95.24% 0.027 255.49); /* #e3f2fe */
 
+  --color-background: oklch(97.44% 0.004 264.14); /* #F5F5F5 */
   --color-base: oklch(100% 0 0); /* #ffffff */
   --color-neutral: oklch(97.34% 0.004 264.14); /* #F8F9FA */
   --color-outline: oklch(0.9417 0.0052 247.88); /* #f0f1f3 */
@@ -16,4 +17,18 @@
   --color-black: oklch(35.36% 0.032 275.17); /* #3a3a3a */
   --color-muted: oklch(61.37% 0.015 275.47); /* #7e7f81 */
   --color-inverse: oklch(100% 0 0); /* #ffffff */
+
+  --color-type-regular: oklch(0.5169 0.1619 255.57);
+  --color-type-regular-light: oklch(95.24% 0.027 255.49);
+  --color-type-student: oklch(0.7658 0.119 144.95);
+  --color-type-student-light: oklch(0.9571 0.021 147.64);
+  --color-type-pwd: oklch(0.7437 0.1161 321.55);
+  --color-type-pwd-light: oklch(0.9384 0.0266 323.91);
+  --color-type-senior: oklch(0.8287 0.1452 73.54);
+  --color-type-senior-light: oklch(0.9685 0.0282 79.48);
+
+  --color-type-online: oklch(0.5169 0.1619 255.57);
+  --color-type-online-light: oklch(95.24% 0.027 255.49);
+  --color-type-cash: oklch(0.8287 0.1452 73.54);
+  --color-type-cash-light: oklch(0.9685 0.0282 79.48);
 }

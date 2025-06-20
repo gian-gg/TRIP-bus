@@ -17,21 +17,41 @@ const CardContainer = (props: {
   );
 };
 
-const CardHeader = (props: { children: React.ReactNode }) => {
+const CardHeader = (props: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
-    <div className="bg-primary text-inverse h-auto w-full rounded-t-md px-8 py-4">
+    <div
+      className={clsx(
+        'bg-primary text-inverse h-auto w-full rounded-t-md px-8 py-4',
+        props.className
+      )}
+    >
       {props.children}
     </div>
   );
 };
 
-const CardBody = (props: { children: React.ReactNode }) => {
-  return <div className="flex-1 px-8 py-4">{props.children}</div>;
+const CardBody = (props: { children: React.ReactNode; className?: string }) => {
+  return (
+    <div className={clsx('flex-1 px-8 py-4', props.className)}>
+      {props.children}
+    </div>
+  );
 };
 
-const CardFooter = (props: { children: React.ReactNode }) => {
+const CardFooter = (props: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
-    <div className="bg-neutral h-auto w-full rounded-b-md px-8 py-4 text-sm">
+    <div
+      className={clsx(
+        'bg-neutral h-auto w-full rounded-b-md px-8 py-4 text-sm',
+        props.className
+      )}
+    >
       {props.children}
     </div>
   );
