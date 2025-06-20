@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import Container from '@/components/Container';
+import { Fetch } from '@/lib/api';
 
 import {
   CardContainer,
@@ -19,16 +19,8 @@ const Home = () => {
 
   useEffect(() => {
     const fetchNames = async () => {
-      const response = await fetch('https://trip-api.dcism.org/api/test.php', {
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          Authorization: import.meta.env.VITE_API_KEY as string,
-        },
-      });
-      const data = await response.json();
-
-      return data.reports;
+      const response = await Fetch.get('/test.php');
+      return response.data.reports;
     };
 
     fetchNames().then((reports) => setNames(reports));
