@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from 'clsx';
 
 import { Button as HeadlessButton } from '@headlessui/react';
 
@@ -17,7 +18,7 @@ const Button = (props: {
       break;
     case 'outline':
       variantClass =
-        'border-neutral bg-transparent text-black hover:opacity-50';
+        'border-outline bg-transparent text-black hover:opacity-50';
       break;
     case 'glass':
       variantClass =
@@ -27,7 +28,10 @@ const Button = (props: {
 
   return (
     <HeadlessButton
-      className={`${props.className} cursor-pointer rounded-md border-1 p-2 transition-opacity duration-200 ${variantClass}`}
+      className={clsx(
+        `${variantClass} cursor-pointer rounded-md border-1 p-2 transition-opacity duration-200`,
+        props.className
+      )}
       style={props.style}
     >
       {props.label}

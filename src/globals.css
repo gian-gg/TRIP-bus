@@ -11,6 +11,7 @@
 
   --color-base: oklch(100% 0 0); /* #ffffff */
   --color-neutral: oklch(97.34% 0.004 264.14); /* #F8F9FA */
+  --color-outline: oklch(0.9417 0.0052 247.88); /* #f0f1f3 */
 
   --color-black: oklch(35.36% 0.032 275.17); /* #3a3a3a */
   --color-muted: oklch(61.37% 0.015 275.47); /* #7e7f81 */
