@@ -3,6 +3,8 @@
 - Frontend for TRIP
 - In Partial Fulfillment of the Requirements in Information Management II.
 
+Backend Repository: [TRIP-api](https://github.com/Ehmann37/TRIP-api)
+
 ## Tech Stack
 
 ![Tech Stack](https://skills-icons.vercel.app/api/icons?i=react,ts,vite,axios,tailwind,headlessui,lucide)
