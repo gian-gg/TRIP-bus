@@ -15,7 +15,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <HeadlessSelect
       {...props}
-      className="border-outline bg-base active:border-primary focus:border-primary hover:outline-primary h-full w-full cursor-pointer rounded-md border-1 p-2 px-4 text-black outline-0 outline-transparent focus:ring-0"
+      className="border-outline bg-base active:border-primary focus:border-primary hover:outline-primary h-full w-full cursor-pointer rounded-md border-1 p-3 px-4 text-black outline-0 outline-transparent focus:ring-0"
     />
   );
 }
@@ -60,7 +60,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <HeadlessInput
       {...props}
-      className="border-outline bg-base active:border-primary focus:border-primary hover:outline-primary h-full w-full cursor-pointer rounded-md border-1 p-2 px-4 text-black outline-0 outline-transparent focus:ring-0"
+      className="border-outline bg-base active:border-primary focus:border-primary hover:outline-primary h-full w-full cursor-pointer rounded-md border-1 p-3 px-4 text-black outline-0 outline-transparent focus:ring-0"
     />
   );
 }
