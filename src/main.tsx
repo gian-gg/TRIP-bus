@@ -11,6 +11,8 @@ import NotFound from '@/app/NotFound';
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
+import { Toaster } from 'sonner';
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Router>
@@ -23,5 +25,6 @@ createRoot(document.getElementById('root')!).render(
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
+    <Toaster richColors />
   </StrictMode>
 );

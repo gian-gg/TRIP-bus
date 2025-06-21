@@ -9,6 +9,8 @@
   --color-primary: oklch(0.5169 0.1619 255.57); /* #186cc7 */
   --color-primary-light: oklch(95.24% 0.027 255.49); /* #e3f2fe */
 
+  --color-error: oklch(57.7% 0.245 27.325);
+
   --color-background: oklch(97.44% 0.004 264.14); /* #F5F5F5 */
   --color-base: oklch(100% 0 0); /* #ffffff */
   --color-neutral: oklch(97.34% 0.004 264.14); /* #F8F9FA */

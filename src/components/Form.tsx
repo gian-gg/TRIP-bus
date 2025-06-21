@@ -41,7 +41,7 @@ function Label(props: {
       className="text-sm font-semibold text-black"
     >
       {props.children}
-      <span className="ml-1 text-red-700">{props.required ? '*' : ''}</span>
+      <span className="text-error ml-1">{props.required ? '*' : ''}</span>
     </HeadlessLabel>
   );
 }

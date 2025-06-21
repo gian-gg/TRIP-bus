@@ -8,7 +8,7 @@ const CardContainer = (props: {
   return (
     <div
       className={clsx(
-        'border-neutral bg-base flex flex-col justify-between rounded-md border-1',
+        'bg-base flex flex-col justify-between rounded-md',
         props.className
       )}
     >
@@ -48,7 +48,7 @@ const CardFooter = (props: {
   return (
     <div
       className={clsx(
-        'bg-neutral h-auto w-full rounded-b-md px-8 py-4 text-sm',
+        'bg-neutral flex h-auto w-full justify-end gap-4 rounded-b-md px-8 py-4 text-sm',
         props.className
       )}
     >

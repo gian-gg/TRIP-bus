@@ -22,7 +22,7 @@ const Button = (
       break;
     case 'outline':
       variantClass =
-        'border-outline bg-transparent text-black hover:opacity-50';
+        'border-primary bg-transparent text-black hover:opacity-50';
       break;
     case 'glass':
       variantClass =
