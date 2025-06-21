@@ -20,6 +20,7 @@
     "express": "4",
     "lucide-react": "^0.516.0",
     "pm2": "^6.0.8",
+    "qrcode.react": "^4.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2",

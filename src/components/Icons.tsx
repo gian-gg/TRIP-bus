@@ -8,4 +8,12 @@ const BusIcon = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
   return <span {...props}>🚌</span>;
 };
 
-export { PushPinIcon, BusIcon };
+const ClockIcon = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
+  return <span {...props}>⏱️</span>;
+};
+
+const PhoneIcon = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
+  return <span {...props}>📱</span>;
+};
+
+export { PushPinIcon, BusIcon, ClockIcon, PhoneIcon };
