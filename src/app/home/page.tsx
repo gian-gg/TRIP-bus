@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-
-import { Fetch } from '@/lib/api';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import {
   CardContainer,
@@ -8,68 +7,74 @@ import {
   CardBody,
   CardFooter,
 } from '@/components/Card';
+import Button from '@/components/Button';
+import PageBody from '@/components/PageBody';
 
-interface Name {
-  id: number;
-  name: string;
-}
+import { Fetch } from '@/lib/api';
 
 const Home = () => {
-  const [names, setNames] = useState<Name[]>([]);
-
-  useEffect(() => {
-    const fetchNames = async () => {
+  const handleConnectionTest = async () => {
+    try {
       const response = await Fetch.get('/test.php');
-      return response.data.reports;
-    };
+      if (response.status === 200) {
+        toast.success('Backend connection successful!');
+      } else {
+        toast.error('Failed to connect to the backend.');
+      }
+    } catch (error) {
+      toast.error('Error connecting to the backend.');
+    }
+  };
 
-    fetchNames().then((reports) => setNames(reports));
-  }, []);
   return (
-    <div className="font-base bg-base flex h-screen flex-col items-center justify-center">
-      <CardContainer className="h-96">
+    <PageBody>
+      <CardContainer className="border-primary-light border-2">
         <CardHeader>
-          <h1 className="text-xl font-semibold">TRIP</h1>
-          <p>Transit Routing & Integrated Payments</p>
+          <h1 className="text-center text-2xl font-bold">TRIP</h1>
+          <p className="text-primary-light text-center text-sm">
+            Transit Routing & Integrated Payments
+          </p>
         </CardHeader>
-        <CardBody>
-          <h2 className="text-center font-semibold">
-            Backend Connection Test:
-          </h2>
-          <table className="border-outline mt-2 min-w-full border text-sm">
-            <thead>
-              <tr>
-                <th className="border-outline border px-2 py-1 text-left">
-                  ID
-                </th>
-                <th className="border-outline border px-2 py-1 text-left">
-                  Name
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {names.length > 0 ? (
-                names.map((name) => (
-                  <tr key={name.id} className="border-outline border">
-                    <td className="border-outline border px-2 py-1">
-                      {name.id}
-                    </td>
-                    <td className="px-2 py-1">{name.name}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={2} className="px-2 py-1 text-center">
-                    Connection unsuccessful.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <CardBody className="flex flex-col items-center justify-center gap-4 !px-4">
+          <Link to="/qrcode" className="w-full">
+            <Button variant="outline" className="w-full">
+              QR Code
+            </Button>
+          </Link>
+          <Link to="/passenger" className="w-full">
+            <Button variant="outline" className="w-full">
+              Passenger Form
+            </Button>
+          </Link>
+          <Link to="/conductor" className="w-full">
+            <Button variant="outline" className="w-full">
+              Conductor Dashboard
+            </Button>
+          </Link>
+          <Link to="/operator" className="w-full">
+            <Button variant="outline" className="w-full">
+              Operator Dashboard
+            </Button>
+          </Link>
+          <Link to="/404" className="w-full">
+            <Button variant="outline" className="w-full">
+              404 Page
+            </Button>
+          </Link>
+
+          <Button
+            variant="solid"
+            className="w-full"
+            onClick={handleConnectionTest}
+          >
+            Backend Connection Test
+          </Button>
         </CardBody>
-        <CardFooter>© 2025, TRIP. All Rights Reserved.</CardFooter>
+        <CardFooter className="!justify-center">
+          CIS2104: Information Management II
+        </CardFooter>
       </CardContainer>
-    </div>
+    </PageBody>
   );
 };
 

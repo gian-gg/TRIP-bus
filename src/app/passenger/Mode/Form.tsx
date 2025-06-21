@@ -10,7 +10,7 @@ import {
 } from '@/components/Form';
 import Button from '@/components/Button';
 
-import { PassengerTypesRadios, PaymentMethodRadios } from './Radios';
+import { PassengerTypesRadios, PaymentMethodRadios } from '../Radios';
 
 import type { passengerDetailsType } from '@/type';
 import {

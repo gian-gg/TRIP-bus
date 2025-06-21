@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+
 import { CardContainer, CardHeader, CardBody } from '@/components/Card';
 import Callout from '@/components/Callout';
-import Form from './Form';
-import Success from './Success';
-
 import { PushPinIcon, BusIcon } from '@/components/Icons';
+import PageBody from '@/components/PageBody';
 
-import type { passengerDetailsType } from '@/type';
+import Form from './Mode/Form';
+import Success from './Mode/Success';
 
-type modeType = 'form' | 'success';
+import type { passengerDetailsType, modeType } from '@/type';
 
 const Passenger = () => {
   const [mode, setMode] = useState<modeType>(
@@ -72,7 +72,7 @@ const Passenger = () => {
   };
 
   return (
-    <div className="bg-background m-0 flex min-h-screen min-w-screen items-start justify-center p-0 sm:p-5 md:p-10">
+    <PageBody>
       <CardContainer className="w-full sm:w-4/5 md:w-3/5 lg:w-2/5">
         <CardHeader className="flex flex-col items-center justify-center py-6 sm:py-8 md:py-10">
           <h1 className="text-2xl font-bold">
@@ -111,7 +111,7 @@ const Passenger = () => {
           )}
         </CardBody>
       </CardContainer>
-    </div>
+    </PageBody>
   );
 };
 

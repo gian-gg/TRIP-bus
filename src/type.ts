@@ -1,5 +1,6 @@
 type PassengerType = 'regular' | 'student' | 'pwd' | 'senior';
 type PaymentMethodType = 'cash' | 'online';
+type modeType = 'form' | 'success';
 
 interface passengerDetailsType {
   passengerType: PassengerType | string;
@@ -10,4 +11,9 @@ interface passengerDetailsType {
   seat: string;
 }
 
-export type { PassengerType, PaymentMethodType, passengerDetailsType };
+export type {
+  PassengerType,
+  PaymentMethodType,
+  passengerDetailsType,
+  modeType,
+};
