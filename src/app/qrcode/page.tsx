@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   CardContainer,
@@ -13,22 +14,59 @@ import Callout from '@/components/Callout';
 import Dialog from '@/components/Dialog';
 import { Input, Label, Field } from '@/components/Form';
 
-import { ClockIcon, PhoneIcon, GearIcon } from '@/components/Icons';
+import {
+  ClockIcon,
+  PhoneIcon,
+  GearIcon,
+  SpinnerIcon,
+} from '@/components/Icons';
 
-const MAX_SECONDS = 5;
+import { GET, POST } from '@/lib/api';
+import { getCurrentTimeDate } from '@/lib/misc';
+
+import type { SessionResponse, GETResponse } from '@/type';
+
+const MAX_SECONDS = 30;
 
 const QrCode = () => {
+  const [seconds, setSeconds] = useState(MAX_SECONDS);
+
   const [currentBusID, setCurrentBusID] = useState(
     () => (localStorage.getItem('bus_id') as string) || ''
   );
-  const [sessionURL] = useState('http://trip.dcism.org/passenger');
+  const [sessionURL, setSessionURL] = useState('');
+  const [currentStop, setCurrentStop] = useState('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [seconds, setSeconds] = useState(MAX_SECONDS);
 
-  const onRefresh = () => {
-    console.log('Refreshing QR Code...');
-  };
+  const onRefresh = useCallback(async () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        POST('/session/', {
+          bus_id: currentBusID,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }).then((response) => {
+          const res = response as SessionResponse;
+          if (res.status === 'success') {
+            setSessionURL(`http://trip.dcism.org/passenger/${res.token}`);
+            setCurrentStop(res.stop_name);
+          } else {
+            toast.info('Failed to generate QR code session.');
+          }
+        });
+      },
+      (error) => {
+        console.error('Error getting location:', error.message);
+      }
+    );
+  }, [currentBusID]);
+
+  useEffect(() => {
+    if (currentBusID) {
+      onRefresh();
+    }
+  }, [currentBusID, onRefresh]);
 
   useEffect(() => {
     if (currentBusID) {
@@ -45,14 +83,31 @@ const QrCode = () => {
 
       return () => clearInterval(interval);
     }
-  }, [currentBusID, sessionURL]);
+  }, [currentBusID, sessionURL, onRefresh]);
 
-  const handleSettingsChange = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSettingsChange = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const busID = e.currentTarget.busID.value;
 
+    try {
+      const response = await GET('/bus/' + busID);
+      const res = response as GETResponse;
+
+      if (res.status !== 'success') {
+        toast.error('Invalid Bus ID');
+        return;
+      }
+    } catch (error) {
+      toast.error(
+        'Invalid Bus ID: ' +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
+      return;
+    }
+
     localStorage.setItem('bus_id', busID);
     setCurrentBusID(busID);
+    toast.success('Successfully linked to bus ID: ' + busID);
 
     setIsModalOpen(false);
   };
@@ -113,16 +168,15 @@ const QrCode = () => {
       </Button>
       <CardContainer className="m-4 w-full p-4 md:w-4/5 xl:w-1/2">
         <CardHeader className="flex items-start justify-between rounded-b-md !p-4">
-          {currentBusID ? (
+          {currentBusID && currentStop ? (
             <>
               <div>
                 <p className="text-primary-light text-sm font-bold">
                   CURRENT STOP
                 </p>
-                <h1 className="text-2xl font-bold">Lorem Station</h1>
-                <p className="text-primary-light text-xs">
-                  <ClockIcon className="text-md" /> Thursday, May 15, 2025 at
-                  2:30:58 PM
+                <h1 className="text-2xl font-bold">{currentStop}</h1>
+                <p className="text-primary-light flex items-center gap-1 text-xs">
+                  <ClockIcon className="text-md" /> {getCurrentTimeDate()}
                 </p>
               </div>
               <p className="rounded-md bg-white/10 p-2 text-xs sm:text-sm">
@@ -147,13 +201,19 @@ const QrCode = () => {
             </h2>
             <div className="bg-base border-outline flex h-full items-center justify-center rounded-md border-2 p-8 shadow-md sm:p-12 lg:p-14">
               {currentBusID ? (
-                <QRCodeSVG
-                  className="h-68 w-68 lg:h-80 lg:w-80"
-                  value={sessionURL}
-                  bgColor="#ffffff"
-                  fgColor="#000000"
-                  level="H"
-                />
+                sessionURL ? (
+                  <QRCodeSVG
+                    className="h-68 w-68 lg:h-80 lg:w-80"
+                    value={sessionURL}
+                    bgColor="#ffffff"
+                    fgColor="#000000"
+                    level="H"
+                  />
+                ) : (
+                  <div className="flex h-68 w-68 items-center justify-center lg:h-80 lg:w-80">
+                    <SpinnerIcon className="text-primary animate-spin text-9xl" />
+                  </div>
+                )
               ) : (
                 <div className="h-68 w-68 lg:h-80 lg:w-80" />
               )}

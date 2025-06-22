@@ -10,19 +10,25 @@ import {
 import Button from '@/components/Button';
 import PageBody from '@/components/PageBody';
 
-import { Fetch } from '@/lib/api';
+import { GET } from '@/lib/api';
+
+import type { GETResponse } from '@/type';
 
 const Home = () => {
   const handleConnectionTest = async () => {
     try {
-      const response = await Fetch.get('/test.php');
-      if (response.status === 200) {
+      const response = await GET('/bus');
+      const res = response as GETResponse;
+      if (res.status === 'success') {
         toast.success('Backend connection successful!');
       } else {
         toast.error('Failed to connect to the backend.');
       }
     } catch (error) {
-      toast.error('Error connecting to the backend.');
+      toast.error(
+        'Error connecting to the backend. ' +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
     }
   };
 

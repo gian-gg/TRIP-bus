@@ -11,9 +11,22 @@ interface passengerDetailsType {
   seat: string;
 }
 
+interface SessionResponse {
+  status: string;
+  token: string;
+  stop_name: string;
+}
+
+interface GETResponse {
+  status: string;
+  data: object;
+}
+
 export type {
   PassengerType,
   PaymentMethodType,
   passengerDetailsType,
   modeType,
+  SessionResponse,
+  GETResponse,
 };
