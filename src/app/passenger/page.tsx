@@ -8,7 +8,7 @@ import PageBody from '@/components/PageBody';
 
 import Form from './Mode/Form';
 import Success from './Mode/Success';
-import Payment from './Mode/Payment';
+import Pending from './Mode/Pending';
 
 import type {
   passengerDetailsType,
@@ -126,7 +126,7 @@ const Passenger = () => {
               handleSubmit={handleSubmit}
             />
           ) : mode === 'pending' ? (
-            <Payment />
+            <Pending />
           ) : (
             <Success data={passengerDetails} />
           )}
