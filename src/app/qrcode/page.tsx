@@ -21,10 +21,7 @@ const QrCode = () => {
   const [currentBusID, setCurrentBusID] = useState(
     () => (localStorage.getItem('bus_id') as string) || ''
   );
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [sessionURL, setSessionURL] = useState(
-    'http://trip.dcism.org/passenger'
-  );
+  const [sessionURL] = useState('http://trip.dcism.org/passenger');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [seconds, setSeconds] = useState(MAX_SECONDS);

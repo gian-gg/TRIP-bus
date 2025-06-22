@@ -21,7 +21,6 @@ const Home = () => {
       } else {
         toast.error('Failed to connect to the backend.');
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error('Error connecting to the backend.');
     }
