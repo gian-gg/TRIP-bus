@@ -1,26 +1,36 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { CardContainer, CardHeader, CardBody } from '@/components/Card';
 import Callout from '@/components/Callout';
-import { PushPinIcon, BusIcon } from '@/components/Icons';
+import { PushPinIcon, ClockIcon } from '@/components/Icons';
 import PageBody from '@/components/PageBody';
 
 import Form from './Mode/Form';
 import Success from './Mode/Success';
 import Pending from './Mode/Pending';
 
+import { GET } from '@/lib/api';
+import { formatTimeDate } from '@/lib/misc';
+
 import type {
   passengerDetailsType,
   modeType,
   PassengerType,
   PaymentMethodType,
+  CurrentBusInfoType,
+  GETResponse,
 } from '@/type';
 
 const Passenger = () => {
+  const { token } = useParams();
+
   const [mode, setMode] = useState<modeType>(
     () => (localStorage.getItem('passengerMode') as modeType) || 'form'
   );
+
+  const [currentBusInfo, setCurrentBusInfo] = useState<CurrentBusInfoType>();
 
   const [passengerDetails, setPassengerDetails] =
     useState<passengerDetailsType>({
@@ -31,6 +41,30 @@ const Passenger = () => {
       contact: '',
       seat: '',
     });
+
+  useEffect(() => {
+    const onMount = async () => {
+      try {
+        const response = await GET('/session/' + token);
+        const res = response as GETResponse;
+        if (res.status !== 'success') {
+          toast.error('Invalid token. Call the conductor for help.');
+          return;
+        }
+
+        console.log('Session Response:', res.data as CurrentBusInfoType);
+        setCurrentBusInfo(res.data as CurrentBusInfoType);
+      } catch (error) {
+        toast.error(
+          'Error: ' +
+            (error instanceof Error ? error.message : 'Unknown error',
+            ' Call the conductor for help. ')
+        );
+      }
+    };
+
+    onMount();
+  }, [token]);
 
   useEffect(() => {
     localStorage.setItem('passengerMode', mode);
@@ -101,7 +135,7 @@ const Passenger = () => {
           </p>
         </CardHeader>
         <CardBody>
-          {mode === 'form' && (
+          {mode === 'form' && currentBusInfo && (
             <Callout
               mode="primary"
               className="mx-4 mb-4 flex items-center justify-start gap-4 p-8"
@@ -110,10 +144,10 @@ const Passenger = () => {
               <div>
                 <p className="text-xs font-medium">BOARDING POINT</p>
                 <h2 className="text-primary my-1 text-xl font-bold">
-                  Lorem Ipsum Station
+                  {currentBusInfo.current_stop}
                 </h2>
                 <p className="text-xs">
-                  <BusIcon /> Bus Entry: 2:30 PM Today
+                  <ClockIcon /> {formatTimeDate(currentBusInfo.timestamp)}
                 </p>
               </div>
             </Callout>

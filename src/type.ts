@@ -22,6 +22,12 @@ interface GETResponse {
   data: object;
 }
 
+interface CurrentBusInfoType {
+  timestamp: string;
+  current_stop: string;
+  bus_id: number;
+}
+
 export type {
   PassengerType,
   PaymentMethodType,
@@ -29,4 +35,5 @@ export type {
   modeType,
   SessionResponse,
   GETResponse,
+  CurrentBusInfoType,
 };

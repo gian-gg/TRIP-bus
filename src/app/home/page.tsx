@@ -47,11 +47,6 @@ const Home = () => {
               QR Code
             </Button>
           </Link>
-          <Link to="/passenger" className="w-full">
-            <Button variant="outline" className="w-full">
-              Passenger Form
-            </Button>
-          </Link>
           <Link to="/conductor" className="w-full">
             <Button variant="outline" className="w-full">
               Conductor Dashboard

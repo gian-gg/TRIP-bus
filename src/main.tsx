@@ -19,7 +19,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/qrcode" element={<QrCode />} />
-        <Route path="/passenger" element={<Passenger />} />
+        <Route path="/passenger/:token" element={<Passenger />} />
         <Route path="/conductor" element={<Conductor />} />
         <Route path="/operator" element={<Operator />} />
         <Route path="*" element={<NotFound />} />
