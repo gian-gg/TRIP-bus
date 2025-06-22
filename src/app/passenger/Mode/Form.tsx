@@ -98,7 +98,7 @@ const Passenger = (props: {
         </Select>
       </Field>
       {props.data.passengerType && props.data.destination && (
-        <Callout className="mx-4 mb-4 flex justify-between p-4">
+        <Callout mode="primary" className="mx-4 mb-4 flex justify-between p-4">
           <div>
             <h3 className="text-sm font-bold">FARE AMOUNT</h3>
             <p className="text-xs">Regular (₱25) - 20% Discount (₱5)</p>

@@ -8,8 +8,14 @@ import PageBody from '@/components/PageBody';
 
 import Form from './Mode/Form';
 import Success from './Mode/Success';
+import Payment from './Mode/Payment';
 
-import type { passengerDetailsType, modeType } from '@/type';
+import type {
+  passengerDetailsType,
+  modeType,
+  PassengerType,
+  PaymentMethodType,
+} from '@/type';
 
 const Passenger = () => {
   const [mode, setMode] = useState<modeType>(
@@ -18,8 +24,8 @@ const Passenger = () => {
 
   const [passengerDetails, setPassengerDetails] =
     useState<passengerDetailsType>({
-      passengerType: '',
-      paymentMethod: '',
+      passengerType: '' as PassengerType,
+      paymentMethod: '' as PaymentMethodType,
       destination: '',
       name: '',
       contact: '',
@@ -66,7 +72,11 @@ const Passenger = () => {
         destination,
       });
 
-      setMode('success');
+      setMode('pending');
+      setTimeout(() => {
+        setMode('success');
+      }, 5000); // Simulate a delay for the success state
+
       toast.success('Form submitted successfully!');
     }
   };
@@ -76,17 +86,26 @@ const Passenger = () => {
       <CardContainer className="w-full sm:w-4/5 md:w-3/5 lg:w-2/5">
         <CardHeader className="flex flex-col items-center justify-center py-6 sm:py-8 md:py-10">
           <h1 className="text-2xl font-bold">
-            {mode === 'form' ? 'Passenger Details' : 'Success'}
+            {mode === 'form'
+              ? 'Passenger Details'
+              : mode === 'pending'
+                ? 'Payment Pending'
+                : 'Payment Successful'}
           </h1>
           <p className="text-primary-light text-sm">
             {mode === 'form'
               ? 'Please fill out the form below to proceed with your trip.'
-              : 'Your trip details have been successfully submitted.'}
+              : mode === 'pending'
+                ? 'Conductor will arrive shortly to collect payment.'
+                : 'Thank you for choosing our service. Enjoy your trip!'}
           </p>
         </CardHeader>
         <CardBody>
           {mode === 'form' && (
-            <Callout className="mx-4 mb-4 flex items-center justify-start gap-4 p-8">
+            <Callout
+              mode="primary"
+              className="mx-4 mb-4 flex items-center justify-start gap-4 p-8"
+            >
               <PushPinIcon className="text-2xl" />
               <div>
                 <p className="text-xs font-medium">BOARDING POINT</p>
@@ -106,6 +125,8 @@ const Passenger = () => {
               onChange={setPassengerDetails}
               handleSubmit={handleSubmit}
             />
+          ) : mode === 'pending' ? (
+            <Payment />
           ) : (
             <Success data={passengerDetails} />
           )}
