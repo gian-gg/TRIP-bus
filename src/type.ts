@@ -1,6 +1,6 @@
 type PassengerType = 'regular' | 'student' | 'pwd' | 'senior';
 type PaymentMethodType = 'cash' | 'online';
-type modeType = 'form' | 'success' | 'pending';
+type modeType = 'form' | 'complete';
 
 interface passengerDetailsType {
   passengerType: PassengerType;

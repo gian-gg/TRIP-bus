@@ -9,7 +9,6 @@ import PageBody from '@/components/PageBody';
 
 import Form from './Mode/Form';
 import Success from './Mode/Success';
-import Pending from './Mode/Pending';
 
 import { GET } from '@/lib/api';
 import { formatTimeDate } from '@/lib/misc';
@@ -45,14 +44,13 @@ const Passenger = () => {
   useEffect(() => {
     const onMount = async () => {
       try {
-        const response = await GET('/session/' + token);
+        const response = await GET('/session/index.php?id=' + token);
         const res = response as GETResponse;
         if (res.status !== 'success') {
           toast.error('Invalid token. Call the conductor for help.');
           return;
         }
 
-        console.log('Session Response:', res.data as CurrentBusInfoType);
         setCurrentBusInfo(res.data as CurrentBusInfoType);
       } catch (error) {
         toast.error(
@@ -72,7 +70,7 @@ const Passenger = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const name = (e.target as HTMLFormElement).nameInput.value;
+    const name = (e.target as HTMLFormElement).howManyPassengersInput.value;
     const contact = (e.target as HTMLFormElement).contactInput.value;
     const seat = (e.target as HTMLFormElement).seatNumberInput.value;
     const passengerType = passengerDetails.passengerType;
@@ -106,35 +104,28 @@ const Passenger = () => {
         destination,
       });
 
-      setMode('pending');
-      setTimeout(() => {
-        setMode('success');
-      }, 5000); // Simulate a delay for the success state
+      setMode('complete');
 
       toast.success('Form submitted successfully!');
     }
   };
 
   return (
-    <PageBody>
-      <CardContainer className="w-full sm:w-4/5 md:w-3/5 lg:w-2/5">
+    <PageBody className="!items-start">
+      <CardContainer className="w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
         <CardHeader className="flex flex-col items-center justify-center py-6 sm:py-8 md:py-10">
           <h1 className="text-2xl font-bold">
             {mode === 'form'
-              ? 'Passenger Details'
-              : mode === 'pending'
-                ? 'Payment Pending'
-                : 'Payment Successful'}
+              ? 'Trip Details'
+              : 'Ticket has been booked successfully!'}
           </h1>
           <p className="text-primary-light text-sm">
             {mode === 'form'
               ? 'Please fill out the form below to proceed with your trip.'
-              : mode === 'pending'
-                ? 'Conductor will arrive shortly to collect payment.'
-                : 'Thank you for choosing our service. Enjoy your trip!'}
+              : 'Thank you for choosing our services. Enjoy your trip!'}
           </p>
         </CardHeader>
-        <CardBody>
+        <CardBody className="!px-4 md:!px-8">
           {mode === 'form' && currentBusInfo && (
             <Callout
               mode="primary"
@@ -159,8 +150,6 @@ const Passenger = () => {
               onChange={setPassengerDetails}
               handleSubmit={handleSubmit}
             />
-          ) : mode === 'pending' ? (
-            <Pending />
           ) : (
             <Success data={passengerDetails} />
           )}
