@@ -28,6 +28,22 @@ interface CurrentBusInfoType {
   bus_id: number;
 }
 
+interface BusInformationType {
+  bus_id: number;
+  route_id: string;
+  driver_name: string;
+  passenger_count: number;
+  curr_location: string;
+  bus_status: 'active' | 'maintenance' | 'in transit';
+}
+
+interface StatsInformationType {
+  bus_active: number;
+  bus_maintenance: number;
+  on_time_performance: number;
+  total_passenger_count: number;
+}
+
 export type {
   PassengerType,
   PaymentMethodType,
@@ -36,4 +52,6 @@ export type {
   SessionResponse,
   GETResponse,
   CurrentBusInfoType,
+  BusInformationType,
+  StatsInformationType,
 };
