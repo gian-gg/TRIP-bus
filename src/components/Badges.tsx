@@ -1,4 +1,4 @@
-import type { passengerDetailsType } from '@/type';
+import type { PassengerDetailsType } from '@/type';
 
 import { formatPassengerType } from '@/lib/misc';
 
@@ -9,7 +9,7 @@ const typeBgClass: Record<string, string> = {
   pwd: 'bg-type-pwd-light',
 };
 
-const Badges = (props: { type: passengerDetailsType['passengerType'] }) => {
+const Badges = (props: { type: PassengerDetailsType['category'] }) => {
   const bgClass = typeBgClass[props.type] || 'bg-type-regular-light';
   return (
     <span
