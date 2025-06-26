@@ -2,15 +2,6 @@ type PassengerType = 'regular' | 'student' | 'pwd' | 'senior';
 type PaymentMethodType = 'cash' | 'online';
 type modeType = 'form' | 'complete';
 
-interface passengerDetailsType {
-  passengerType: PassengerType;
-  paymentMethod: PaymentMethodType;
-  destination: string;
-  name: string;
-  contact: string;
-  seat: string;
-}
-
 interface SessionResponse {
   status: string;
   token: string;
@@ -44,14 +35,27 @@ interface StatsInformationType {
   total_passenger_count: number;
 }
 
+interface GeneralTripInfoType {
+  passengerCount: number;
+  contactNumber: string;
+  destination: string;
+}
+
+interface PassengerDetailsType {
+  category: PassengerType;
+  name: string;
+  seat: string;
+}
+
 export type {
   PassengerType,
   PaymentMethodType,
-  passengerDetailsType,
   modeType,
   SessionResponse,
   GETResponse,
   CurrentBusInfoType,
   BusInformationType,
   StatsInformationType,
+  GeneralTripInfoType,
+  PassengerDetailsType,
 };

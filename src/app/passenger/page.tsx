@@ -3,21 +3,18 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { CardContainer, CardHeader, CardBody } from '@/components/Card';
-import Callout from '@/components/Callout';
-import { PushPinIcon, ClockIcon } from '@/components/Icons';
 import PageBody from '@/components/PageBody';
 
 import Form from './Mode/Form';
-import Success from './Mode/Success';
+import Success from './Mode/Complete';
 
 import { GET } from '@/lib/api';
-import { formatTimeDate } from '@/lib/misc';
 
 import type {
-  passengerDetailsType,
+  GeneralTripInfoType,
+  PassengerDetailsType,
   modeType,
   PassengerType,
-  PaymentMethodType,
   CurrentBusInfoType,
   GETResponse,
 } from '@/type';
@@ -31,15 +28,21 @@ const Passenger = () => {
 
   const [currentBusInfo, setCurrentBusInfo] = useState<CurrentBusInfoType>();
 
-  const [passengerDetails, setPassengerDetails] =
-    useState<passengerDetailsType>({
-      passengerType: '' as PassengerType,
-      paymentMethod: '' as PaymentMethodType,
-      destination: '',
+  const [generalTripInfo, setGeneralTripInfo] = useState<GeneralTripInfoType>({
+    passengerCount: 1,
+    contactNumber: '',
+    destination: '',
+  });
+
+  const [passengerDetails, setPassengerDetails] = useState<
+    PassengerDetailsType[]
+  >(
+    Array.from({ length: generalTripInfo.passengerCount }, () => ({
+      category: '' as PassengerType,
       name: '',
-      contact: '',
       seat: '',
-    });
+    }))
+  );
 
   useEffect(() => {
     const onMount = async () => {
@@ -70,45 +73,40 @@ const Passenger = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const name = (e.target as HTMLFormElement).howManyPassengersInput.value;
-    const contact = (e.target as HTMLFormElement).contactInput.value;
-    const seat = (e.target as HTMLFormElement).seatNumberInput.value;
-    const passengerType = passengerDetails.passengerType;
-    const paymentMethod = passengerDetails.paymentMethod;
-    const destination = passengerDetails.destination;
 
-    if (
-      !name ||
-      !contact ||
-      !seat ||
-      !passengerType ||
-      !paymentMethod ||
-      !destination
-    ) {
+    const hasEmptyFields = passengerDetails.some(
+      (detail) =>
+        !detail.name ||
+        !detail.seat ||
+        !detail.category ||
+        !generalTripInfo.contactNumber ||
+        !generalTripInfo.passengerCount ||
+        !generalTripInfo.destination
+    );
+
+    if (hasEmptyFields) {
       toast.error('Please fill out all required fields.');
       return;
-    } else {
-      setPassengerDetails({
-        ...passengerDetails,
-        name: name,
-        contact: contact,
-        seat: seat,
-      });
-
-      console.log('Form Data:', {
-        name,
-        contact,
-        seat,
-        passengerType,
-        paymentMethod,
-        destination,
-      });
-
-      setMode('complete');
-
-      toast.success('Form submitted successfully!');
     }
+
+    toast.success('Form submitted successfully!');
+    setMode('complete');
   };
+
+  if (!currentBusInfo) {
+    return (
+      <PageBody className="!items-start">
+        <CardContainer className="w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
+          <CardHeader className="flex flex-col items-center justify-center py-6 sm:py-8 md:py-10">
+            <h1 className="text-2xl font-bold">Loading...</h1>
+            <p className="text-primary-light text-sm">
+              Please wait while we fetch the bus information.
+            </p>
+          </CardHeader>
+        </CardContainer>
+      </PageBody>
+    );
+  }
 
   return (
     <PageBody className="!items-start">
@@ -126,32 +124,21 @@ const Passenger = () => {
           </p>
         </CardHeader>
         <CardBody className="!px-4 md:!px-8">
-          {mode === 'form' && currentBusInfo && (
-            <Callout
-              mode="primary"
-              className="mx-4 mb-4 flex items-center justify-start gap-4 p-8"
-            >
-              <PushPinIcon className="text-2xl" />
-              <div>
-                <p className="text-xs font-medium">BOARDING POINT</p>
-                <h2 className="text-primary my-1 text-xl font-bold">
-                  {currentBusInfo.current_stop}
-                </h2>
-                <p className="text-xs">
-                  <ClockIcon /> {formatTimeDate(currentBusInfo.timestamp)}
-                </p>
-              </div>
-            </Callout>
-          )}
-
           {mode === 'form' ? (
             <Form
-              data={passengerDetails}
-              onChange={setPassengerDetails}
               handleSubmit={handleSubmit}
+              currentBusInfo={currentBusInfo}
+              generalTripInfo={generalTripInfo}
+              setGeneralTripInfo={setGeneralTripInfo}
+              passengerDetails={passengerDetails}
+              setPassengerDetails={setPassengerDetails}
             />
           ) : (
-            <Success data={passengerDetails} />
+            <Success
+              currentBusInfo={currentBusInfo}
+              generalTripInfo={generalTripInfo}
+              passengerDetails={passengerDetails}
+            />
           )}
         </CardBody>
       </CardContainer>
