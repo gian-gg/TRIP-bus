@@ -1,3 +1,5 @@
+import Passenger from './app/passenger/page';
+
 type PassengerType = 'regular' | 'student' | 'pwd' | 'senior';
 type PaymentMethodType = 'cash' | 'online';
 type modeType = 'form' | 'success' | 'pending';
@@ -28,13 +30,20 @@ interface CurrentBusInfoType {
   bus_id: number;
 }
 
+interface TimelineInformationType {
+  timestamp: string;
+  status_code: number;
+}
+
 interface BusInformationType {
   bus_id: number;
   route_id: string;
   driver_name: string;
+  conductor_name: string;
   passenger_count: number;
   curr_location: string;
   bus_status: 'active' | 'maintenance' | 'in transit';
+  timeline?: TimelineInformationType[];
 }
 
 interface StatsInformationType {
@@ -42,6 +51,15 @@ interface StatsInformationType {
   bus_maintenance: number;
   on_time_performance: number;
   total_passenger_count: number;
+}
+
+interface TripInformationType {
+  route_id: number;
+  bus_id: number;
+  conductor_name: string;
+  driver_name: string;
+  total_passenger: number;
+  total_revenue: number;
 }
 
 export type {
@@ -54,4 +72,6 @@ export type {
   CurrentBusInfoType,
   BusInformationType,
   StatsInformationType,
+  TimelineInformationType,
+  TripInformationType,
 };
