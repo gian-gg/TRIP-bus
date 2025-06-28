@@ -5,19 +5,17 @@ import Button from '@/components/Button';
 import Dialog from '@/components/Dialog';
 import Container from '@/components/Container';
 import Callout from '@/components/Callout';
-
 import { RightArrow, CloseIcon } from '@/components/Icons';
 import Badges from '@/components/Badges';
-
 import {
   CardContainer,
   CardBody,
   CardHeader,
   CardFooter,
 } from '@/components/Card';
-
 import { Field, Label, RadioGroup, Description } from '@/components/Form';
-import { PaymentMethodRadios } from '../Radios';
+import { PaymentMethodRadios } from '../components/Radios';
+
 import { PaymentMethod } from '@/data';
 
 import type {

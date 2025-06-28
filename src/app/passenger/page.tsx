@@ -4,11 +4,12 @@ import { toast } from 'sonner';
 
 import { CardContainer, CardHeader, CardBody } from '@/components/Card';
 import PageBody from '@/components/PageBody';
+import Loading from '@/components/Loading';
 
-import Form from './Mode/Form';
-import Success from './Mode/Complete';
+import Form from './Form';
+import Complete from './Pages/Complete';
 
-import { GET } from '@/lib/api';
+import { GET, POST } from '@/lib/api';
 
 import type {
   GeneralTripInfoType,
@@ -17,37 +18,29 @@ import type {
   PassengerType,
   CurrentBusInfoType,
   GETResponse,
+  SessionResponse,
 } from '@/type';
 
 const Passenger = () => {
   const { token } = useParams();
-
-  const [mode, setMode] = useState<modeType>(
-    () => (localStorage.getItem('passengerMode') as modeType) || 'form'
-  );
+  const [mode, setMode] = useState<modeType>('form');
 
   const [currentBusInfo, setCurrentBusInfo] = useState<CurrentBusInfoType>();
-
   const [generalTripInfo, setGeneralTripInfo] = useState<GeneralTripInfoType>({
     passengerCount: 1,
     contactNumber: '',
     destination: '',
   });
-
   const [passengerDetails, setPassengerDetails] = useState<
     PassengerDetailsType[]
-  >(
-    Array.from({ length: generalTripInfo.passengerCount }, () => ({
-      category: '' as PassengerType,
-      name: '',
-      seat: '',
-    }))
-  );
+  >([{ category: '' as PassengerType, name: '', seat: '' }]);
 
+  // Fetch current bus information when the component mounts using token
   useEffect(() => {
     const onMount = async () => {
       try {
         const response = await GET('/session/index.php?id=' + token);
+
         const res = response as GETResponse;
         if (res.status !== 'success') {
           toast.error('Invalid token. Call the conductor for help.');
@@ -57,9 +50,8 @@ const Passenger = () => {
         setCurrentBusInfo(res.data as CurrentBusInfoType);
       } catch (error) {
         toast.error(
-          'Error: ' +
-            (error instanceof Error ? error.message : 'Unknown error',
-            ' Call the conductor for help. ')
+          `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Call the
+     conductor for help.`
         );
       }
     };
@@ -67,13 +59,9 @@ const Passenger = () => {
     onMount();
   }, [token]);
 
-  useEffect(() => {
-    localStorage.setItem('passengerMode', mode);
-  }, [mode]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  // Handle form submission
+  const handleSubmit = async () => {
+    if (!currentBusInfo) return;
     const hasEmptyFields = passengerDetails.some(
       (detail) =>
         !detail.name ||
@@ -83,30 +71,60 @@ const Passenger = () => {
         !generalTripInfo.passengerCount ||
         !generalTripInfo.destination
     );
-
     if (hasEmptyFields) {
       toast.error('Please fill out all required fields.');
       return;
     }
 
-    toast.success('Form submitted successfully!');
-    setMode('complete');
+    // temporary only, will implement batch ticket booking
+    try {
+      for (const detail of passengerDetails) {
+        const response = await POST('/ticket/index.php', {
+          origin_stop_id: 1,
+          destination_stop_id: 10,
+          passenger_status: 'on_bus',
+          bus_id: currentBusInfo.bus_id,
+          full_name: detail.name,
+          seat_number: detail.seat,
+          passenger_category: detail.category,
+          boarding_time: currentBusInfo.timestamp,
+          payment: {
+            payment_mode: 'cash',
+            payment_platform: 'bus',
+            fare_amount: 20.34,
+            payment_status: 'pending',
+          },
+        });
+
+        const res = response as SessionResponse;
+        if (res.status !== 'success') {
+          toast.error('Failed to book ticket. Please try again later.');
+        }
+        console.log('Ticket booked successfully:', res);
+      }
+      setMode('pending');
+      toast.success('Ticket/s booked successfully!');
+    } catch (error) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'message' in error.response.data
+      ) {
+        toast.error('Error: ' + error.response.data.message);
+      } else {
+        toast.error('Network or server error');
+      }
+      console.log('Network or server error', error);
+    }
   };
 
-  if (!currentBusInfo) {
-    return (
-      <PageBody className="!items-start">
-        <CardContainer className="w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
-          <CardHeader className="flex flex-col items-center justify-center py-6 sm:py-8 md:py-10">
-            <h1 className="text-2xl font-bold">Loading...</h1>
-            <p className="text-primary-light text-sm">
-              Please wait while we fetch the bus information.
-            </p>
-          </CardHeader>
-        </CardContainer>
-      </PageBody>
-    );
-  }
+  if (!currentBusInfo) return <Loading />;
 
   return (
     <PageBody className="!items-start">
@@ -134,7 +152,7 @@ const Passenger = () => {
               setPassengerDetails={setPassengerDetails}
             />
           ) : (
-            <Success
+            <Complete
               currentBusInfo={currentBusInfo}
               generalTripInfo={generalTripInfo}
               passengerDetails={passengerDetails}
