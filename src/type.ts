@@ -72,6 +72,30 @@ interface TripInformationType {
   total_revenue: number;
 }
 
+interface PaymentType {
+  payment_id: number;
+  payment_mode: PaymentMethodType;
+  payment_platform: string | undefined;
+  fare_amount: number;
+  payment_timestamp: string;
+  payment_status: 'paid' | 'pending';
+}
+
+interface TicketType {
+  ticket_id: number;
+  bus_id: number;
+  origin_stop_id: number;
+  destination_stop_id: number;
+  full_name: string;
+  seat_number: string;
+  passenger_category: PassengerType;
+  passenger_status: 'left_bus' | 'onboard';
+  boarding_time: string;
+  arrival_time: string | undefined;
+  ticket_timestamp: string;
+  payment: PaymentType;
+}
+
 export type {
   PassengerType,
   PaymentMethodType,
@@ -86,4 +110,6 @@ export type {
   passengerDetailsType,
   TimelineInformationType,
   TripInformationType,
+  TicketType,
+  PaymentType,
 };
