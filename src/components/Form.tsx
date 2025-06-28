@@ -65,6 +65,23 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   );
 }
 
+function InputWithIcon(
+  props: React.InputHTMLAttributes<HTMLInputElement> & {
+    children?: React.ReactNode;
+  }
+) {
+  const { children, ...rest } = props;
+  return (
+    <div className="border-outline bg-base flex h-full w-full items-center gap-2 rounded-md border-1 pl-4 text-black">
+      {children}
+      <HeadlessInput
+        {...rest}
+        className="active:border-primary focus:border-primary hover:outline-primary h-full w-full p-3 px-4 outline-0 outline-transparent focus:ring-0"
+      />
+    </div>
+  );
+}
+
 function Radio(props: RadioProps & { children?: React.ReactNode }) {
   const { children, className, ...rest } = props;
 
@@ -81,4 +98,13 @@ function Radio(props: RadioProps & { children?: React.ReactNode }) {
   );
 }
 
-export { Input, Label, Field, Description, RadioGroup, Radio, Select };
+export {
+  Input,
+  InputWithIcon,
+  Label,
+  Field,
+  Description,
+  RadioGroup,
+  Radio,
+  Select,
+};

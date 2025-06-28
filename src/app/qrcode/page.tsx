@@ -40,7 +40,7 @@ const QrCode = () => {
         }).then((response) => {
           const res = response as SessionResponse;
           if (res.status === 'success') {
-            setSessionURL(`http://trip.dcism.org/passenger/${res.token}`);
+            setSessionURL(`${import.meta.env.VITE_URL}/passenger/${res.token}`);
           } else {
             toast.info('Failed to generate QR code session.');
           }
@@ -73,7 +73,7 @@ const QrCode = () => {
     const busID = e.currentTarget.busID.value;
 
     try {
-      const response = await GET('/bus/index.php/' + busID);
+      const response = await GET('/bus/index.php?id=' + busID);
       const res = response as GETResponse;
 
       if (res.status !== 'success') {

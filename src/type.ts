@@ -1,17 +1,6 @@
-import Passenger from './app/passenger/page';
-
 type PassengerType = 'regular' | 'student' | 'pwd' | 'senior';
 type PaymentMethodType = 'cash' | 'online';
-type modeType = 'form' | 'success' | 'pending';
-
-interface passengerDetailsType {
-  passengerType: PassengerType;
-  paymentMethod: PaymentMethodType;
-  destination: string;
-  name: string;
-  contact: string;
-  seat: string;
-}
+type modeType = 'form' | 'complete' | 'pending' | 'success'; // Combined all mode types
 
 interface SessionResponse {
   status: string;
@@ -30,20 +19,15 @@ interface CurrentBusInfoType {
   bus_id: number;
 }
 
-interface TimelineInformationType {
-  timestamp: string;
-  status_code: number;
-}
-
 interface BusInformationType {
   bus_id: number;
   route_id: string;
   driver_name: string;
-  conductor_name: string;
+  conductor_name?: string; // Made optional as it was only in second file
   passenger_count: number;
   curr_location: string;
   bus_status: 'active' | 'maintenance' | 'in transit';
-  timeline?: TimelineInformationType[];
+  timeline?: TimelineInformationType[]; // Added from second file
 }
 
 interface StatsInformationType {
@@ -51,6 +35,32 @@ interface StatsInformationType {
   bus_maintenance: number;
   on_time_performance: number;
   total_passenger_count: number;
+}
+
+interface GeneralTripInfoType {
+  passengerCount: number;
+  contactNumber: string;
+  destination: string;
+}
+
+interface PassengerDetailsType {
+  category: PassengerType;
+  name: string;
+  seat: string;
+}
+
+interface passengerDetailsType {
+  passengerType: PassengerType;
+  paymentMethod: PaymentMethodType;
+  destination: string;
+  name: string;
+  contact: string;
+  seat: string;
+}
+
+interface TimelineInformationType {
+  timestamp: string;
+  status_code: number;
 }
 
 interface TripInformationType {
@@ -65,13 +75,15 @@ interface TripInformationType {
 export type {
   PassengerType,
   PaymentMethodType,
-  passengerDetailsType,
   modeType,
   SessionResponse,
   GETResponse,
   CurrentBusInfoType,
   BusInformationType,
   StatsInformationType,
+  GeneralTripInfoType,
+  PassengerDetailsType,
+  passengerDetailsType,
   TimelineInformationType,
   TripInformationType,
 };

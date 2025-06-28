@@ -9,13 +9,14 @@ const PageBody = (
     className?: string;
   }
 ) => {
+  const { className, ...rest } = props;
   return (
     <div
       className={clsx(
         'bg-background m-0 flex min-h-screen min-w-screen items-center justify-center p-0 sm:p-5 md:p-10',
-        props.className
+        className
       )}
-      {...props}
+      {...rest}
     >
       {props.children}
     </div>
