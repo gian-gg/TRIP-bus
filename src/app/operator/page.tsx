@@ -4,12 +4,7 @@ import {
   CardBody,
   CardFooter,
 } from '@/components/Card';
-import {
-  GearIcon,
-  CloseIcon,
-  AlertIcon,
-  RefreshIcon,
-} from '@/components/Icons';
+import { CloseIcon, AlertIcon, RefreshIcon } from '@/components/Icons';
 import type {
   BusInformationType,
   StatsInformationType,
