@@ -82,6 +82,7 @@ const AlertIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
       className={clsx('h-6 w-6', props.className)}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
+      fill="none"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
@@ -133,6 +134,24 @@ const CloseIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
   );
 };
 
+const CircleIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+  return (
+    <svg
+      {...props}
+      className={clsx('h-6 w-6', props.className)}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="0"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="6" />
+    </svg>
+  );
+};
+
 export {
   PushPinIcon,
   BusIcon,
@@ -144,4 +163,5 @@ export {
   AlertIcon,
   RightArrow,
   CloseIcon,
+  CircleIcon,
 };

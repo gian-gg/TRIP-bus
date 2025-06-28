@@ -1,6 +1,6 @@
 type PassengerType = 'regular' | 'student' | 'pwd' | 'senior';
 type PaymentMethodType = 'cash' | 'online';
-type modeType = 'form' | 'complete' | 'pending';
+type modeType = 'form' | 'complete' | 'pending' | 'success'; // Combined all mode types
 
 interface SessionResponse {
   status: string;
@@ -23,9 +23,11 @@ interface BusInformationType {
   bus_id: number;
   route_id: string;
   driver_name: string;
+  conductor_name?: string; // Made optional as it was only in second file
   passenger_count: number;
   curr_location: string;
   bus_status: 'active' | 'maintenance' | 'in transit';
+  timeline?: TimelineInformationType[]; // Added from second file
 }
 
 interface StatsInformationType {
@@ -47,6 +49,29 @@ interface PassengerDetailsType {
   seat: string;
 }
 
+interface passengerDetailsType {
+  passengerType: PassengerType;
+  paymentMethod: PaymentMethodType;
+  destination: string;
+  name: string;
+  contact: string;
+  seat: string;
+}
+
+interface TimelineInformationType {
+  timestamp: string;
+  status_code: number;
+}
+
+interface TripInformationType {
+  route_id: number;
+  bus_id: number;
+  conductor_name: string;
+  driver_name: string;
+  total_passenger: number;
+  total_revenue: number;
+}
+
 export type {
   PassengerType,
   PaymentMethodType,
@@ -58,4 +83,7 @@ export type {
   StatsInformationType,
   GeneralTripInfoType,
   PassengerDetailsType,
+  passengerDetailsType,
+  TimelineInformationType,
+  TripInformationType,
 };
