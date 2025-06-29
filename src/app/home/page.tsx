@@ -19,8 +19,10 @@ const Home = () => {
     try {
       const response = await GET('/bus/index.php');
       const res = response as GETResponse;
+      const start = performance.now();
       if (res.status === 'success') {
-        toast.success('Backend connection successful!');
+        const ping = Math.round(performance.now() - start);
+        toast.success(`Backend connection successful! Ping: ${ping} ms`);
       } else {
         toast.error('Failed to connect to the backend.');
       }
