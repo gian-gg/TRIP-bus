@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 import { toast } from 'sonner';
 import {
   CardContainer,
@@ -16,9 +18,8 @@ import {
   StatsCard,
   TimelineCard,
 } from './components/BusInfoContainer';
-import { useState } from 'react';
 import Button from '@/components/Button';
-
+import { Input, Label, Field } from '@/components/Form';
 import Dialog from '@/components/Dialog';
 
 const StatsData: StatsInformationType = {
@@ -173,6 +174,8 @@ const BusData: BusInformationType[] = [
 
 const Operator = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [currentBusID, setCurrentBusID] = useState('');
   const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
   const selectedBus = BusData.find((bus) => bus.bus_id === selectedBusId);
 
@@ -180,8 +183,68 @@ const Operator = () => {
     toast.success('Data refreshed successfully!');
   };
 
+  useEffect(() => {
+    const operatorID = localStorage.getItem('operator_id');
+
+    if (operatorID) {
+      setCurrentBusID(operatorID);
+      toast.success('Welcome back, Operator ID: ' + operatorID);
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  }, [currentBusID]);
+
+  const handleAuth = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const operatorID = e.currentTarget.operatorID.value;
+
+    // temp only
+    localStorage.setItem('operator_id', operatorID);
+    setCurrentBusID(operatorID);
+    toast.success('Successfully signed in as : ' + operatorID);
+
+    setIsAuthModalOpen(false);
+  };
+
   return (
     <>
+      <Dialog
+        open={isAuthModalOpen}
+        as="div"
+        onClose={() => null}
+        className="w-96"
+      >
+        <CardContainer className="h-full w-full">
+          <CardHeader>
+            <h1 className="text-lg font-semibold text-white">Sign In</h1>
+          </CardHeader>
+          <form onSubmit={handleAuth}>
+            <CardBody>
+              <Field>
+                <Label htmlFor="operatorID" required>
+                  Operator ID
+                </Label>
+                <Input
+                  id="operatorID"
+                  name="operatorID"
+                  type="text"
+                  placeholder="Enter Operator ID"
+                  required
+                />
+              </Field>
+            </CardBody>
+            <CardFooter className="flex justify-end">
+              <Button
+                type="submit"
+                variant="solid"
+                className="!bg-primary px-4"
+              >
+                Sign In
+              </Button>
+            </CardFooter>
+          </form>
+        </CardContainer>
+      </Dialog>
       <Dialog
         open={isModalOpen}
         as="div"
@@ -293,59 +356,63 @@ const Operator = () => {
           </CardBody>
         </CardContainer>
       </Dialog>
-      <CardContainer className="m-auto max-w-[1400px] p-2">
-        <CardHeader className="flex items-start justify-between">
-          <div>
-            <h1 className="flex items-center gap-2 text-2xl font-bold">
-              <BusIcon /> Ceres Liners
-            </h1>
-            <p className="text-primary-light text-start text-sm">
-              Bus Operator Dashboard
-            </p>
-          </div>
-          <Button
-            className="flex items-center justify-between gap-2"
-            variant="glass"
-            onClick={refreshData}
-          >
-            <RefreshIcon className="h-[18px] w-[18px]" />
-            <p className="hidden font-semibold sm:block">Refresh</p>
-          </Button>
-        </CardHeader>
-        <CardBody className="flex w-full flex-col gap-4 !px-2 sm:!px-4 lg:!px-6">
-          <div className="mx-2 grid w-full grid-cols-2 items-center justify-items-center gap-4 md:grid-cols-4">
-            <StatsCard value={StatsData.bus_active} label="Active Buses" />
-            <StatsCard
-              value={StatsData.bus_maintenance}
-              label="In Maintenance"
-            />
-            <StatsCard
-              value={StatsData.on_time_performance + '%'}
-              label="On-time Performance"
-            />
-            <StatsCard
-              value={StatsData.total_passenger_count}
-              label="Total Passenger Count"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {BusData.map((data, index) => (
-              <BusCard
-                key={index}
-                BusInfo={data}
-                OnClick={() => {
-                  setSelectedBusId(data.bus_id);
-                  setIsModalOpen(true);
-                }}
+      {currentBusID && (
+        <CardContainer className="m-auto max-w-[1400px] p-2">
+          <CardHeader className="flex items-start justify-between">
+            <div>
+              <h1 className="flex items-center gap-2 text-2xl font-bold">
+                <BusIcon /> Ceres Liners
+              </h1>
+              <p className="text-primary-light text-start text-sm">
+                Bus Operator Dashboard
+              </p>
+            </div>
+            <Button
+              className="flex items-center justify-between gap-2"
+              variant="glass"
+              onClick={refreshData}
+            >
+              <RefreshIcon className="h-[18px] w-[18px]" />
+              <p className="hidden font-semibold sm:block">Refresh</p>
+            </Button>
+          </CardHeader>
+          <CardBody className="flex w-full flex-col gap-4 !px-2 sm:!px-4 lg:!px-6">
+            <div className="mx-2 grid w-full grid-cols-2 items-center justify-items-center gap-4 md:grid-cols-4">
+              <StatsCard value={StatsData.bus_active} label="Active Buses" />
+              <StatsCard
+                value={StatsData.bus_maintenance}
+                label="In Maintenance"
               />
-            ))}
-          </div>
-        </CardBody>
-        <CardFooter className="!justify-center">
-          <p className="text-sm">TRIP: Transit Routing & Integrated Payments</p>
-        </CardFooter>
-      </CardContainer>
+              <StatsCard
+                value={StatsData.on_time_performance + '%'}
+                label="On-time Performance"
+              />
+              <StatsCard
+                value={StatsData.total_passenger_count}
+                label="Total Passenger Count"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {BusData.map((data, index) => (
+                <BusCard
+                  key={index}
+                  BusInfo={data}
+                  OnClick={() => {
+                    setSelectedBusId(data.bus_id);
+                    setIsModalOpen(true);
+                  }}
+                />
+              ))}
+            </div>
+          </CardBody>
+          <CardFooter className="!justify-center">
+            <p className="text-sm">
+              TRIP: Transit Routing & Integrated Payments
+            </p>
+          </CardFooter>
+        </CardContainer>
+      )}
     </>
   );
 };
