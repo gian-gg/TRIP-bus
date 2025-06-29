@@ -36,16 +36,18 @@ const PassengerDetails = (props: {
         >
           <div>
             <p>
-              <strong>Name:</strong> {detail.name}
+              <strong>Name:</strong> {detail.full_name}
             </p>
             <p>
               <strong>Type:</strong>{' '}
               <Badges
-                type={detail.category as PassengerDetailsType['category']}
+                type={
+                  detail.passenger_category as PassengerDetailsType['passenger_category']
+                }
               />
             </p>
             <p>
-              <strong>Seat:</strong> {detail.seat}
+              <strong>Seat:</strong> {detail.seat_number}
             </p>
           </div>
           <p className="text-primary text-xl font-bold">₱20</p>

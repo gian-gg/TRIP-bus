@@ -34,7 +34,7 @@ const Form2 = (props: {
                 placeholder="Enter your full name"
                 className="w-full"
                 required
-                defaultValue={props.passengerDetails[idx].name}
+                defaultValue={props.passengerDetails[idx].full_name}
               />
             </Field>
             <div className="mt-2 flex gap-8">
@@ -46,7 +46,7 @@ const Form2 = (props: {
                   id={`seatNumberInput-${idx}`}
                   name={`seatNumberInput-${idx}`}
                   required
-                  defaultValue={props.passengerDetails[idx].seat}
+                  defaultValue={props.passengerDetails[idx].seat_number}
                 >
                   <option value="" disabled>
                     Select Seat Number
@@ -66,7 +66,7 @@ const Form2 = (props: {
                   id={`categoryInput-${idx}`}
                   name={`categoryInput-${idx}`}
                   required
-                  defaultValue={props.passengerDetails[idx].category}
+                  defaultValue={props.passengerDetails[idx].passenger_category}
                 >
                   {PassengerTypes.map((type, index) => (
                     <option key={index} value={type}>

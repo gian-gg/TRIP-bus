@@ -57,9 +57,9 @@ const Passenger = (props: {
       const additional = Array.from(
         { length: newCount - prevDetails.length },
         () => ({
-          category: '' as PassengerType,
-          name: '',
-          seat: '',
+          passenger_category: '' as PassengerType,
+          full_name: '',
+          seat_number: '',
         })
       );
       return [...prevDetails, ...additional];
@@ -82,9 +82,9 @@ const Passenger = (props: {
       setPassengerDetails((prevDetails) => {
         const updatedDetails = [...prevDetails];
         updatedDetails[idx] = {
-          category: category,
-          name: fullName,
-          seat: seat,
+          passenger_category: category,
+          full_name: fullName,
+          seat_number: seat,
         };
         return updatedDetails;
       });

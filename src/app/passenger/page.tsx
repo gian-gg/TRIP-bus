@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { nanoid } from 'nanoid';
 
 import { CardContainer, CardHeader, CardBody } from '@/components/Card';
 import PageBody from '@/components/PageBody';
@@ -9,7 +10,7 @@ import Loading from '@/components/Loading';
 import Form from './Form';
 import Complete from './Pages/Complete';
 
-import { GET, POST } from '@/lib/api';
+import { POST } from '@/lib/api';
 
 import type {
   GeneralTripInfoType,
@@ -20,6 +21,18 @@ import type {
   GETResponse,
   SessionResponse,
 } from '@/type';
+
+interface ResponseGETReponseType extends GETResponse {
+  data: {
+    trip_details: CurrentBusInfoType;
+    passenger_details: {
+      state: 'not exist' | 'pending' | 'paid';
+      destination_name: string;
+      contact_number: string;
+      passengers: PassengerDetailsType[];
+    };
+  };
+}
 
 const Passenger = () => {
   const { token } = useParams();
@@ -33,40 +46,89 @@ const Passenger = () => {
   });
   const [passengerDetails, setPassengerDetails] = useState<
     PassengerDetailsType[]
-  >([{ category: '' as PassengerType, name: '', seat: '' }]);
+  >([
+    { passenger_category: '' as PassengerType, full_name: '', seat_number: '' },
+  ]);
+
+  const fetchData = useCallback(async () => {
+    // Refresh payment ID in localStorage if it doesn't match the token
+    const tokenLast10Chars = token?.toString().slice(-10);
+    if (
+      localStorage.getItem('id')?.toString().slice(0, 10) !== tokenLast10Chars
+    ) {
+      localStorage.setItem('id', `${tokenLast10Chars}-${nanoid(10)}`);
+    }
+
+    // fetch current bus information
+    try {
+      const response = await POST('/session/index.php', {
+        id: token,
+        payment_id: localStorage.getItem('id')?.slice(-10),
+      });
+
+      const res = response as ResponseGETReponseType;
+      if (res.status !== 'success') {
+        toast.error('Invalid token. Call the conductor for help.');
+        return;
+      }
+
+      switch (res.data.passenger_details.state) {
+        case 'not exist':
+          setMode('form');
+          setPassengerDetails([
+            {
+              passenger_category: '' as PassengerType,
+              full_name: '',
+              seat_number: '',
+            },
+          ]);
+          break;
+        case 'pending':
+          setMode('pending');
+          setPassengerDetails(res.data.passenger_details.passengers);
+          break;
+        case 'paid':
+          setMode('complete');
+          setPassengerDetails(res.data.passenger_details.passengers);
+          break;
+        default:
+          console.error(
+            'Unexpected passenger status:',
+            res.data.passenger_details.state
+          );
+          return;
+      }
+
+      setCurrentBusInfo(res.data.trip_details);
+
+      if (res.data.passenger_details.passengers) {
+        setGeneralTripInfo({
+          passengerCount: res.data.passenger_details.passengers.length,
+          contactNumber: res.data.passenger_details.contact_number || '',
+          destination: res.data.passenger_details.destination_name || '',
+        });
+      }
+    } catch (error) {
+      toast.error(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Call the
+     conductor for help.`
+      );
+    }
+  }, [token]);
 
   // Fetch current bus information when the component mounts using token
   useEffect(() => {
-    const onMount = async () => {
-      try {
-        const response = await GET('/session/index.php?id=' + token);
-
-        const res = response as GETResponse;
-        if (res.status !== 'success') {
-          toast.error('Invalid token. Call the conductor for help.');
-          return;
-        }
-
-        setCurrentBusInfo(res.data as CurrentBusInfoType);
-      } catch (error) {
-        toast.error(
-          `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Call the
-     conductor for help.`
-        );
-      }
-    };
-
-    onMount();
-  }, [token]);
+    fetchData();
+  }, [token, fetchData]);
 
   // Handle form submission
   const handleSubmit = async () => {
     if (!currentBusInfo) return;
     const hasEmptyFields = passengerDetails.some(
       (detail) =>
-        !detail.name ||
-        !detail.seat ||
-        !detail.category ||
+        !detail.full_name ||
+        !detail.seat_number ||
+        !detail.passenger_category ||
         !generalTripInfo.contactNumber ||
         !generalTripInfo.passengerCount ||
         !generalTripInfo.destination
@@ -84,11 +146,13 @@ const Passenger = () => {
           destination_stop_id: 10,
           passenger_status: 'on_bus',
           bus_id: currentBusInfo.bus_id,
-          full_name: detail.name,
-          seat_number: detail.seat,
-          passenger_category: detail.category,
+          full_name: detail.full_name,
+          seat_number: detail.seat_number,
+          passenger_category: detail.passenger_category,
           boarding_time: currentBusInfo.timestamp,
+          contact_info: generalTripInfo.contactNumber,
           payment: {
+            payment_id: localStorage.getItem('id')?.slice(-10),
             payment_mode: 'cash',
             payment_platform: 'bus',
             fare_amount: 20.34,
@@ -97,12 +161,14 @@ const Passenger = () => {
         });
 
         const res = response as SessionResponse;
-        if (res.status !== 'success') {
+        if (res.status !== 'success' || !res.status) {
           toast.error('Failed to book ticket. Please try again later.');
+          return;
         }
         console.log('Ticket booked successfully:', res);
       }
-      setMode('pending');
+
+      fetchData(); // Refresh data after booking
       toast.success('Ticket/s booked successfully!');
     } catch (error) {
       if (
@@ -156,6 +222,7 @@ const Passenger = () => {
               currentBusInfo={currentBusInfo}
               generalTripInfo={generalTripInfo}
               passengerDetails={passengerDetails}
+              mode={mode}
             />
           )}
         </CardBody>

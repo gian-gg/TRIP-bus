@@ -44,9 +44,9 @@ interface GeneralTripInfoType {
 }
 
 interface PassengerDetailsType {
-  category: PassengerType;
-  name: string;
-  seat: string;
+  passenger_category: PassengerType;
+  full_name: string;
+  seat_number: string;
 }
 
 interface passengerDetailsType {

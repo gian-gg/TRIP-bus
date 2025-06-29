@@ -23,12 +23,14 @@ import type {
   PassengerDetailsType,
   CurrentBusInfoType,
   PaymentMethodType,
+  modeType,
 } from '@/type';
 
 const Success = (props: {
   currentBusInfo: CurrentBusInfoType;
   generalTripInfo: GeneralTripInfoType;
   passengerDetails: PassengerDetailsType[];
+  mode: modeType;
 }) => {
   const [isConductorModalOpen, setIsConductorModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -184,16 +186,18 @@ const Success = (props: {
             >
               <div>
                 <p>
-                  <strong>Name:</strong> {detail.name}
+                  <strong>Name:</strong> {detail.full_name}
                 </p>
                 <p>
                   <strong>Type:</strong>{' '}
                   <Badges
-                    type={detail.category as PassengerDetailsType['category']}
+                    type={
+                      detail.passenger_category as PassengerDetailsType['passenger_category']
+                    }
                   />
                 </p>
                 <p>
-                  <strong>Seat:</strong> {detail.seat}
+                  <strong>Seat:</strong> {detail.seat_number}
                 </p>
               </div>
               <p className="text-primary text-xl font-bold">₱20</p>
@@ -217,13 +221,15 @@ const Success = (props: {
           >
             Call Bus Conductor / Stop Bus
           </Button>
-          <Button
-            variant="solid"
-            className="w-full"
-            onClick={() => setIsPaymentModalOpen(true)}
-          >
-            Pay Now
-          </Button>
+          {props.mode === 'pending' && (
+            <Button
+              variant="solid"
+              className="w-full"
+              onClick={() => setIsPaymentModalOpen(true)}
+            >
+              Pay Now
+            </Button>
+          )}
         </div>
       </div>
     </>
