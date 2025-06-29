@@ -9,7 +9,9 @@ const typeBgClass: Record<string, string> = {
   pwd: 'bg-type-pwd-light',
 };
 
-const Badges = (props: { type: PassengerDetailsType['category'] }) => {
+const Badges = (props: {
+  type: PassengerDetailsType['passenger_category'];
+}) => {
   const bgClass = typeBgClass[props.type] || 'bg-type-regular-light';
   return (
     <span
