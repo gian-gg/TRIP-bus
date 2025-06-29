@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { toast } from 'sonner';
 import {
@@ -8,11 +8,6 @@ import {
   CardFooter,
 } from '@/components/Card';
 import { CloseIcon, RefreshIcon, BusIcon } from '@/components/Icons';
-import type {
-  BusInformationType,
-  StatsInformationType,
-  TimelineInformationType,
-} from '@/type';
 import {
   BusCard,
   StatsCard,
@@ -21,14 +16,17 @@ import {
 import Button from '@/components/Button';
 import { Input, Label, Field } from '@/components/Form';
 import Dialog from '@/components/Dialog';
+import Loading from '@/components/Loading';
 
-const StatsData: StatsInformationType = {
-  bus_active: 3,
-  bus_maintenance: 12,
-  on_time_performance: 89,
-  total_passenger_count: 1234,
-};
+import { GET } from '@/lib/api';
+import type {
+  GETResponse,
+  BusDataType,
+  BusInformationType,
+  TimelineInformationType,
+} from '@/type';
 
+// temp data
 const TimelineData: { bus_id: number; timeline: TimelineInformationType[] }[] =
   [
     {
@@ -97,102 +95,56 @@ const TimelineData: { bus_id: number; timeline: TimelineInformationType[] }[] =
     },
   ];
 
-const BusData: BusInformationType[] = [
-  {
-    bus_id: 1,
-    route_id: 'Route 42',
-    driver_name: 'Geri',
-    conductor_name: 'Emman',
-    passenger_count: 0,
-    curr_location: 'University of San Carlos North Campus',
-    bus_status: 'active',
-  },
-  {
-    bus_id: 2,
-    route_id: 'Route 23',
-    driver_name: 'Gian',
-    conductor_name: 'Emmanuel',
-    passenger_count: 1000,
-    curr_location: 'University of San Carlos Talamban Campus',
-    bus_status: 'active',
-  },
-  {
-    bus_id: 3,
-    route_id: 'Route 43',
-    driver_name: 'Epanto',
-    conductor_name: 'Czachary',
-    passenger_count: 2,
-    curr_location: 'University of San Carlos DownTown Campus',
-    bus_status: 'maintenance',
-  },
-  {
-    bus_id: 4,
-    route_id: 'Route 69',
-    driver_name: 'Czachary',
-    conductor_name: 'Xavier',
-    passenger_count: 999,
-    curr_location: 'University of the Philippines',
-    bus_status: 'maintenance',
-  },
-  {
-    bus_id: 5,
-    route_id: 'Route 69',
-    driver_name: 'Xavier',
-    conductor_name: 'Bruce',
-    passenger_count: 999,
-    curr_location: 'University of the Philippines Cebu Campus',
-    bus_status: 'active',
-  },
-  {
-    bus_id: 6,
-    route_id: 'Route 62',
-    driver_name: 'Emmanuel',
-    conductor_name: 'Felicia',
-    passenger_count: 9234,
-    curr_location: 'University of the Philippines Diliman Campus',
-    bus_status: 'in transit',
-  },
-  {
-    bus_id: 7,
-    route_id: 'Route 69',
-    driver_name: 'Xavier',
-    conductor_name: 'Peter',
-    passenger_count: 999,
-    curr_location: 'University of the Philippines Cebu Campus',
-    bus_status: 'in transit',
-  },
-  {
-    bus_id: 8,
-    route_id: 'Route 62',
-    driver_name: 'Emmanuel',
-    conductor_name: 'Clark',
-    passenger_count: 9234,
-    curr_location: 'University of the Philippines Diliman Campus',
-    bus_status: 'in transit',
-  },
-];
-
 const Operator = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [currentBusID, setCurrentBusID] = useState('');
-  const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
-  const selectedBus = BusData.find((bus) => bus.bus_id === selectedBusId);
+  const [operatorID, setCurrentOperatorID] = useState('');
 
-  const refreshData = () => {
+  const [data, setData] = useState<BusDataType>();
+  const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
+  const selectedBus = data
+    ? data.busData.find((bus) => bus.bus_id === selectedBusId)
+    : null;
+
+  const refreshData = useCallback(async () => {
+    try {
+      const response = await GET('/bus/index.php');
+      const res = response as GETResponse;
+      if (res.status === 'success') {
+        setData({
+          busData: res.data as BusInformationType[],
+        });
+      }
+    } catch (error) {
+      toast.error(
+        'Network Error ' +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
+    }
+
     toast.success('Data refreshed successfully!');
-  };
+  }, []);
 
   useEffect(() => {
     const operatorID = localStorage.getItem('operator_id');
 
     if (operatorID) {
-      setCurrentBusID(operatorID);
+      setCurrentOperatorID(operatorID);
+
+      refreshData();
+
       toast.success('Welcome back, Operator ID: ' + operatorID);
     } else {
       setIsAuthModalOpen(true);
     }
-  }, [currentBusID]);
+  }, [operatorID, refreshData]);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    console.log('Data updated:', data);
+  }, [data]);
 
   const handleAuth = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -200,8 +152,7 @@ const Operator = () => {
 
     // temp only
     localStorage.setItem('operator_id', operatorID);
-    setCurrentBusID(operatorID);
-    toast.success('Successfully signed in as : ' + operatorID);
+    setCurrentOperatorID(operatorID);
 
     setIsAuthModalOpen(false);
   };
@@ -297,7 +248,7 @@ const Operator = () => {
                       Driver
                     </td>
                     <td className="sm: p-2 text-end text-sm md:text-lg">
-                      {selectedBus.driver_name}
+                      {selectedBus.driver_id}
                     </td>
                   </tr>
                   <tr className="border-outline border-b-2">
@@ -305,7 +256,7 @@ const Operator = () => {
                       Conductor
                     </td>
                     <td className="sm: p-2 text-end text-sm md:text-lg">
-                      {selectedBus.conductor_name}
+                      {selectedBus.conductor_id}
                     </td>
                   </tr>
                   <tr className="border-outline border-b-2">
@@ -329,7 +280,7 @@ const Operator = () => {
                       Status
                     </td>
                     <td className="sm: p-2 text-end text-sm capitalize md:text-lg">
-                      {selectedBus.bus_status}
+                      {selectedBus.status}
                     </td>
                   </tr>
                 </tbody>
@@ -356,7 +307,7 @@ const Operator = () => {
           </CardBody>
         </CardContainer>
       </Dialog>
-      {currentBusID && (
+      {operatorID && data ? (
         <CardContainer className="m-auto max-w-[1400px] p-2">
           <CardHeader className="flex items-start justify-between">
             <div>
@@ -378,23 +329,35 @@ const Operator = () => {
           </CardHeader>
           <CardBody className="flex w-full flex-col gap-4 !px-2 sm:!px-4 lg:!px-6">
             <div className="mx-2 grid w-full grid-cols-2 items-center justify-items-center gap-4 md:grid-cols-4">
-              <StatsCard value={StatsData.bus_active} label="Active Buses" />
               <StatsCard
-                value={StatsData.bus_maintenance}
-                label="In Maintenance"
+                value={
+                  data.busData.filter(
+                    (bus: BusInformationType) => bus.status === 'active'
+                  ).length
+                }
+                label="Active Buses"
               />
               <StatsCard
-                value={StatsData.on_time_performance + '%'}
-                label="On-time Performance"
+                value={
+                  data.busData.filter(
+                    (bus: BusInformationType) => bus.status === 'inactive'
+                  ).length
+                }
+                label="In inactive"
               />
+              <StatsCard value={0 + '%'} label="On-time Performance" />
               <StatsCard
-                value={StatsData.total_passenger_count}
+                value={data.busData.reduce(
+                  (sum: number, bus: BusInformationType) =>
+                    sum + (bus.passenger_count || 0),
+                  0
+                )}
                 label="Total Passenger Count"
               />
             </div>
 
             <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {BusData.map((data, index) => (
+              {data.busData.map((data, index) => (
                 <BusCard
                   key={index}
                   BusInfo={data}
@@ -412,6 +375,8 @@ const Operator = () => {
             </p>
           </CardFooter>
         </CardContainer>
+      ) : (
+        <Loading />
       )}
     </>
   );

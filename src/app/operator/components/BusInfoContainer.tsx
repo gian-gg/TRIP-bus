@@ -51,13 +51,13 @@ function BusCard(props: {
   BusInfo: BusInformationType;
   OnClick: (data: BusInformationType) => void;
 }) {
-  const status = props.BusInfo['bus_status'];
+  const status = props.BusInfo['status'];
   let StatusClass = 'text-black';
   switch (status) {
     case 'active':
       StatusClass = 'text-green-600 font-bold bg-green-100 border-green-300';
       break;
-    case 'maintenance':
+    case 'inactive':
       StatusClass = 'text-red-600 font-bold bg-red-100 border-red-300';
       break;
     case 'in transit':
@@ -76,7 +76,7 @@ function BusCard(props: {
         <span
           className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${StatusClass} border-1`}
         >
-          {props.BusInfo['bus_status']}
+          {props.BusInfo['status']}
         </span>
       </CardHeader>
       <CardBody className="grid h-full grid-cols-2 grid-rows-2 gap-5 p-3 sm:p-5">
@@ -86,7 +86,7 @@ function BusCard(props: {
         </div>
         <div>
           <p className="text-sm font-semibold md:text-lg">Bus Driver:</p>
-          <p className="text-xs md:text-sm">{props.BusInfo['driver_name']}</p>
+          <p className="text-xs md:text-sm">{props.BusInfo['driver_id']}</p>
         </div>
         <div>
           <p className="text-sm font-semibold md:text-lg">Current Location:</p>

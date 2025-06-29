@@ -22,19 +22,11 @@ interface CurrentBusInfoType {
 interface BusInformationType {
   bus_id: number;
   route_id: string;
-  driver_name: string;
-  conductor_name?: string; // Made optional as it was only in second file
+  driver_id: number;
+  conductor_id: number;
   passenger_count: number;
   curr_location: string;
-  bus_status: 'active' | 'maintenance' | 'in transit';
-  timeline?: TimelineInformationType[]; // Added from second file
-}
-
-interface StatsInformationType {
-  bus_active: number;
-  bus_maintenance: number;
-  on_time_performance: number;
-  total_passenger_count: number;
+  status: 'active' | 'inactive' | 'in transit';
 }
 
 interface GeneralTripInfoType {
@@ -96,6 +88,10 @@ interface TicketType {
   payment: PaymentType;
 }
 
+interface BusDataType {
+  busData: BusInformationType[];
+}
+
 export type {
   PassengerType,
   PaymentMethodType,
@@ -104,7 +100,6 @@ export type {
   GETResponse,
   CurrentBusInfoType,
   BusInformationType,
-  StatsInformationType,
   GeneralTripInfoType,
   PassengerDetailsType,
   passengerDetailsType,
@@ -112,4 +107,5 @@ export type {
   TripInformationType,
   TicketType,
   PaymentType,
+  BusDataType,
 };
