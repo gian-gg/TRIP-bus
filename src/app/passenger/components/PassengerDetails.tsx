@@ -50,7 +50,7 @@ const PassengerDetails = (props: {
 
   useEffect(() => {
     fetchDestinationName();
-  }, []);
+  }, [fetchDestinationName]);
 
   if (!destinationName) {
     return (

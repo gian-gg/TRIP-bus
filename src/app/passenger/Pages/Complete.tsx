@@ -3,10 +3,7 @@ import { toast } from 'sonner';
 
 import Button from '@/components/Button';
 import Dialog from '@/components/Dialog';
-import Container from '@/components/Container';
-import Callout from '@/components/Callout';
-import { RightArrow, CloseIcon } from '@/components/Icons';
-import Badges from '@/components/Badges';
+import { CloseIcon } from '@/components/Icons';
 import {
   CardContainer,
   CardBody,

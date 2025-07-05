@@ -58,7 +58,11 @@ const Form1 = (props: {
           <Select
             id="destinationInput"
             name="destinationInput"
-            defaultValue={props.generalTripInfo.destination}
+            defaultValue={
+              !props.generalTripInfo.destination
+                ? ''
+                : props.generalTripInfo.destination
+            }
             required
           >
             <option value="" disabled defaultChecked>
