@@ -32,4 +32,12 @@ async function GET<T = unknown, P = Record<string, unknown>>(
   return response.data;
 }
 
-export { Fetch, POST, GET };
+async function PUT<T = unknown, D = Record<string, unknown>>(
+  url: string,
+  data: D
+): Promise<T> {
+  const response: AxiosResponse<T> = await Fetch.put<T>(url, data);
+  return response.data;
+}
+
+export { Fetch, POST, GET, PUT };

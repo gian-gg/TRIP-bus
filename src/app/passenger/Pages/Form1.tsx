@@ -7,14 +7,14 @@ import { ClockIcon, PushPinIcon } from '@/components/Icons';
 
 import { formatTimeDate } from '@/lib/misc';
 
-import { Destinations } from '@/data';
-import type { CurrentBusInfoType, GeneralTripInfoType } from '@/type';
+import type { CurrentBusInfoType, GeneralTripInfoType, StopType } from '@/type';
 
 const Form1 = (props: {
   generalTripInfo: GeneralTripInfoType;
   currentBusInfo: CurrentBusInfoType;
   OnSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   handleNextButton: () => void;
+  stops: StopType[];
 }) => {
   return (
     <>
@@ -64,9 +64,9 @@ const Form1 = (props: {
             <option value="" disabled defaultChecked>
               Select destination
             </option>
-            {Destinations.map((destination, index) => (
-              <option key={index} value={destination}>
-                {destination}
+            {props.stops.map((stop, index) => (
+              <option key={index} value={stop.stop_id}>
+                {stop.stop_name}
               </option>
             ))}
           </Select>

@@ -11,12 +11,7 @@ interface SessionResponse {
 interface GETResponse {
   status: string;
   data: object;
-}
-
-interface CurrentBusInfoType {
-  timestamp: string;
-  current_stop: string;
-  bus_id: number;
+  message?: string;
 }
 
 interface BusInformationType {
@@ -27,12 +22,6 @@ interface BusInformationType {
   passenger_count: number;
   curr_location: string;
   status: 'active' | 'inactive' | 'in transit';
-}
-
-interface GeneralTripInfoType {
-  passengerCount: number;
-  contactNumber: string;
-  destination: string;
 }
 
 interface PassengerDetailsType {
@@ -92,6 +81,24 @@ interface BusDataType {
   busData: BusInformationType[];
 }
 
+interface GeneralTripInfoType {
+  passengerCount: number;
+  contactNumber: string;
+  destination: StopType['stop_id'] | undefined;
+}
+
+interface StopType {
+  stop_id: number;
+  stop_name: string;
+}
+
+interface CurrentBusInfoType {
+  timestamp: string;
+  current_stop: string;
+  bus_id: number;
+  stops?: StopType[];
+}
+
 export type {
   PassengerType,
   PaymentMethodType,
@@ -108,4 +115,5 @@ export type {
   TicketType,
   PaymentType,
   BusDataType,
+  StopType,
 };

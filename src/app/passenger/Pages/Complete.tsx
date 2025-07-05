@@ -15,6 +15,7 @@ import {
 } from '@/components/Card';
 import { Field, Label, RadioGroup, Description } from '@/components/Form';
 import { PaymentMethodRadios } from '../components/Radios';
+import PassengerDetails from '../components/PassengerDetails';
 
 import { PaymentMethod } from '@/data';
 
@@ -166,53 +167,11 @@ const Success = (props: {
         <h2 className="text-primary mb-4 text-center text-2xl font-bold">
           Trip Details:
         </h2>
-        <Callout
-          mode="primary"
-          className="mx-4 mb-4 flex items-center justify-between gap-4 p-6 md:p-8"
-        >
-          <h2 className="text-primary my-1 text-xl font-bold">
-            {props.currentBusInfo.current_stop}
-          </h2>
-          <RightArrow className="text-primary" />
-          <h2 className="text-primary text-md my-1 text-center font-bold md:text-lg">
-            {props.generalTripInfo.destination}
-          </h2>
-        </Callout>
-        <div className="my-4 flex flex-col gap-2">
-          {props.passengerDetails.map((detail, idx) => (
-            <Container
-              key={idx}
-              className="flex items-center justify-between p-4 px-8"
-            >
-              <div>
-                <p>
-                  <strong>Name:</strong> {detail.full_name}
-                </p>
-                <p>
-                  <strong>Type:</strong>{' '}
-                  <Badges
-                    type={
-                      detail.passenger_category as PassengerDetailsType['passenger_category']
-                    }
-                  />
-                </p>
-                <p>
-                  <strong>Seat:</strong> {detail.seat_number}
-                </p>
-              </div>
-              <p className="text-primary text-xl font-bold">₱20</p>
-            </Container>
-          ))}
-        </div>
-        <Callout mode="primary" className="mx-4 mb-4 flex justify-between p-4">
-          <div>
-            <h3 className="text-primary text-sm font-bold">FARE TOTAL</h3>
-            <p className="text-xs">Regular (₱25) - 20% Discount (₱5)</p>
-          </div>
-          <span className="text-primary text-4xl font-bold">
-            ₱{20 * props.generalTripInfo.passengerCount}
-          </span>
-        </Callout>
+        <PassengerDetails
+          generalTripInfo={props.generalTripInfo}
+          currentBusInfo={props.currentBusInfo}
+          passengerDetails={props.passengerDetails}
+        />
         <div className="mt-4 flex w-full flex-col items-center gap-2">
           <Button
             variant="outline"

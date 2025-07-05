@@ -20,6 +20,7 @@ import type {
   CurrentBusInfoType,
   GETResponse,
   SessionResponse,
+  StopType,
 } from '@/type';
 
 interface ResponseGETReponseType extends GETResponse {
@@ -27,7 +28,7 @@ interface ResponseGETReponseType extends GETResponse {
     trip_details: CurrentBusInfoType;
     passenger_details: {
       state: 'not exist' | 'pending' | 'paid';
-      destination_name: string;
+      destination_id: StopType['stop_id'];
       contact_number: string;
       passengers: PassengerDetailsType[];
     };
@@ -42,31 +43,34 @@ const Passenger = () => {
   const [generalTripInfo, setGeneralTripInfo] = useState<GeneralTripInfoType>({
     passengerCount: 1,
     contactNumber: '',
-    destination: '',
+    destination: undefined,
   });
   const [passengerDetails, setPassengerDetails] = useState<
     PassengerDetailsType[]
   >([
     { passenger_category: '' as PassengerType, full_name: '', seat_number: '' },
   ]);
+  const [stops, setStops] = useState<StopType[]>([]);
 
   const fetchData = useCallback(async () => {
-    // Refresh payment ID in localStorage if it doesn't match the token
-    const tokenLast10Chars = token?.toString().slice(-10);
+    const tokenFirst10Chars = token?.toString().slice(0, 10);
+    const tokenRest = token?.toString().slice(11); // start from 11 to skip the hyphen
+
     if (
-      localStorage.getItem('id')?.toString().slice(0, 10) !== tokenLast10Chars
+      localStorage.getItem('id')?.toString().slice(0, 10) !== tokenFirst10Chars
     ) {
-      localStorage.setItem('id', `${tokenLast10Chars}-${nanoid(10)}`);
+      localStorage.setItem('id', `${tokenFirst10Chars}-${nanoid(10)}`);
     }
 
     // fetch current bus information
     try {
       const response = await POST('/session/index.php', {
-        id: token,
+        id: tokenRest,
         payment_id: localStorage.getItem('id')?.slice(-10),
       });
 
       const res = response as ResponseGETReponseType;
+
       if (res.status !== 'success') {
         toast.error('Invalid token. Call the conductor for help.');
         return;
@@ -100,12 +104,15 @@ const Passenger = () => {
       }
 
       setCurrentBusInfo(res.data.trip_details);
+      setStops(res.data.trip_details.stops as StopType[]);
 
       if (res.data.passenger_details.passengers) {
         setGeneralTripInfo({
           passengerCount: res.data.passenger_details.passengers.length,
           contactNumber: res.data.passenger_details.contact_number || '',
-          destination: res.data.passenger_details.destination_name || '',
+          destination: Number(
+            res.data.passenger_details.destination_id
+          ) as StopType['stop_id'],
         });
       }
     } catch (error) {
@@ -122,7 +129,7 @@ const Passenger = () => {
   }, [token, fetchData]);
 
   // Handle form submission
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!currentBusInfo) return;
     const hasEmptyFields = passengerDetails.some(
       (detail) =>
@@ -143,7 +150,7 @@ const Passenger = () => {
       for (const detail of passengerDetails) {
         const response = await POST('/ticket/index.php', {
           origin_stop_id: 1,
-          destination_stop_id: 10,
+          destination_stop_id: generalTripInfo.destination,
           passenger_status: 'on_bus',
           bus_id: currentBusInfo.bus_id,
           full_name: detail.full_name,
@@ -188,7 +195,7 @@ const Passenger = () => {
       }
       console.log('Network or server error', error);
     }
-  };
+  }, [currentBusInfo, passengerDetails, generalTripInfo, fetchData]);
 
   if (!currentBusInfo) return <Loading />;
 
@@ -216,6 +223,7 @@ const Passenger = () => {
               setGeneralTripInfo={setGeneralTripInfo}
               passengerDetails={passengerDetails}
               setPassengerDetails={setPassengerDetails}
+              stops={stops}
             />
           ) : (
             <Complete

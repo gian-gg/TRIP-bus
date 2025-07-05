@@ -1,20 +1,65 @@
+import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
 import Callout from '@/components/Callout';
 import Container from '@/components/Container';
 import Badges from '@/components/Badges';
 
-import { RightArrow } from '@/components/Icons';
+import { RightArrow, SpinnerIcon } from '@/components/Icons';
+
+import { GET } from '@/lib/api';
 
 import type {
   GeneralTripInfoType,
   PassengerDetailsType,
   CurrentBusInfoType,
+  GETResponse,
+  StopType,
 } from '@/type';
+
+interface ResponseGETReponseType extends GETResponse {
+  data: StopType;
+}
 
 const PassengerDetails = (props: {
   generalTripInfo: GeneralTripInfoType;
   passengerDetails: PassengerDetailsType[];
   currentBusInfo: CurrentBusInfoType;
 }) => {
+  const [destinationName, setDestinationName] = useState<string>('');
+
+  const fetchDestinationName = useCallback(async () => {
+    try {
+      const response = await GET(
+        '/stop/index.php?id=' + props.generalTripInfo.destination
+      );
+
+      const res = response as ResponseGETReponseType;
+
+      setDestinationName(res.data.stop_name);
+
+      if (res.status !== 'success') {
+        toast.error('Failed to fetch destination name.');
+        return;
+      }
+    } catch (error) {
+      toast.error(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Call the conductor for help.`
+      );
+    }
+  }, [props.generalTripInfo.destination]);
+
+  useEffect(() => {
+    fetchDestinationName();
+  }, []);
+
+  if (!destinationName) {
+    return (
+      <div className="flex h-20 items-center justify-center">
+        <SpinnerIcon className="text-primary animate-spin text-9xl" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <Callout
@@ -26,7 +71,7 @@ const PassengerDetails = (props: {
         </h2>
         <RightArrow className="text-primary" />
         <h2 className="text-primary text-md my-1 text-center font-bold md:text-lg">
-          {props.generalTripInfo.destination}
+          {destinationName}
         </h2>
       </Callout>
       {props.passengerDetails.map((detail, idx) => (

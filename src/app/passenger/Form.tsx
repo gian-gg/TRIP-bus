@@ -11,6 +11,7 @@ import type {
   PassengerDetailsType,
   CurrentBusInfoType,
   PassengerType,
+  StopType,
 } from '@/type';
 
 const Passenger = (props: {
@@ -22,6 +23,7 @@ const Passenger = (props: {
   setPassengerDetails: React.Dispatch<
     React.SetStateAction<PassengerDetailsType[]>
   >;
+  stops: StopType[];
 }) => {
   const [currentFormPage, setCurrentFormPage] = useState(1);
 
@@ -32,6 +34,7 @@ const Passenger = (props: {
     passengerDetails,
     setPassengerDetails,
     handleSubmit,
+    stops,
   } = props;
 
   const handleForm1Submit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,7 +43,9 @@ const Passenger = (props: {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const passengersCount = formData.get('passengersCount') as string;
-    const destination = formData.get('destinationInput') as string;
+    const destination = Number(
+      formData.get('destinationInput')
+    ) as StopType['stop_id'];
     const contact = formData.get('contactInput') as string;
 
     setGeneralTripInfo({
@@ -116,6 +121,7 @@ const Passenger = (props: {
                 currentBusInfo={currentBusInfo}
                 OnSubmit={handleForm1Submit}
                 handleNextButton={handleNextButton}
+                stops={stops}
               />
             );
           case 2:
