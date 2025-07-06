@@ -99,6 +99,23 @@ interface CurrentBusInfoType {
   stops?: StopType[];
 }
 
+interface DriverInformationType {
+  driver_id: number;
+  full_name: string;
+  license_number: string;
+  contact_number: string;
+  status: 'active' | 'inactive';
+  bus_id?: number;
+}
+
+interface ConductorInformationType {
+  conductor_id: number;
+  full_name: string;
+  contact_number: string;
+  status: 'active' | 'inactive';
+  bus_id?: number;
+}
+
 export type {
   PassengerType,
   PaymentMethodType,
@@ -116,4 +133,6 @@ export type {
   PaymentType,
   BusDataType,
   StopType,
+  DriverInformationType,
+  ConductorInformationType,
 };

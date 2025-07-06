@@ -13,6 +13,7 @@ import {
   StatsCard,
   TimelineCard,
 } from './components/BusInfoContainer';
+import { DriverCard, ConductorCard } from './components/DriverInfoContainer';
 import Button from '@/components/Button';
 import { Input, Label, Field } from '@/components/Form';
 import Dialog from '@/components/Dialog';
@@ -24,6 +25,8 @@ import type {
   BusDataType,
   BusInformationType,
   TimelineInformationType,
+  DriverInformationType,
+  ConductorInformationType,
 } from '@/type';
 
 // temp data
@@ -95,34 +98,103 @@ const TimelineData: { bus_id: number; timeline: TimelineInformationType[] }[] =
     },
   ];
 
+const mockBusData: BusInformationType[] = [
+  {
+    bus_id: 1,
+    route_id: 'Route 42',
+    driver_id: 2,
+    conductor_id: 3,
+    passenger_count: 12,
+    curr_location: 'University of San Carlos North Campus',
+    status: 'active',
+  },
+  {
+    bus_id: 2,
+    route_id: 'Route 15',
+    driver_id: 4,
+    conductor_id: 5,
+    passenger_count: 8,
+    curr_location: 'Ayala Center Cebu',
+    status: 'inactive',
+  },
+];
+
+const mockDriverData: DriverInformationType[] = [
+  {
+    driver_id: 1,
+    full_name: 'Geri Santos',
+    license_number: 'D1234567',
+    contact_number: '09171234567',
+    status: 'active',
+    bus_id: 1,
+  },
+  {
+    driver_id: 2,
+    full_name: 'Alex Cruz',
+    license_number: 'D7654321',
+    contact_number: '09179876543',
+    status: 'inactive',
+    bus_id: 2,
+  },
+];
+
+const mockConductorData: ConductorInformationType[] = [
+  {
+    conductor_id: 1,
+    full_name: 'Ryan Romero',
+    contact_number: '09171234567',
+    status: 'active',
+    bus_id: 1,
+  },
+  {
+    conductor_id: 1,
+    full_name: 'John Cena',
+    contact_number: '09179876543',
+    status: 'inactive',
+    bus_id: 2,
+  },
+];
+
 const Operator = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [operatorID, setCurrentOperatorID] = useState('');
+  const [activeTab, setActiveTab] = useState<
+    'buses' | 'drivers' | 'conductors'
+  >('buses');
+  // const [driverData, setDriverData] =
+  //   useState<DriverInformationType[]>(mockDriverData);
 
-  const [data, setData] = useState<BusDataType>();
+  // const [conductorData, setConductorData] =
+  //   useState<ConductorInformationType[]>(mockConductorData);
+
+  const [data, setData] = useState<BusDataType>({
+    busData: mockBusData,
+  });
+
   const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
   const selectedBus = data
     ? data.busData.find((bus) => bus.bus_id === selectedBusId)
     : null;
 
   const refreshData = useCallback(async () => {
-    try {
-      const response = await GET('/bus/index.php');
-      const res = response as GETResponse;
-      if (res.status === 'success') {
-        setData({
-          busData: res.data as BusInformationType[],
-        });
-      }
-    } catch (error) {
-      toast.error(
-        'Network Error ' +
-          (error instanceof Error ? error.message : 'Unknown error')
-      );
-    }
-
-    toast.success('Data refreshed successfully!');
+    // try {
+    //   const response = await GET('/bus/index.php');
+    //   const res = response as GETResponse;
+    //   if (res.status === 'success') {
+    //     setData({
+    //       busData: res.data as BusInformationType[],
+    //     });
+    //   }
+    // } catch (error) {
+    //   toast.error(
+    //     'Network Error ' +
+    //       (error instanceof Error ? error.message : 'Unknown error')
+    //   );
+    // }
+    // toast.success('Data refreshed successfully!');
+    setData({ busData: mockBusData });
+    toast.success('Mock data loaded!');
   }, []);
 
   useEffect(() => {
@@ -355,18 +427,59 @@ const Operator = () => {
                 label="Total Passenger Count"
               />
             </div>
-
-            <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {data.busData.map((data, index) => (
-                <BusCard
-                  key={index}
-                  BusInfo={data}
-                  OnClick={() => {
-                    setSelectedBusId(data.bus_id);
-                    setIsModalOpen(true);
-                  }}
-                />
-              ))}
+            <hr className="border-primary my-2 border-t-2" />
+            <div>
+              <div className="mb-4 flex gap-2">
+                <Button
+                  className={`text-primary border-outline w-[120px] border-2 bg-white text-lg font-semibold ${activeTab === 'buses' ? '!bg-primary !text-white' : ''}`}
+                  variant="glass"
+                  onClick={() => setActiveTab('buses')}
+                >
+                  Buses
+                </Button>
+                <Button
+                  className={`text-primary border-outline w-[120px] border-2 bg-white text-lg font-semibold ${activeTab === 'drivers' ? '!bg-primary !text-white' : ''}`}
+                  variant="glass"
+                  onClick={() => setActiveTab('drivers')}
+                >
+                  Drivers
+                </Button>
+                <Button
+                  className={`text-primary border-outline w-[120px] border-2 bg-white text-lg font-semibold ${activeTab === 'conductors' ? '!bg-primary !text-white' : ''}`}
+                  variant="glass"
+                  onClick={() => setActiveTab('conductors')}
+                >
+                  Conductors
+                </Button>
+              </div>
+              {activeTab === 'buses' && (
+                <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {data.busData.map((data, index) => (
+                    <BusCard
+                      key={index}
+                      BusInfo={data}
+                      OnClick={() => {
+                        setSelectedBusId(data.bus_id);
+                        setIsModalOpen(true);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+              {activeTab === 'drivers' && (
+                <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {mockDriverData.map((data, index) => (
+                    <DriverCard key={index} DriverInfo={data} />
+                  ))}
+                </div>
+              )}
+              {activeTab === 'conductors' && (
+                <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {mockConductorData.map((data, index) => (
+                    <ConductorCard key={index} ConductorInfo={data} />
+                  ))}
+                </div>
+              )}
             </div>
           </CardBody>
           <CardFooter className="!justify-center">
