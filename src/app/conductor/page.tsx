@@ -57,6 +57,8 @@ const Conductor = () => {
   useEffect(() => {
     if (currentBusID) {
       fetchData();
+    } else {
+      setIsSettingsModalOpen(true);
     }
   }, [currentBusID, fetchData]);
 
@@ -104,7 +106,7 @@ const Conductor = () => {
 
     setPassengerData([]);
     setPassengerModal({ open: false, ticket: undefined });
-    setIsSettingsModalOpen(false);
+    setIsSettingsModalOpen(true);
   }, []);
 
   const handleStartTrip = useCallback(async () => {
@@ -175,52 +177,55 @@ const Conductor = () => {
       <Dialog
         open={isSettingsModalOpen}
         as="div"
-        onClose={() => setIsSettingsModalOpen(false)}
+        onClose={() => currentBusID && setIsSettingsModalOpen(false)}
         className="w-96"
       >
         <CardContainer className="h-full w-full">
           <CardHeader className="flex items-center justify-between">
             <h1 className="text-lg font-semibold text-white">Bus Settings</h1>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsSettingsModalOpen(false)}
-            >
-              <CloseIcon className="text-white" />
-            </Button>
+            {currentBusID && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsSettingsModalOpen(false)}
+              >
+                <CloseIcon className="text-white" />
+              </Button>
+            )}
           </CardHeader>
           <CardBody>
-            <form onSubmit={handleSettingsChange}>
-              <Field>
-                <Label htmlFor="busID" required>
-                  Bus ID
-                </Label>
-                <Input
-                  id="busID"
-                  name="busID"
-                  type="text"
-                  placeholder="Enter Bus ID"
-                  required
-                />
-              </Field>
-              <div className="mt-4 flex items-center justify-center gap-2">
-                <Button
-                  type="button"
-                  onClick={handleDetachBusID}
-                  variant="outline"
-                  className="w-full"
-                >
-                  Detach Bus ID
-                </Button>
-                <Button type="submit" variant="solid" className="w-full">
+            {currentBusID ? (
+              <Button
+                type="button"
+                onClick={handleDetachBusID}
+                variant="outline"
+                className="w-full"
+              >
+                Detach Bus ID
+              </Button>
+            ) : (
+              <form onSubmit={handleSettingsChange}>
+                <Field>
+                  <Label htmlFor="busID" required>
+                    Bus ID
+                  </Label>
+                  <Input
+                    id="busID"
+                    name="busID"
+                    type="text"
+                    placeholder="Enter Bus ID"
+                    required
+                  />
+                </Field>
+                <Button type="submit" variant="solid" className="mt-2 w-full">
                   Link to Bus ID
                 </Button>
-              </div>
-            </form>
+              </form>
+            )}
 
             {currentBusID && (
               <>
-                <hr className="border-outline my-8 border-1" />
+                <hr className="border-outline my-4 border-1" />
                 <div className="flex flex-col items-center gap-2">
                   <Button
                     onClick={handleStartTrip}
@@ -296,66 +301,70 @@ const Conductor = () => {
         )}
       </Dialog>
 
-      <PageBody className="!items-start">
-        <CardContainer className="w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
-          <CardHeader className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">
-                <BusIcon /> CERES LINERS
-              </h1>
-              <p className="text-primary-light text-sm">Route: Lorem - Dolor</p>
-              <p className="text-primary-light text-sm">
-                {new Date().toLocaleString()}
-              </p>
-            </div>
-            <Button
-              variant="glass"
-              className="flex items-center gap-2"
-              onClick={fetchData}
-            >
-              <RefreshIcon className="!h-4 !w-4" />{' '}
-              <p className="hidden text-xs md:block md:text-sm">Refresh</p>
-            </Button>
-          </CardHeader>
-          <CardBody className="flex flex-col items-center justify-center gap-4 !px-4">
-            {passengerData.length > 0 ? (
-              <div className="w-full">
-                <h2 className="mb-4 text-lg font-semibold">Passenger List</h2>
-                <ul className="space-y-2">
-                  {passengerData.map((ticket: TicketType) => (
-                    <li
-                      key={ticket.ticket_id}
-                      className="flex items-center justify-between border-b border-gray-200 p-2"
-                    >
-                      <span>{ticket.full_name || 'Unknown Passenger'}</span>
-                      <span>
-                        {ticket.seat_number
-                          ? `Seat: ${ticket.seat_number}`
-                          : ''}
-                      </span>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleRenderPassengerModal(ticket)}
-                      >
-                        Click
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
+      {currentBusID && (
+        <PageBody className="!items-start">
+          <CardContainer className="w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
+            <CardHeader className="flex items-start justify-between">
+              <div>
+                <h1 className="text-2xl font-bold">
+                  <BusIcon /> CERES LINERS
+                </h1>
+                <p className="text-primary-light text-sm">
+                  Route: Lorem - Dolor
+                </p>
+                <p className="text-primary-light text-sm">
+                  {new Date().toLocaleString()}
+                </p>
               </div>
-            ) : !currentBusID ? (
-              <p>
-                Please set the Bus ID in settings to view passenger details.
+              <Button
+                variant="glass"
+                className="flex items-center gap-2"
+                onClick={fetchData}
+              >
+                <RefreshIcon className="!h-4 !w-4" />{' '}
+                <p className="hidden text-xs md:block md:text-sm">Refresh</p>
+              </Button>
+            </CardHeader>
+            <CardBody className="flex flex-col items-center justify-center gap-4 !px-4">
+              {passengerData.length > 0 ? (
+                <div className="w-full">
+                  <h2 className="mb-4 text-lg font-semibold">Passenger List</h2>
+                  <ul className="space-y-2">
+                    {passengerData.map((ticket: TicketType) => (
+                      <li
+                        key={ticket.ticket_id}
+                        className="flex items-center justify-between border-b border-gray-200 p-2"
+                      >
+                        <span>{ticket.full_name || 'Unknown Passenger'}</span>
+                        <span>
+                          {ticket.seat_number
+                            ? `Seat: ${ticket.seat_number}`
+                            : ''}
+                        </span>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleRenderPassengerModal(ticket)}
+                        >
+                          Click
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : !currentBusID ? (
+                <p>
+                  Please set the Bus ID in settings to view passenger details.
+                </p>
+              ) : (
+                <Loading />
+              )}
+              <p className="text-muted text-xs">
+                Dev Note: Still in development, chill brav
               </p>
-            ) : (
-              <Loading />
-            )}
-            <p className="text-muted text-xs">
-              Dev Note: Still in development, chill brav
-            </p>
-          </CardBody>
-        </CardContainer>
-      </PageBody>
+            </CardBody>
+          </CardContainer>
+        </PageBody>
+      )}
     </>
   );
 };
