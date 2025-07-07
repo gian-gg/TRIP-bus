@@ -11,11 +11,11 @@ import Button from '@/components/Button';
 import PageBody from '@/components/PageBody';
 import Dialog from '@/components/Dialog';
 import { Input, Label, Field } from '@/components/Form';
-import { GearIcon } from '@/components/Icons';
 import Loading from '@/components/Loading';
 import Container from '@/components/Container';
+import { SettingsModal } from '@/components/Settings';
 
-import { BusIcon, RefreshIcon, CloseIcon } from '@/components/Icons';
+import { BusIcon, RefreshIcon } from '@/components/Icons';
 
 import { GET, PUT } from '@/lib/api';
 
@@ -174,88 +174,63 @@ const Conductor = () => {
   return (
     <>
       {/* // settings modal */}
-      <Dialog
-        open={isSettingsModalOpen}
-        as="div"
-        onClose={() => currentBusID && setIsSettingsModalOpen(false)}
-        className="w-96"
-      >
-        <CardContainer className="h-full w-full">
-          <CardHeader className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold text-white">Bus Settings</h1>
-            {currentBusID && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsSettingsModalOpen(false)}
-              >
-                <CloseIcon className="text-white" />
-              </Button>
-            )}
-          </CardHeader>
-          <CardBody>
-            {currentBusID ? (
-              <Button
-                type="button"
-                onClick={handleDetachBusID}
-                variant="outline"
-                className="w-full"
-              >
-                Detach Bus ID
-              </Button>
-            ) : (
-              <form onSubmit={handleSettingsChange}>
-                <Field>
-                  <Label htmlFor="busID" required>
-                    Bus ID
-                  </Label>
-                  <Input
-                    id="busID"
-                    name="busID"
-                    type="text"
-                    placeholder="Enter Bus ID"
-                    required
-                  />
-                </Field>
-                <Button type="submit" variant="solid" className="mt-2 w-full">
-                  Link to Bus ID
-                </Button>
-              </form>
-            )}
 
-            {currentBusID && (
-              <>
-                <hr className="border-outline my-4 border-1" />
-                <div className="flex flex-col items-center gap-2">
-                  <Button
-                    onClick={handleStartTrip}
-                    type="button"
-                    variant="solid"
-                    className="!bg-error w-full"
-                  >
-                    Start Trip
-                  </Button>
-                  <Button
-                    onClick={handleEndTrip}
-                    type="button"
-                    variant="outline"
-                    className="!border-error w-full"
-                  >
-                    End Trip
-                  </Button>
-                </div>
-              </>
-            )}
-          </CardBody>
-        </CardContainer>
-      </Dialog>
-      <Button
-        variant="solid"
-        className="text-primary fixed bottom-10 left-10 flex h-12 w-12 items-center justify-center !rounded-full !border-2 bg-white shadow-lg"
-        onClick={() => setIsSettingsModalOpen(true)}
-      >
-        <GearIcon />
-      </Button>
+      <SettingsModal
+        modalTitle="Bus Settings"
+        handleSettingsModalState={setIsSettingsModalOpen}
+        settingsModalState={isSettingsModalOpen}
+        state={!!currentBusID}
+        State1={() => (
+          <>
+            <Button
+              type="button"
+              onClick={handleDetachBusID}
+              variant="outline"
+              className="w-full"
+            >
+              Detach Bus ID
+            </Button>
+            <hr className="border-outline my-4 border-1" />
+            <div className="flex flex-col items-center gap-2">
+              <Button
+                onClick={handleStartTrip}
+                type="button"
+                variant="solid"
+                className="!bg-error w-full"
+              >
+                Start Trip
+              </Button>
+              <Button
+                onClick={handleEndTrip}
+                type="button"
+                variant="outline"
+                className="!border-error w-full"
+              >
+                End Trip
+              </Button>
+            </div>
+          </>
+        )}
+        State2={() => (
+          <form onSubmit={handleSettingsChange}>
+            <Field>
+              <Label htmlFor="busID" required>
+                Bus ID
+              </Label>
+              <Input
+                id="busID"
+                name="busID"
+                type="text"
+                placeholder="Enter Bus ID"
+                required
+              />
+            </Field>
+            <Button type="submit" variant="solid" className="mt-2 w-full">
+              Link to Bus ID
+            </Button>
+          </form>
+        )}
+      />
 
       {/* // passenger modal */}
       <Dialog

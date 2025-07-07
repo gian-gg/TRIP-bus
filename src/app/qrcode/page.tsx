@@ -2,14 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { QRCodeSVG } from 'qrcode.react';
 import { nanoid } from 'nanoid';
-import { CardContainer, CardHeader, CardBody } from '@/components/Card';
+import { CardContainer, CardBody } from '@/components/Card';
 import Button from '@/components/Button';
 import PageBody from '@/components/PageBody';
 import Container from '@/components/Container';
-import Dialog from '@/components/Dialog';
 import { Input, Label, Field } from '@/components/Form';
+import { SettingsModal } from '@/components/Settings';
 
-import { GearIcon, SpinnerIcon, CloseIcon } from '@/components/Icons';
+import { SpinnerIcon } from '@/components/Icons';
 
 import { GET, POST } from '@/lib/api';
 
@@ -131,92 +131,66 @@ const QrCode = () => {
 
   return (
     <>
-      <Dialog
-        open={isModalOpen}
-        as="div"
-        onClose={() => currentBusID && setIsModalOpen(false)}
-        className="w-96"
-      >
-        <CardContainer className="h-full w-full">
-          <CardHeader className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold text-white">Bus Settings</h1>
-            {currentBusID && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsModalOpen(false)}
-              >
-                <CloseIcon className="text-white" />
-              </Button>
-            )}
-          </CardHeader>
-          <CardBody>
-            {currentBusID ? (
-              <Button
-                type="button"
-                onClick={handleBusSettingsReset}
-                variant="outline"
-                className="w-full"
-              >
-                Reset Settings
-              </Button>
-            ) : (
-              <form
-                onSubmit={handleSettingsChange}
-                className="flex flex-col gap-2"
-              >
-                <Field>
-                  <Label htmlFor="busID" required>
-                    Bus ID
-                  </Label>
-                  <Input
-                    id="busID"
-                    name="busID"
-                    type="text"
-                    placeholder="Enter Bus ID"
-                    required
-                  />
-                </Field>
-                <Field>
-                  <Label htmlFor="wifiSSID" required>
-                    Bus WiFi SSID
-                  </Label>
-                  <Input
-                    id="wifiSSID"
-                    name="wifiSSID"
-                    type="text"
-                    placeholder="Enter Bus ID"
-                    required
-                  />
-                </Field>
-                <Field>
-                  <Label htmlFor="wifiPassword" required>
-                    Bus WiFi Password
-                  </Label>
-                  <Input
-                    id="wifiPassword"
-                    name="wifiPassword"
-                    type="text"
-                    placeholder="Enter Bus ID"
-                    required
-                  />
-                </Field>
+      <SettingsModal
+        modalTitle="Bus Settings"
+        handleSettingsModalState={setIsModalOpen}
+        settingsModalState={isModalOpen}
+        state={!!currentBusID}
+        State1={() => (
+          <Button
+            type="button"
+            onClick={handleBusSettingsReset}
+            variant="outline"
+            className="w-full"
+          >
+            Reset Settings
+          </Button>
+        )}
+        State2={() => (
+          <form onSubmit={handleSettingsChange} className="flex flex-col gap-2">
+            <Field>
+              <Label htmlFor="busID" required>
+                Bus ID
+              </Label>
+              <Input
+                id="busID"
+                name="busID"
+                type="text"
+                placeholder="Enter Bus ID"
+                required
+              />
+            </Field>
+            <Field>
+              <Label htmlFor="wifiSSID" required>
+                Bus WiFi SSID
+              </Label>
+              <Input
+                id="wifiSSID"
+                name="wifiSSID"
+                type="text"
+                placeholder="Enter Bus ID"
+                required
+              />
+            </Field>
+            <Field>
+              <Label htmlFor="wifiPassword" required>
+                Bus WiFi Password
+              </Label>
+              <Input
+                id="wifiPassword"
+                name="wifiPassword"
+                type="text"
+                placeholder="Enter Bus ID"
+                required
+              />
+            </Field>
 
-                <Button type="submit" variant="solid" className="mt-4 w-full">
-                  Save Bus Settings
-                </Button>
-              </form>
-            )}
-          </CardBody>
-        </CardContainer>
-      </Dialog>
-      <Button
-        variant="solid"
-        className="text-primary fixed bottom-10 left-10 flex h-12 w-12 items-center justify-center !rounded-full !border-2 bg-white shadow-lg"
-        onClick={() => setIsModalOpen(true)}
-      >
-        <GearIcon />
-      </Button>
+            <Button type="submit" variant="solid" className="mt-4 w-full">
+              Save Bus Settings
+            </Button>
+          </form>
+        )}
+      />
 
       {currentBusID && (
         <PageBody>

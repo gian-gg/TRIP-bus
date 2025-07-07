@@ -19,6 +19,8 @@ import { Input, Label, Field } from '@/components/Form';
 import Dialog from '@/components/Dialog';
 import Loading from '@/components/Loading';
 
+import { SettingsModal } from '@/components/Settings';
+
 import { GET } from '@/lib/api';
 import type {
   GETResponse,
@@ -98,27 +100,6 @@ const TimelineData: { bus_id: number; timeline: TimelineInformationType[] }[] =
     },
   ];
 
-const mockBusData: BusInformationType[] = [
-  {
-    bus_id: 1,
-    route_id: 'Route 42',
-    driver_id: 2,
-    conductor_id: 3,
-    passenger_count: 12,
-    curr_location: 'University of San Carlos North Campus',
-    status: 'active',
-  },
-  {
-    bus_id: 2,
-    route_id: 'Route 15',
-    driver_id: 4,
-    conductor_id: 5,
-    passenger_count: 8,
-    curr_location: 'Ayala Center Cebu',
-    status: 'inactive',
-  },
-];
-
 const mockDriverData: DriverInformationType[] = [
   {
     driver_id: 1,
@@ -156,45 +137,41 @@ const mockConductorData: ConductorInformationType[] = [
 ];
 
 const Operator = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [operatorID, setCurrentOperatorID] = useState('');
   const [activeTab, setActiveTab] = useState<
     'buses' | 'drivers' | 'conductors'
   >('buses');
-  // const [driverData, setDriverData] =
-  //   useState<DriverInformationType[]>(mockDriverData);
-
-  // const [conductorData, setConductorData] =
-  //   useState<ConductorInformationType[]>(mockConductorData);
-
-  const [data, setData] = useState<BusDataType>({
-    busData: mockBusData,
-  });
-
+  const [driverData, setDriverData] = useState<DriverInformationType[]>();
+  const [conductorData, setConductorData] =
+    useState<ConductorInformationType[]>();
+  const [data, setData] = useState<BusDataType>();
   const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
   const selectedBus = data
     ? data.busData.find((bus) => bus.bus_id === selectedBusId)
     : null;
 
   const refreshData = useCallback(async () => {
-    // try {
-    //   const response = await GET('/bus/index.php');
-    //   const res = response as GETResponse;
-    //   if (res.status === 'success') {
-    //     setData({
-    //       busData: res.data as BusInformationType[],
-    //     });
-    //   }
-    // } catch (error) {
-    //   toast.error(
-    //     'Network Error ' +
-    //       (error instanceof Error ? error.message : 'Unknown error')
-    //   );
-    // }
-    // toast.success('Data refreshed successfully!');
-    setData({ busData: mockBusData });
-    toast.success('Mock data loaded!');
+    try {
+      const response = await GET('/bus/index.php');
+      const res = response as GETResponse;
+      if (res.status === 'success') {
+        setData({
+          busData: res.data as BusInformationType[],
+        });
+
+        setDriverData(mockDriverData as DriverInformationType[]);
+        setConductorData(mockConductorData as ConductorInformationType[]);
+      }
+    } catch (error) {
+      toast.error(
+        'Network Error ' +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
+    }
+    toast.success('Data refreshed successfully!');
   }, []);
 
   useEffect(() => {
@@ -204,8 +181,6 @@ const Operator = () => {
       setCurrentOperatorID(operatorID);
 
       refreshData();
-
-      toast.success('Welcome back, Operator ID: ' + operatorID);
     } else {
       setIsAuthModalOpen(true);
     }
@@ -215,12 +190,17 @@ const Operator = () => {
     if (!data) {
       return;
     }
-    console.log('Data updated:', data);
   }, [data]);
 
-  const handleAuth = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const operatorID = e.currentTarget.operatorID.value;
+    const operatorPassword = e.currentTarget.operatorPassword.value;
+
+    console.log('Signed in as:', {
+      operator_id: operatorID,
+      operator_password: operatorPassword,
+    });
 
     // temp only
     localStorage.setItem('operator_id', operatorID);
@@ -229,45 +209,64 @@ const Operator = () => {
     setIsAuthModalOpen(false);
   };
 
+  const handleSignOut = useCallback(() => {
+    localStorage.removeItem('operator_id');
+    setCurrentOperatorID('');
+    setData(undefined);
+    setDriverData(undefined);
+    setConductorData(undefined);
+    setSelectedBusId(null);
+    setIsAuthModalOpen(true);
+    toast.success('Signed out successfully!');
+  }, []);
+
   return (
     <>
-      <Dialog
-        open={isAuthModalOpen}
-        as="div"
-        onClose={() => null}
-        className="w-96"
-      >
-        <CardContainer className="h-full w-full">
-          <CardHeader>
-            <h1 className="text-lg font-semibold text-white">Sign In</h1>
-          </CardHeader>
-          <form onSubmit={handleAuth}>
-            <CardBody>
-              <Field>
-                <Label htmlFor="operatorID" required>
-                  Operator ID
-                </Label>
-                <Input
-                  id="operatorID"
-                  name="operatorID"
-                  type="text"
-                  placeholder="Enter Operator ID"
-                  required
-                />
-              </Field>
-            </CardBody>
-            <CardFooter className="flex justify-end">
-              <Button
-                type="submit"
-                variant="solid"
-                className="!bg-primary px-4"
-              >
-                Sign In
-              </Button>
-            </CardFooter>
+      {/* Settings Modal */}
+      <SettingsModal
+        modalTitle="Operator Settings"
+        handleSettingsModalState={setIsAuthModalOpen}
+        settingsModalState={isAuthModalOpen}
+        state={!!operatorID}
+        State1={() => (
+          <Button variant="outline" className="w-full" onClick={handleSignOut}>
+            Sign out
+          </Button>
+        )}
+        State2={() => (
+          <form onSubmit={handleSignIn} className="flex flex-col gap-4">
+            <Field>
+              <Label htmlFor="operatorID" required>
+                ID
+              </Label>
+              <Input
+                id="operatorID"
+                name="operatorID"
+                type="text"
+                placeholder="Enter Operator ID"
+                required
+              />
+            </Field>
+            <Field>
+              <Label htmlFor="operatorPassword" required>
+                Password
+              </Label>
+              <Input
+                id="operatorPassword"
+                name="operatorPassword"
+                type="password"
+                placeholder="Enter Password"
+                required
+              />
+            </Field>
+            <Button type="submit" variant="solid" className="w-full">
+              Sign In
+            </Button>
           </form>
-        </CardContainer>
-      </Dialog>
+        )}
+      />
+
+      {/* bus modal */}
       <Dialog
         open={isModalOpen}
         as="div"
@@ -379,6 +378,8 @@ const Operator = () => {
           </CardBody>
         </CardContainer>
       </Dialog>
+
+      {/* page */}
       {operatorID && data ? (
         <CardContainer className="m-auto max-w-[1400px] p-2">
           <CardHeader className="flex items-start justify-between">
@@ -427,9 +428,9 @@ const Operator = () => {
                 label="Total Passenger Count"
               />
             </div>
-            <hr className="border-primary my-2 border-t-2" />
+            <hr className="border-outline my-2 border-t-2" />
             <div>
-              <div className="mb-4 flex gap-2">
+              <div className="mb-4 flex items-center justify-center gap-2 md:justify-start">
                 <Button
                   className={`text-primary border-outline w-[120px] border-2 bg-white text-lg font-semibold ${activeTab === 'buses' ? '!bg-primary !text-white' : ''}`}
                   variant="glass"
@@ -452,7 +453,7 @@ const Operator = () => {
                   Conductors
                 </Button>
               </div>
-              {activeTab === 'buses' && (
+              {activeTab === 'buses' && data && (
                 <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {data.busData.map((data, index) => (
                     <BusCard
@@ -466,16 +467,16 @@ const Operator = () => {
                   ))}
                 </div>
               )}
-              {activeTab === 'drivers' && (
+              {activeTab === 'drivers' && driverData && (
                 <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {mockDriverData.map((data, index) => (
+                  {driverData.map((data, index) => (
                     <DriverCard key={index} DriverInfo={data} />
                   ))}
                 </div>
               )}
-              {activeTab === 'conductors' && (
+              {activeTab === 'conductors' && conductorData && (
                 <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {mockConductorData.map((data, index) => (
+                  {conductorData.map((data, index) => (
                     <ConductorCard key={index} ConductorInfo={data} />
                   ))}
                 </div>
