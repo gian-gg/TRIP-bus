@@ -1,3 +1,4 @@
+import React from 'react';
 import PageBody from '@/components/PageBody';
 import { SpinnerIcon } from '@/components/Icons';
 
@@ -9,4 +10,4 @@ const Loading = () => {
   );
 };
 
-export default Loading;
+export default React.memo(Loading);

@@ -23,4 +23,4 @@ const PageBody = (
   );
 };
 
-export default PageBody;
+export default React.memo(PageBody);

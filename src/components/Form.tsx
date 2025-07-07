@@ -8,19 +8,25 @@ import {
   Select as HeadlessSelect,
 } from '@headlessui/react';
 import clsx from 'clsx';
+import React from 'react';
 
 import type { RadioProps } from '@headlessui/react';
 
-function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
+const Select = React.memo(function Select(
+  props: React.SelectHTMLAttributes<HTMLSelectElement>
+) {
   return (
     <HeadlessSelect
       {...props}
       className="border-outline bg-base active:border-primary focus:border-primary hover:outline-primary h-full w-full cursor-pointer rounded-md border-1 p-3 px-4 text-black outline-0 outline-transparent focus:ring-0"
     />
   );
-}
+});
 
-function Description(props: { children: React.ReactNode; className?: string }) {
+const Description = React.memo(function Description(props: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <HeadlessDescription
       className={clsx('text-muted text-xs', props.className)}
@@ -28,9 +34,9 @@ function Description(props: { children: React.ReactNode; className?: string }) {
       {props.children}
     </HeadlessDescription>
   );
-}
+});
 
-function Label(props: {
+const Label = React.memo(function Label(props: {
   required?: boolean;
   children: React.ReactNode;
   htmlFor?: string;
@@ -44,9 +50,12 @@ function Label(props: {
       <span className="text-error ml-1">{props.required ? '*' : ''}</span>
     </HeadlessLabel>
   );
-}
+});
 
-function Field(props: { children: React.ReactNode; className?: string }) {
+const Field = React.memo(function Field(props: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <HeadlessField
       className={clsx('flex h-full w-full flex-col gap-2', props.className)}
@@ -54,18 +63,20 @@ function Field(props: { children: React.ReactNode; className?: string }) {
       {props.children}
     </HeadlessField>
   );
-}
+});
 
-function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
+const Input = React.memo(function Input(
+  props: React.InputHTMLAttributes<HTMLInputElement>
+) {
   return (
     <HeadlessInput
       {...props}
       className="border-outline bg-base active:border-primary focus:border-primary hover:outline-primary h-full w-full cursor-pointer rounded-md border-1 p-3 px-4 text-black outline-0 outline-transparent focus:ring-0"
     />
   );
-}
+});
 
-function InputWithIcon(
+const InputWithIcon = React.memo(function InputWithIcon(
   props: React.InputHTMLAttributes<HTMLInputElement> & {
     children?: React.ReactNode;
   }
@@ -80,9 +91,11 @@ function InputWithIcon(
       />
     </div>
   );
-}
+});
 
-function Radio(props: RadioProps & { children?: React.ReactNode }) {
+const Radio = React.memo(function Radio(
+  props: RadioProps & { children?: React.ReactNode }
+) {
   const { children, className, ...rest } = props;
 
   return (
@@ -96,7 +109,7 @@ function Radio(props: RadioProps & { children?: React.ReactNode }) {
       {children}
     </HeadlessRadio>
   );
-}
+});
 
 export {
   Input,

@@ -1,3 +1,4 @@
+import React from 'react';
 import type { PassengerDetailsType } from '@/type';
 
 import { formatPassengerType } from '@/lib/misc';
@@ -22,4 +23,4 @@ const Badges = (props: {
   );
 };
 
-export default Badges;
+export default React.memo(Badges);

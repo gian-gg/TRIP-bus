@@ -17,11 +17,11 @@ import type { GETResponse } from '@/type';
 const Home = () => {
   const handleConnectionTest = async () => {
     try {
-      const response = await GET('/bus/index.php');
-      const res = response as GETResponse;
       const start = performance.now();
+      const response = await GET('/bus/index.php');
+      const ping = Math.round(performance.now() - start);
+      const res = response as GETResponse;
       if (res.status === 'success') {
-        const ping = Math.round(performance.now() - start);
         toast.success(`Backend connection successful! Ping: ${ping} ms`);
       } else {
         toast.error('Failed to connect to the backend.');

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { toast } from 'sonner';
 import {
@@ -149,9 +149,11 @@ const Operator = () => {
     useState<ConductorInformationType[]>();
   const [data, setData] = useState<BusDataType>();
   const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
-  const selectedBus = data
-    ? data.busData.find((bus) => bus.bus_id === selectedBusId)
-    : null;
+  const selectedBus = useMemo(
+    () =>
+      data ? data.busData.find((bus) => bus.bus_id === selectedBusId) : null,
+    [data, selectedBusId]
+  );
 
   const refreshData = useCallback(async () => {
     try {
@@ -192,7 +194,7 @@ const Operator = () => {
     }
   }, [data]);
 
-  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const operatorID = e.currentTarget.operatorID.value;
     const operatorPassword = e.currentTarget.operatorPassword.value;
@@ -207,7 +209,7 @@ const Operator = () => {
     setCurrentOperatorID(operatorID);
 
     setIsAuthModalOpen(false);
-  };
+  }, []);
 
   const handleSignOut = useCallback(() => {
     localStorage.removeItem('operator_id');

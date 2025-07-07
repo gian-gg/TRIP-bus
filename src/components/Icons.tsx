@@ -1,23 +1,25 @@
 import React from 'react';
 import clsx from 'clsx';
 
-const PushPinIcon = (props: React.HTMLAttributes<HTMLSpanElement>) => {
-  return <span {...props}>📍</span>;
-};
+const PushPinIcon = React.memo(
+  (props: React.HTMLAttributes<HTMLSpanElement>) => {
+    return <span {...props}>📍</span>;
+  }
+);
 
-const BusIcon = (props: React.HTMLAttributes<HTMLSpanElement>) => {
+const BusIcon = React.memo((props: React.HTMLAttributes<HTMLSpanElement>) => {
   return <span {...props}>🚌</span>;
-};
+});
 
-const ClockIcon = (props: React.HTMLAttributes<HTMLSpanElement>) => {
+const ClockIcon = React.memo((props: React.HTMLAttributes<HTMLSpanElement>) => {
   return <span {...props}>⏱️</span>;
-};
+});
 
-const PhoneIcon = (props: React.HTMLAttributes<HTMLSpanElement>) => {
+const PhoneIcon = React.memo((props: React.HTMLAttributes<HTMLSpanElement>) => {
   return <span {...props}>📱</span>;
-};
+});
 
-const GearIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+const GearIcon = React.memo((props: React.HTMLAttributes<HTMLOrSVGElement>) => {
   return (
     <svg
       {...props}
@@ -34,123 +36,135 @@ const GearIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
       <circle cx="12" cy="12" r="3" />
     </svg>
   );
-};
+});
 
-const SpinnerIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
-  return (
-    <svg
-      {...props}
-      className={clsx('h-6 w-6', props.className)}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
-  );
-};
+const SpinnerIcon = React.memo(
+  (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+    return (
+      <svg
+        {...props}
+        className={clsx('h-6 w-6', props.className)}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+      </svg>
+    );
+  }
+);
 
-const RefreshIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
-  return (
-    <svg
-      {...props}
-      className={clsx('h-6 w-6', props.className)}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-      <path d="M3 3v5h5" />
-      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-      <path d="M16 16h5v5" />
-    </svg>
-  );
-};
+const RefreshIcon = React.memo(
+  (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+    return (
+      <svg
+        {...props}
+        className={clsx('h-6 w-6', props.className)}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+        <path d="M3 3v5h5" />
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+        <path d="M16 16h5v5" />
+      </svg>
+    );
+  }
+);
 
-const AlertIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
-  return (
-    <svg
-      {...props}
-      className={clsx('h-6 w-6', props.className)}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M10.268 21a2 2 0 0 0 3.464 0" />
-      <path d="M22 8c0-2.3-.8-4.3-2-6" />
-      <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
-      <path d="M4 2C2.8 3.7 2 5.7 2 8" />
-    </svg>
-  );
-};
+const AlertIcon = React.memo(
+  (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+    return (
+      <svg
+        {...props}
+        className={clsx('h-6 w-6', props.className)}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M10.268 21a2 2 0 0 0 3.464 0" />
+        <path d="M22 8c0-2.3-.8-4.3-2-6" />
+        <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
+        <path d="M4 2C2.8 3.7 2 5.7 2 8" />
+      </svg>
+    );
+  }
+);
 
-const RightArrow = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
-  return (
-    <svg
-      {...props}
-      className={clsx('h-6 w-6', props.className)}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 8L22 12L18 16" />
-      <path d="M2 12H22" />
-    </svg>
-  );
-};
+const RightArrow = React.memo(
+  (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+    return (
+      <svg
+        {...props}
+        className={clsx('h-6 w-6', props.className)}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M18 8L22 12L18 16" />
+        <path d="M2 12H22" />
+      </svg>
+    );
+  }
+);
 
-const CloseIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
-  return (
-    <svg
-      {...props}
-      className={clsx('h-6 w-6', props.className)}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  );
-};
+const CloseIcon = React.memo(
+  (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+    return (
+      <svg
+        {...props}
+        className={clsx('h-6 w-6', props.className)}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    );
+  }
+);
 
-const CircleIcon = (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
-  return (
-    <svg
-      {...props}
-      className={clsx('h-6 w-6', props.className)}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="0"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="6" />
-    </svg>
-  );
-};
+const CircleIcon = React.memo(
+  (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+    return (
+      <svg
+        {...props}
+        className={clsx('h-6 w-6', props.className)}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="6" />
+      </svg>
+    );
+  }
+);
 
 export {
   PushPinIcon,
