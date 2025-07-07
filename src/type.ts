@@ -77,10 +77,6 @@ interface TicketType {
   payment: PaymentType;
 }
 
-interface BusDataType {
-  busData: BusInformationType[];
-}
-
 interface GeneralTripInfoType {
   passengerCount: number;
   contactNumber: string;
@@ -131,7 +127,6 @@ export type {
   TripInformationType,
   TicketType,
   PaymentType,
-  BusDataType,
   StopType,
   DriverInformationType,
   ConductorInformationType,

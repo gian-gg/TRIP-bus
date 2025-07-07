@@ -24,7 +24,6 @@ import { SettingsModal } from '@/components/Settings';
 import { GET } from '@/lib/api';
 import type {
   GETResponse,
-  BusDataType,
   BusInformationType,
   TimelineInformationType,
   DriverInformationType,
@@ -100,42 +99,6 @@ const TimelineData: { bus_id: number; timeline: TimelineInformationType[] }[] =
     },
   ];
 
-const mockDriverData: DriverInformationType[] = [
-  {
-    driver_id: 1,
-    full_name: 'Geri Santos',
-    license_number: 'D1234567',
-    contact_number: '09171234567',
-    status: 'active',
-    bus_id: 1,
-  },
-  {
-    driver_id: 2,
-    full_name: 'Alex Cruz',
-    license_number: 'D7654321',
-    contact_number: '09179876543',
-    status: 'inactive',
-    bus_id: 2,
-  },
-];
-
-const mockConductorData: ConductorInformationType[] = [
-  {
-    conductor_id: 1,
-    full_name: 'Ryan Romero',
-    contact_number: '09171234567',
-    status: 'active',
-    bus_id: 1,
-  },
-  {
-    conductor_id: 1,
-    full_name: 'John Cena',
-    contact_number: '09179876543',
-    status: 'inactive',
-    bus_id: 2,
-  },
-];
-
 const Operator = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -147,26 +110,36 @@ const Operator = () => {
   const [driverData, setDriverData] = useState<DriverInformationType[]>();
   const [conductorData, setConductorData] =
     useState<ConductorInformationType[]>();
-  const [data, setData] = useState<BusDataType>();
+  const [busData, setBusData] = useState<BusInformationType[]>();
   const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
   const selectedBus = useMemo(
     () =>
-      data ? data.busData.find((bus) => bus.bus_id === selectedBusId) : null,
-    [data, selectedBusId]
+      busData ? busData.find((bus) => bus.bus_id === selectedBusId) : null,
+    [busData, selectedBusId]
   );
 
   const refreshData = useCallback(async () => {
     try {
-      const response = await GET('/bus/index.php');
-      const res = response as GETResponse;
-      if (res.status === 'success') {
-        setData({
-          busData: res.data as BusInformationType[],
-        });
+      const busDataResponse = await GET('/bus/index.php');
+      const busRes = busDataResponse as GETResponse;
 
-        setDriverData(mockDriverData as DriverInformationType[]);
-        setConductorData(mockConductorData as ConductorInformationType[]);
+      const driverDataResponse = await GET('/driver/index.php');
+      const driverRes = driverDataResponse as GETResponse;
+
+      const conductorDataResponse = await GET('/conductor/index.php');
+      const conductorRes = conductorDataResponse as GETResponse;
+      if (
+        busRes.status !== 'success' ||
+        driverRes.status !== 'success' ||
+        conductorRes.status !== 'success'
+      ) {
+        toast.error('Error fetching data');
+        return;
       }
+
+      setBusData(busRes.data as BusInformationType[]);
+      setDriverData(driverRes.data as DriverInformationType[]);
+      setConductorData(conductorRes.data as ConductorInformationType[]);
     } catch (error) {
       toast.error(
         'Network Error ' +
@@ -188,12 +161,6 @@ const Operator = () => {
     }
   }, [operatorID, refreshData]);
 
-  useEffect(() => {
-    if (!data) {
-      return;
-    }
-  }, [data]);
-
   const handleSignIn = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const operatorID = e.currentTarget.operatorID.value;
@@ -214,7 +181,7 @@ const Operator = () => {
   const handleSignOut = useCallback(() => {
     localStorage.removeItem('operator_id');
     setCurrentOperatorID('');
-    setData(undefined);
+    setBusData(undefined);
     setDriverData(undefined);
     setConductorData(undefined);
     setSelectedBusId(null);
@@ -321,7 +288,11 @@ const Operator = () => {
                       Driver
                     </td>
                     <td className="sm: p-2 text-end text-sm md:text-lg">
-                      {selectedBus.driver_id}
+                      {driverData?.find(
+                        (driver) =>
+                          String(driver.driver_id) ===
+                          String(selectedBus.driver_id)
+                      )?.full_name ?? 'NULL'}
                     </td>
                   </tr>
                   <tr className="border-outline border-b-2">
@@ -329,7 +300,11 @@ const Operator = () => {
                       Conductor
                     </td>
                     <td className="sm: p-2 text-end text-sm md:text-lg">
-                      {selectedBus.conductor_id}
+                      {conductorData?.find(
+                        (conductor) =>
+                          String(conductor.conductor_id) ===
+                          String(selectedBus.conductor_id)
+                      )?.full_name ?? 'NULL'}
                     </td>
                   </tr>
                   <tr className="border-outline border-b-2">
@@ -382,7 +357,7 @@ const Operator = () => {
       </Dialog>
 
       {/* page */}
-      {operatorID && data ? (
+      {operatorID && busData && driverData && conductorData ? (
         <CardContainer className="m-auto max-w-[1400px] p-2">
           <CardHeader className="flex items-start justify-between">
             <div>
@@ -406,7 +381,7 @@ const Operator = () => {
             <div className="mx-2 grid w-full grid-cols-2 items-center justify-items-center gap-4 md:grid-cols-4">
               <StatsCard
                 value={
-                  data.busData.filter(
+                  busData.filter(
                     (bus: BusInformationType) => bus.status === 'active'
                   ).length
                 }
@@ -414,7 +389,7 @@ const Operator = () => {
               />
               <StatsCard
                 value={
-                  data.busData.filter(
+                  busData.filter(
                     (bus: BusInformationType) => bus.status === 'inactive'
                   ).length
                 }
@@ -422,7 +397,7 @@ const Operator = () => {
               />
               <StatsCard value={0 + '%'} label="On-time Performance" />
               <StatsCard
-                value={data.busData.reduce(
+                value={busData.reduce(
                   (sum: number, bus: BusInformationType) =>
                     sum + (bus.passenger_count || 0),
                   0
@@ -455,12 +430,20 @@ const Operator = () => {
                   Conductors
                 </Button>
               </div>
-              {activeTab === 'buses' && data && (
+              {activeTab === 'buses' && busData && (
                 <div className="grid grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {data.busData.map((data, index) => (
+                  {busData.map((data, index) => (
                     <BusCard
                       key={index}
-                      BusInfo={data}
+                      BusInfo={{
+                        ...data,
+                        driver_name:
+                          driverData.find(
+                            (driver) =>
+                              String(driver.driver_id) ===
+                              String(data.driver_id)
+                          )?.full_name ?? 'NULL',
+                      }}
                       OnClick={() => {
                         setSelectedBusId(data.bus_id);
                         setIsModalOpen(true);

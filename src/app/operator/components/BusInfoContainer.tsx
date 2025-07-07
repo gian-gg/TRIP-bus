@@ -52,9 +52,13 @@ const TimelineCard = React.memo(
   }
 );
 
+interface BusCardInfoType extends BusInformationType {
+  driver_name: string;
+}
+
 const BusCard = React.memo(
   (props: {
-    BusInfo: BusInformationType;
+    BusInfo: BusCardInfoType;
     OnClick: (data: BusInformationType) => void;
   }) => {
     const status = props.BusInfo['status'];
@@ -93,7 +97,7 @@ const BusCard = React.memo(
           </div>
           <div>
             <p className="text-sm font-semibold md:text-lg">Bus Driver:</p>
-            <p className="text-xs md:text-sm">{props.BusInfo['driver_id']}</p>
+            <p className="text-xs md:text-sm">{props.BusInfo['driver_name']}</p>
           </div>
           <div>
             <p className="text-sm font-semibold md:text-lg">
