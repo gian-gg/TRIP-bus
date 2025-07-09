@@ -52,6 +52,7 @@ const Passenger = (props: {
       passengerCount: parseInt(passengersCount, 10),
       destination: destination,
       contactNumber: contact,
+      trip_id: currentBusInfo.trip_id,
     });
 
     setPassengerDetails((prevDetails) => {
