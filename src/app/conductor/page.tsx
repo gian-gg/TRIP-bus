@@ -14,6 +14,8 @@ import { Input, Label, Field } from '@/components/Form';
 import Loading from '@/components/Loading';
 import Container from '@/components/Container';
 import { SettingsModal } from '@/components/Settings';
+import SeatingGrid from './components/SeatingGrid';
+import LegendItems from './components/LegendItems';
 
 import { BusIcon, RefreshIcon } from '@/components/Icons';
 
@@ -92,12 +94,12 @@ const Conductor = () => {
     []
   );
 
-  const handleRenderPassengerModal = useCallback((ticket: TicketType) => {
-    setPassengerModal({
-      open: true,
-      ticket: ticket,
-    });
-  }, []);
+  // const handleRenderPassengerModal = useCallback((ticket: TicketType) => {
+  //   setPassengerModal({
+  //     open: true,
+  //     ticket: ticket,
+  //   });
+  // }, []);
 
   const handleDetachBusID = useCallback(() => {
     localStorage.removeItem('bus_id');
@@ -278,7 +280,7 @@ const Conductor = () => {
 
       {currentBusID && (
         <PageBody className="!items-start">
-          <CardContainer className="w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
+          <CardContainer className="h-full w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
             <CardHeader className="flex items-start justify-between">
               <div>
                 <h1 className="text-2xl font-bold">
@@ -302,30 +304,17 @@ const Conductor = () => {
             </CardHeader>
             <CardBody className="flex flex-col items-center justify-center gap-4 !px-4">
               {passengerData.length > 0 ? (
-                <div className="w-full">
-                  <h2 className="mb-4 text-lg font-semibold">Passenger List</h2>
-                  <ul className="space-y-2">
-                    {passengerData.map((ticket: TicketType) => (
-                      <li
-                        key={ticket.ticket_id}
-                        className="flex items-center justify-between border-b border-gray-200 p-2"
-                      >
-                        <span>{ticket.full_name || 'Unknown Passenger'}</span>
-                        <span>
-                          {ticket.seat_number
-                            ? `Seat: ${ticket.seat_number}`
-                            : ''}
-                        </span>
-                        <Button
-                          variant="outline"
-                          onClick={() => handleRenderPassengerModal(ticket)}
-                        >
-                          Click
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <>
+                  <Container className="flex w-full flex-wrap items-center justify-evenly gap-4">
+                    <LegendItems type="digital" />
+                    <LegendItems type="cash_paid" />
+                    <LegendItems type="cash_unpaid" />
+                    <LegendItems type="student" />
+                    <LegendItems type="senior" />
+                    <LegendItems type="pwd" />
+                  </Container>
+                  <SeatingGrid />
+                </>
               ) : !currentBusID ? (
                 <p>
                   Please set the Bus ID in settings to view passenger details.
@@ -333,9 +322,6 @@ const Conductor = () => {
               ) : (
                 <Loading />
               )}
-              <p className="text-muted text-xs">
-                Dev Note: Still in development, chill brav
-              </p>
             </CardBody>
           </CardContainer>
         </PageBody>

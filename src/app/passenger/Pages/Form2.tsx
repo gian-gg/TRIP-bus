@@ -2,7 +2,7 @@ import { Field, Label, Input, Description, Select } from '@/components/Form';
 import Button from '@/components/Button';
 import Container from '@/components/Container';
 
-import { PassengerTypes, SeatNumber } from '@/data';
+import { PassengerTypes, SeatInfo } from '@/data';
 
 import { formatPassengerType } from '@/lib/misc';
 
@@ -51,7 +51,7 @@ const Form2 = (props: {
                   <option value="" disabled>
                     Select Seat Number
                   </option>
-                  {SeatNumber.map((seat, index) => (
+                  {SeatInfo.seats.map((seat, index) => (
                     <option key={index} value={seat}>
                       {seat}
                     </option>
