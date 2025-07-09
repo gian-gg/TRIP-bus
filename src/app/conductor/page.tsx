@@ -101,6 +101,22 @@ const Conductor = () => {
   //   });
   // }, []);
 
+  const handleOpenPassengerModal = useCallback(
+    (seat_number: string) => {
+      const ticket = passengerData.find((p) => p.seat_number === seat_number);
+
+      if (ticket) {
+        setPassengerModal({
+          open: true,
+          ticket: ticket,
+        });
+      } else {
+        toast.error('No passenger found for seat: ' + seat_number);
+      }
+    },
+    [passengerData]
+  );
+
   const handleDetachBusID = useCallback(() => {
     localStorage.removeItem('bus_id');
     setCurrentBusID('');
@@ -313,7 +329,7 @@ const Conductor = () => {
                     <LegendItems type="senior" />
                     <LegendItems type="pwd" />
                   </Container>
-                  <SeatingGrid />
+                  <SeatingGrid handleClick={handleOpenPassengerModal} />
                 </>
               ) : !currentBusID ? (
                 <p>

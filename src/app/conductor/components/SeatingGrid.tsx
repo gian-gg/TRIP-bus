@@ -2,7 +2,7 @@ import Button from '@/components/Button';
 
 import { SeatInfo } from '@/data';
 
-const SeatingGrid = () => {
+const SeatingGrid = (props: { handleClick: (arg: string) => void }) => {
   return (
     <div className="grid w-full grid-cols-5 gap-2">
       {SeatInfo.cols.map((col) => (
@@ -19,6 +19,7 @@ const SeatingGrid = () => {
                   <Button
                     key={cellId}
                     variant="outline"
+                    onClick={() => props.handleClick(cellId)}
                     className="!border-outline h-16 w-16 !border-2 md:h-18 md:w-18 lg:h-20 lg:w-20"
                   >
                     {cellId}
@@ -46,6 +47,7 @@ const SeatingGrid = () => {
               <Button
                 key={cellId}
                 variant="outline"
+                onClick={() => props.handleClick(cellId)}
                 className="!border-outline h-16 w-16 !border-2 md:h-18 md:w-18 lg:h-20 lg:w-20"
               >
                 {cellId}
