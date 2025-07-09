@@ -54,6 +54,8 @@ const Conductor = () => {
       );
       return;
     }
+
+    toast.info('Passenger data fetched successfully!');
   }, [currentBusID]);
 
   useEffect(() => {
@@ -101,21 +103,14 @@ const Conductor = () => {
   //   });
   // }, []);
 
-  const handleOpenPassengerModal = useCallback(
-    (seat_number: string) => {
-      const ticket = passengerData.find((p) => p.seat_number === seat_number);
-
-      if (ticket) {
-        setPassengerModal({
-          open: true,
-          ticket: ticket,
-        });
-      } else {
-        toast.error('No passenger found for seat: ' + seat_number);
-      }
-    },
-    [passengerData]
-  );
+  const handleOpenPassengerModal = useCallback((ticket: TicketType) => {
+    if (ticket) {
+      setPassengerModal({
+        open: true,
+        ticket: ticket,
+      });
+    }
+  }, []);
 
   const handleDetachBusID = useCallback(() => {
     localStorage.removeItem('bus_id');
@@ -171,8 +166,6 @@ const Conductor = () => {
       });
       const res = response as GETResponse;
 
-      console.log('Trip ended successfully:', res);
-
       if (res.message === 'No active trip found for the bus') {
         toast.error('No active trip found for this bus ID.');
         return;
@@ -185,9 +178,12 @@ const Conductor = () => {
       return;
     }
 
-    // Logic to start the trip can be added here
-    toast.info('Trip started successfully for Bus ID: ' + currentBusID);
+    toast.warning('Trip ended successfully for Bus ID: ' + currentBusID);
   }, [currentBusID]);
+
+  const getCurrentTime = useCallback(() => {
+    return new Date().toLocaleString();
+  }, []);
 
   return (
     <>
@@ -260,7 +256,7 @@ const Conductor = () => {
             open: false,
           })
         }
-        className="w-2/5"
+        className="w-[90%] lg:w-2/5"
       >
         {passengerModal.ticket && (
           <CardContainer className="h-full w-full">
@@ -300,14 +296,12 @@ const Conductor = () => {
             <CardHeader className="flex items-start justify-between">
               <div>
                 <h1 className="text-2xl font-bold">
-                  <BusIcon /> CERES LINERS
+                  <BusIcon /> Bus #{currentBusID}
                 </h1>
                 <p className="text-primary-light text-sm">
                   Route: Lorem - Dolor
                 </p>
-                <p className="text-primary-light text-sm">
-                  {new Date().toLocaleString()}
-                </p>
+                <p className="text-primary-light text-sm">{getCurrentTime()}</p>
               </div>
               <Button
                 variant="glass"
@@ -321,15 +315,18 @@ const Conductor = () => {
             <CardBody className="flex flex-col items-center justify-center gap-4 !px-4">
               {passengerData.length > 0 ? (
                 <>
-                  <Container className="flex w-full flex-wrap items-center justify-evenly gap-4">
-                    <LegendItems type="digital" />
-                    <LegendItems type="cash_paid" />
-                    <LegendItems type="cash_unpaid" />
+                  <Container className="flex w-full flex-wrap items-center justify-center gap-4">
+                    <LegendItems type="paid" />
+                    <LegendItems type="unpaid" />
+                    <LegendItems type="regular" />
                     <LegendItems type="student" />
                     <LegendItems type="senior" />
                     <LegendItems type="pwd" />
                   </Container>
-                  <SeatingGrid handleClick={handleOpenPassengerModal} />
+                  <SeatingGrid
+                    passengerData={passengerData}
+                    handleClick={handleOpenPassengerModal}
+                  />
                 </>
               ) : !currentBusID ? (
                 <p>
