@@ -44,6 +44,7 @@ const Passenger = () => {
     passengerCount: 1,
     contactNumber: '',
     destination: undefined,
+    trip_id: 0,
   });
   const [passengerDetails, setPassengerDetails] = useState<
     PassengerDetailsType[]
@@ -110,6 +111,7 @@ const Passenger = () => {
         setGeneralTripInfo({
           passengerCount: res.data.passenger_details.passengers.length,
           contactNumber: res.data.passenger_details.contact_number || '',
+          trip_id: res.data.trip_details.trip_id,
           destination: Number(
             res.data.passenger_details.destination_id
           ) as StopType['stop_id'],
@@ -149,6 +151,7 @@ const Passenger = () => {
     try {
       for (const detail of passengerDetails) {
         const response = await POST('/ticket/index.php', {
+          trip_id: currentBusInfo.trip_id,
           origin_stop_id: 1,
           destination_stop_id: generalTripInfo.destination,
           passenger_status: 'on_bus',
@@ -168,11 +171,12 @@ const Passenger = () => {
         });
 
         const res = response as SessionResponse;
+        console.log('Ticket booked successfully:', res);
+
         if (res.status !== 'success' || !res.status) {
           toast.error('Failed to book ticket. Please try again later.');
           return;
         }
-        console.log('Ticket booked successfully:', res);
       }
 
       fetchData(); // Refresh data after booking

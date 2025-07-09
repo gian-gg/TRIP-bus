@@ -81,6 +81,7 @@ interface GeneralTripInfoType {
   passengerCount: number;
   contactNumber: string;
   destination: StopType['stop_id'] | undefined;
+  trip_id: number;
 }
 
 interface StopType {
@@ -92,6 +93,7 @@ interface CurrentBusInfoType {
   timestamp: string;
   current_stop: string;
   bus_id: number;
+  trip_id: number;
   stops?: StopType[];
 }
 
