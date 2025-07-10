@@ -16,8 +16,15 @@ import Container from '@/components/Container';
 import { SettingsModal } from '@/components/Settings';
 import SeatingGrid from './components/SeatingGrid';
 import LegendItems from './components/LegendItems';
+import PassengerModalBadge from './components/PassengerModalBadge';
+import Callout from '@/components/Callout';
 
-import { BusIcon, RefreshIcon } from '@/components/Icons';
+import {
+  BusIcon,
+  RefreshIcon,
+  CloseIcon,
+  RightArrow,
+} from '@/components/Icons';
 
 import { GET, PUT } from '@/lib/api';
 
@@ -95,13 +102,6 @@ const Conductor = () => {
     },
     []
   );
-
-  // const handleRenderPassengerModal = useCallback((ticket: TicketType) => {
-  //   setPassengerModal({
-  //     open: true,
-  //     ticket: ticket,
-  //   });
-  // }, []);
 
   const handleOpenPassengerModal = useCallback((ticket: TicketType) => {
     if (ticket) {
@@ -181,10 +181,6 @@ const Conductor = () => {
     toast.warning('Trip ended successfully for Bus ID: ' + currentBusID);
   }, [currentBusID]);
 
-  const getCurrentTime = useCallback(() => {
-    return new Date().toLocaleString();
-  }, []);
-
   return (
     <>
       {/* // settings modal */}
@@ -260,20 +256,23 @@ const Conductor = () => {
       >
         {passengerModal.ticket && (
           <CardContainer className="h-full w-full">
-            <CardHeader>
-              <h1 className="text-lg font-semibold text-white">
-                {passengerModal.ticket['full_name']}
-              </h1>
-            </CardHeader>
-            <CardBody className="!p-6 !text-sm">
-              <Container>
-                <code className="rounded-md whitespace-pre-wrap">
-                  {JSON.stringify(passengerModal.ticket, null, 4)}
-                </code>
-              </Container>
-            </CardBody>
-            <CardFooter className="flex justify-end">
+            <CardHeader className="flex items-center justify-between">
+              <div className="flex w-full flex-1 flex-col gap-2">
+                <div className="flex items-center gap-4">
+                  <h1 className="text-lg font-semibold text-white">
+                    {passengerModal.ticket['full_name']}
+                  </h1>
+                  <PassengerModalBadge
+                    passengerType={passengerModal.ticket['passenger_category']}
+                  />
+                </div>
+                <p className="text-primary-light text-xs">
+                  Reference Number: {passengerModal.ticket['ticket_id']}-
+                  {passengerModal.ticket.payment['payment_id']}
+                </p>
+              </div>
               <Button
+                type="button"
                 variant="outline"
                 onClick={() =>
                   setPassengerModal({
@@ -281,9 +280,32 @@ const Conductor = () => {
                     open: false,
                   })
                 }
-                className="px-4"
               >
-                Close
+                <CloseIcon className="text-white" />
+              </Button>
+            </CardHeader>
+            <CardBody className="!p-6 !text-sm">
+              <Callout
+                mode="primary"
+                className="mx-4 mb-4 flex items-center justify-between gap-4 p-6 md:p-8"
+              >
+                <h2 className="text-primary my-1 text-xl font-bold">
+                  {passengerModal.ticket['origin_stop_name']}
+                </h2>
+                <RightArrow className="text-primary" />
+                <h2 className="text-primary text-md my-1 text-center font-bold md:text-lg">
+                  {passengerModal.ticket['destination_stop_name']}
+                </h2>
+              </Callout>
+              <Container>
+                <code className="rounded-md whitespace-pre-wrap">
+                  {JSON.stringify(passengerModal.ticket, null, 4)}
+                </code>
+              </Container>
+            </CardBody>
+            <CardFooter>
+              <Button variant="solid" className="w-full">
+                Edit Passenger
               </Button>
             </CardFooter>
           </CardContainer>
@@ -301,7 +323,6 @@ const Conductor = () => {
                 <p className="text-primary-light text-sm">
                   Route: Lorem - Dolor
                 </p>
-                <p className="text-primary-light text-sm">{getCurrentTime()}</p>
               </div>
               <Button
                 variant="glass"

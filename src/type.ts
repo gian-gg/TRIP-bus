@@ -75,6 +75,9 @@ interface TicketType {
   arrival_time: string | undefined;
   ticket_timestamp: string;
   payment: PaymentType;
+  contact_info?: string;
+  destination_stop_name?: string;
+  origin_stop_name?: string;
 }
 
 interface GeneralTripInfoType {

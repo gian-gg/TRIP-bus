@@ -1,15 +1,4 @@
-import type { LegendItemsProps } from '../type';
-import { legendConfig } from '@/app/conductor/type';
-
-const typeLabels: Record<LegendItemsProps, string> = {
-  paid: 'Paid',
-  unpaid: 'Unpaid',
-  pending: 'Unpaid',
-  regular: 'Regular',
-  student: 'Student',
-  senior: 'Senior',
-  pwd: 'PWD',
-};
+import { legendConfig, typeLabels } from '@/app/conductor/type';
 
 const LegendItems = (props: {
   type: 'paid' | 'unpaid' | 'student' | 'senior' | 'pwd' | 'regular';

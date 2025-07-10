@@ -10,7 +10,7 @@ const SettingsButton = React.memo(
     return (
       <Button
         variant="solid"
-        className="text-primary fixed bottom-10 left-10 flex h-12 w-12 items-center justify-center !rounded-full !border-2 bg-white shadow-lg"
+        className="text-primary fixed bottom-10 left-10 z-10 flex h-12 w-12 items-center justify-center !rounded-full !border-2 bg-white shadow-lg"
         onClick={() => props.handleOpenSettingsModal(true)}
       >
         <GearIcon />
