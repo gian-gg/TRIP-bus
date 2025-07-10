@@ -15,11 +15,16 @@ const SeatButton = (props: {
       {props.ticket?.payment.payment_status ? (
         <Button
           variant="outline"
-          className={clsx(
-            'h-16 w-16 !border-2 font-extrabold md:h-18 md:w-18 lg:h-20 lg:w-20',
-            `!${legendConfig[props.ticket.payment.payment_status].bg} ${legendConfig[props.ticket.payment.payment_status].border}`
-          )}
           onClick={() => props.handleClick(props.ticket as TicketType)}
+          style={{
+            borderColor:
+              legendConfig[props.ticket.payment.payment_status].borderColor,
+            backgroundColor:
+              legendConfig[props.ticket.payment.payment_status].bgColor,
+          }}
+          className={clsx(
+            'h-16 w-16 !border-2 font-extrabold md:h-18 md:w-18 lg:h-20 lg:w-20'
+          )}
         >
           {props.label}
         </Button>
