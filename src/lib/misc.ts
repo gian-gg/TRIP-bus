@@ -39,4 +39,18 @@ function formatTimeDate(dateTime: string): string {
   });
 }
 
-export { formatPassengerType, getCurrentTimeDate, formatTimeDate };
+function formatTimeTo12Hour(time: string): string {
+  const [hourStr, minuteStr] = time.split(':');
+  let hour = parseInt(hourStr, 10);
+  const minute = minuteStr;
+  const period = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
+  return `${hour}:${minute} ${period}`;
+}
+
+export {
+  formatPassengerType,
+  getCurrentTimeDate,
+  formatTimeDate,
+  formatTimeTo12Hour,
+};

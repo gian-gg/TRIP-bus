@@ -36,10 +36,10 @@ const legendConfig: Record<
     borderColor: 'var(--color-type-student)',
   },
   senior: {
-    bg: 'bg-gray-200',
-    border: 'border-gray-400',
-    bgColor: 'var(--color-gray-200)',
-    borderColor: 'var(--color-gray-400)',
+    bg: 'bg-red-200',
+    border: 'border-red-400',
+    bgColor: 'var(--color-red-200)',
+    borderColor: 'var(--color-red-400)',
   },
   pwd: {
     bg: 'bg-type-pwd-light',
@@ -48,10 +48,10 @@ const legendConfig: Record<
     borderColor: 'var(--color-type-pwd)',
   },
   regular: {
-    bg: 'bg-gray-400',
-    border: 'border-gray-600',
-    bgColor: 'var(--color-gray-400)',
-    borderColor: 'var(--color-gray-600)',
+    bg: 'bg-gray-200',
+    border: 'border-gray-400',
+    bgColor: 'var(--color-gray-200)',
+    borderColor: 'var(--color-gray-800)',
   },
 };
 

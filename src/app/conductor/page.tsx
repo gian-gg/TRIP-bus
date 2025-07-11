@@ -1,30 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 
-import {
-  CardContainer,
-  CardHeader,
-  CardBody,
-  CardFooter,
-} from '@/components/Card';
+import { CardContainer, CardHeader, CardBody } from '@/components/Card';
 import Button from '@/components/Button';
 import PageBody from '@/components/PageBody';
-import Dialog from '@/components/Dialog';
 import { Input, Label, Field } from '@/components/Form';
 import Loading from '@/components/Loading';
 import Container from '@/components/Container';
 import { SettingsModal } from '@/components/Settings';
 import SeatingGrid from './components/SeatingGrid';
 import LegendItems from './components/LegendItems';
-import PassengerModalBadge from './components/PassengerModalBadge';
-import Callout from '@/components/Callout';
 
-import {
-  BusIcon,
-  RefreshIcon,
-  CloseIcon,
-  RightArrow,
-} from '@/components/Icons';
+import PassengerModal from './components/PassengerModal';
+
+import { BusIcon, RefreshIcon } from '@/components/Icons';
 
 import { GET, PUT } from '@/lib/api';
 
@@ -34,6 +23,7 @@ const Conductor = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [passengerModal, setPassengerModal] = useState({
     open: false,
+    edit: false,
     ticket: undefined as TicketType | undefined,
   });
 
@@ -108,6 +98,7 @@ const Conductor = () => {
       setPassengerModal({
         open: true,
         ticket: ticket,
+        edit: false,
       });
     }
   }, []);
@@ -118,7 +109,7 @@ const Conductor = () => {
     toast.success('Bus ID detached successfully!');
 
     setPassengerData([]);
-    setPassengerModal({ open: false, ticket: undefined });
+    setPassengerModal({ open: false, ticket: undefined, edit: false });
     setIsSettingsModalOpen(true);
   }, []);
 
@@ -243,74 +234,10 @@ const Conductor = () => {
       />
 
       {/* // passenger modal */}
-      <Dialog
-        open={passengerModal.open}
-        as="div"
-        onClose={() =>
-          setPassengerModal({
-            ...passengerModal,
-            open: false,
-          })
-        }
-        className="w-[90%] lg:w-2/5"
-      >
-        {passengerModal.ticket && (
-          <CardContainer className="h-full w-full">
-            <CardHeader className="flex items-center justify-between">
-              <div className="flex w-full flex-1 flex-col gap-2">
-                <div className="flex items-center gap-4">
-                  <h1 className="text-lg font-semibold text-white">
-                    {passengerModal.ticket['full_name']}
-                  </h1>
-                  <PassengerModalBadge
-                    passengerType={passengerModal.ticket['passenger_category']}
-                  />
-                </div>
-                <p className="text-primary-light text-xs">
-                  Reference Number: {passengerModal.ticket['ticket_id']}-
-                  {passengerModal.ticket.payment['payment_id']}
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  setPassengerModal({
-                    ...passengerModal,
-                    open: false,
-                  })
-                }
-              >
-                <CloseIcon className="text-white" />
-              </Button>
-            </CardHeader>
-            <CardBody className="!p-6 !text-sm">
-              <Callout
-                mode="primary"
-                className="mx-4 mb-4 flex items-center justify-between gap-4 p-6 md:p-8"
-              >
-                <h2 className="text-primary my-1 text-xl font-bold">
-                  {passengerModal.ticket['origin_stop_name']}
-                </h2>
-                <RightArrow className="text-primary" />
-                <h2 className="text-primary text-md my-1 text-center font-bold md:text-lg">
-                  {passengerModal.ticket['destination_stop_name']}
-                </h2>
-              </Callout>
-              <Container>
-                <code className="rounded-md whitespace-pre-wrap">
-                  {JSON.stringify(passengerModal.ticket, null, 4)}
-                </code>
-              </Container>
-            </CardBody>
-            <CardFooter>
-              <Button variant="solid" className="w-full">
-                Edit Passenger
-              </Button>
-            </CardFooter>
-          </CardContainer>
-        )}
-      </Dialog>
+      <PassengerModal
+        passengerModal={passengerModal}
+        setPassengerModal={setPassengerModal}
+      />
 
       {currentBusID && (
         <PageBody className="!items-start">
