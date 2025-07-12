@@ -5,7 +5,6 @@ import { CardContainer, CardHeader, CardBody } from '@/components/Card';
 import Button from '@/components/Button';
 import PageBody from '@/components/PageBody';
 import { Input, Label, Field } from '@/components/Form';
-import Loading from '@/components/Loading';
 import Container from '@/components/Container';
 import { SettingsModal } from '@/components/Settings';
 import SeatingGrid from './components/SeatingGrid';
@@ -37,16 +36,20 @@ const Conductor = () => {
   const fetchData = useCallback(async () => {
     try {
       const response = await GET(
-        '/ticket/index.php?busId=' + currentBusInfo.busID
+        '/ticket/index.php?bus_id=' + currentBusInfo.busID
       );
       const res = response as GETResponse;
+
+      console.log('Passenger data response:', JSON.stringify(res, null, 2));
 
       if (res.status !== 'success') {
         toast.error('Invalid Bus ID');
         return;
       }
 
-      setPassengerData(res.data as TicketType[]);
+      if (res.data) {
+        setPassengerData(res.data as TicketType[]);
+      }
     } catch (error) {
       toast.error(
         'Invalid Bus ID: ' +
@@ -75,6 +78,8 @@ const Conductor = () => {
       try {
         const response = await GET('/bus/index.php?id=' + busID);
         const res = response as GETResponse;
+
+        console.log('Sign in response:', res);
 
         if (res.status !== 'success') {
           toast.error('Invalid Bus ID');
@@ -133,15 +138,14 @@ const Conductor = () => {
     }
 
     try {
-      const response = await PUT('/trip/index.php', {
+      const response = await PUT('/trip/index.php?', {
         bus_id: currentBusInfo.busID,
         status: 'active',
       });
       const res = response as GETResponse;
 
-      console.log('Start trip response:', res);
-
-      if (res.message === 'Bus is already active') {
+      if (res.message === '10') {
+        // Trip already active
         toast.error('Trip is already active for this bus ID.');
         return;
       }
@@ -170,7 +174,8 @@ const Conductor = () => {
       });
       const res = response as GETResponse;
 
-      if (res.message === 'No active trip found for the bus') {
+      if (res.message === '00') {
+        // No active trip found
         toast.error('No active trip found for this bus ID.');
         return;
       }
@@ -266,7 +271,7 @@ const Conductor = () => {
         setPassengerModal={setPassengerModal}
       />
 
-      {currentBusInfo && (
+      {currentBusInfo.busID && (
         <PageBody className="!items-start">
           <CardContainer className="h-full w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
             <CardHeader className="flex items-start justify-between">
@@ -288,28 +293,18 @@ const Conductor = () => {
               </Button>
             </CardHeader>
             <CardBody className="flex flex-col items-center justify-center gap-4 !px-4">
-              {passengerData.length > 0 ? (
-                <>
-                  <Container className="flex w-full flex-wrap items-center justify-center gap-4">
-                    <LegendItems type="paid" />
-                    <LegendItems type="unpaid" />
-                    <LegendItems type="regular" />
-                    <LegendItems type="student" />
-                    <LegendItems type="senior" />
-                    <LegendItems type="pwd" />
-                  </Container>
-                  <SeatingGrid
-                    passengerData={passengerData}
-                    handleClick={handleOpenPassengerModal}
-                  />
-                </>
-              ) : !currentBusInfo ? (
-                <p>
-                  Please set the Bus ID in settings to view passenger details.
-                </p>
-              ) : (
-                <Loading />
-              )}
+              <Container className="flex w-full flex-wrap items-center justify-center gap-4">
+                <LegendItems type="paid" />
+                <LegendItems type="unpaid" />
+                <LegendItems type="regular" />
+                <LegendItems type="student" />
+                <LegendItems type="senior" />
+                <LegendItems type="pwd" />
+              </Container>
+              <SeatingGrid
+                passengerData={passengerData}
+                handleClick={handleOpenPassengerModal}
+              />
             </CardBody>
           </CardContainer>
         </PageBody>

@@ -4,8 +4,12 @@ type modeType = 'form' | 'complete' | 'pending' | 'success'; // Combined all mod
 
 interface SessionResponse {
   status: string;
-  token: string;
   stop_name: string;
+  data: {
+    token: string;
+    trip_id: number;
+    stop_name: string;
+  };
 }
 
 interface GETResponse {
@@ -28,6 +32,8 @@ interface PassengerDetailsType {
   passenger_category: PassengerType;
   full_name: string;
   seat_number: string;
+  contact_info?: string;
+  destination_stop_id?: StopType['stop_id'];
 }
 
 interface passengerDetailsType {
@@ -95,6 +101,7 @@ interface StopType {
 interface CurrentBusInfoType {
   timestamp: string;
   current_stop: string;
+  current_stop_id?: string;
   bus_id: number;
   trip_id: number;
   stops?: StopType[];

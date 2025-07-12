@@ -38,7 +38,7 @@ const QrCode = () => {
           if (res.status === 'success') {
             const sessionID = nanoid(10);
             setSessionURL(
-              `${import.meta.env.VITE_URL}/passenger/${sessionID}-${res.token}`
+              `${import.meta.env.VITE_URL}/passenger/${sessionID}-${res.data.token}`
             );
             setTripState('active');
           } else if (res.status === 'error') {

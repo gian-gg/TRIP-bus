@@ -27,7 +27,7 @@ interface ResponseGETReponseType extends GETResponse {
   data: {
     trip_details: CurrentBusInfoType;
     passenger_details: {
-      state: 'not exist' | 'pending' | 'paid';
+      state: 'not_exist' | 'pending' | 'paid';
       destination_id: StopType['stop_id'];
       contact_number: string;
       passengers: PassengerDetailsType[];
@@ -78,7 +78,7 @@ const Passenger = () => {
       }
 
       switch (res.data.passenger_details.state) {
-        case 'not exist':
+        case 'not_exist':
           setMode('form');
           setPassengerDetails([
             {
@@ -110,10 +110,11 @@ const Passenger = () => {
       if (res.data.passenger_details.passengers) {
         setGeneralTripInfo({
           passengerCount: res.data.passenger_details.passengers.length,
-          contactNumber: res.data.passenger_details.contact_number || '',
+          contactNumber:
+            res.data.passenger_details.passengers[0].contact_info ?? '',
           trip_id: res.data.trip_details.trip_id,
           destination: Number(
-            res.data.passenger_details.destination_id
+            res.data.passenger_details.passengers[0].destination_stop_id
           ) as StopType['stop_id'],
         });
       }
@@ -122,6 +123,7 @@ const Passenger = () => {
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Call the
      conductor for help.`
       );
+      console.error(error);
     }
   }, [token]);
 
@@ -147,36 +149,37 @@ const Passenger = () => {
       return;
     }
 
-    // temporary only, will implement batch ticket booking
+    const ticket = {
+      trip_id: generalTripInfo.trip_id,
+      origin_stop_id: currentBusInfo.current_stop_id,
+      destination_stop_id: generalTripInfo.destination,
+      bus_id: currentBusInfo.bus_id,
+      boarding_time: currentBusInfo.timestamp,
+      contact_info: generalTripInfo.contactNumber,
+      passengers: passengerDetails,
+      payment: {
+        payment_id: localStorage.getItem('id')?.slice(-10),
+        payment_mode: 'cash',
+        payment_platform: null,
+        fare_amount: 40.5,
+        payment_status: 'pending',
+      },
+    };
+
+    console.log(
+      'Booking ticket with details:',
+      JSON.stringify(ticket, null, 2)
+    );
+
     try {
-      for (const detail of passengerDetails) {
-        const response = await POST('/ticket/index.php', {
-          trip_id: currentBusInfo.trip_id,
-          origin_stop_id: 1,
-          destination_stop_id: generalTripInfo.destination,
-          passenger_status: 'on_bus',
-          bus_id: currentBusInfo.bus_id,
-          full_name: detail.full_name,
-          seat_number: detail.seat_number,
-          passenger_category: detail.passenger_category,
-          boarding_time: currentBusInfo.timestamp,
-          contact_info: generalTripInfo.contactNumber,
-          payment: {
-            payment_id: localStorage.getItem('id')?.slice(-10),
-            payment_mode: 'cash',
-            payment_platform: 'bus',
-            fare_amount: 20.34,
-            payment_status: 'pending',
-          },
-        });
+      const response = await POST('/ticket/index.php', ticket);
 
-        const res = response as SessionResponse;
-        console.log('Ticket booked successfully:', res);
+      const res = response as SessionResponse;
+      console.log('Ticket booked successfully:', res);
 
-        if (res.status !== 'success' || !res.status) {
-          toast.error('Failed to book ticket. Please try again later.');
-          return;
-        }
+      if (res.status !== 'success' || !res.status) {
+        toast.error('Failed to book ticket(s). Please try again later.');
+        return;
       }
 
       fetchData(); // Refresh data after booking
