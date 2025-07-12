@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Field, Label, Input, Description, Select } from '@/components/Form';
 import Button from '@/components/Button';
 import Container from '@/components/Container';
@@ -15,6 +17,8 @@ const Form2 = (props: {
   handleBackButton: () => void;
   handleNextButton: () => void;
 }) => {
+  const [passengerSeats, setPassengerSeats] = useState<string[]>([]);
+
   return (
     <form className="flex flex-col gap-4" onSubmit={props.OnSubmit}>
       {Array.from(
@@ -47,15 +51,29 @@ const Form2 = (props: {
                   name={`seatNumberInput-${idx}`}
                   required
                   defaultValue={props.passengerDetails[idx].seat_number}
+                  onChange={(e) => {
+                    const newSeats = [...passengerSeats];
+                    newSeats[idx] = e.target.value;
+                    setPassengerSeats(newSeats);
+                  }}
                 >
                   <option value="" disabled>
                     Select Seat Number
                   </option>
-                  {SeatInfo.seats.map((seat, index) => (
-                    <option key={index} value={seat}>
-                      {seat}
-                    </option>
-                  ))}
+                  {SeatInfo.seats.map((seat, index) => {
+                    if (
+                      seat !== 'Aisle' &&
+                      passengerSeats.includes(seat) &&
+                      passengerSeats[idx] !== seat
+                    ) {
+                      return null;
+                    }
+                    return (
+                      <option key={index} value={seat}>
+                        {seat}
+                      </option>
+                    );
+                  })}
                 </Select>
               </Field>
               <Field>

@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 const NUMBER_OF_PAGES = 3;
 
 import React, { useState } from 'react';
@@ -47,6 +49,13 @@ const Passenger = (props: {
       formData.get('destinationInput')
     ) as StopType['stop_id'];
     const contact = formData.get('contactInput') as string;
+
+    if (!/^9\d{9}$/.test(contact)) {
+      toast.warning(
+        'Please enter a valid phone number that starts with 9 and has 10 digits.'
+      );
+      return;
+    }
 
     setGeneralTripInfo({
       passengerCount: parseInt(passengersCount, 10),

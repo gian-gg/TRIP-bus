@@ -72,6 +72,8 @@ const Passenger = () => {
 
       const res = response as ResponseGETReponseType;
 
+      console.log('Fetched data:', JSON.stringify(res, null, 2));
+
       if (res.status !== 'success') {
         toast.error('Invalid token. Call the conductor for help.');
         return;

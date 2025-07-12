@@ -75,10 +75,13 @@ const PassengerModal = (props: {
 
         const res = response as GETResponse;
 
-        console.log('Response:', res);
-
         if (res.status !== 'success') {
           toast.error('Failed to update passenger details.');
+          return;
+        }
+
+        if (res.message === 'Occupied') {
+          toast.error('Seat is already occupied. Please choose another seat.');
           return;
         }
       } catch (error) {
