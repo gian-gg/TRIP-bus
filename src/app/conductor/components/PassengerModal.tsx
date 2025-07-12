@@ -18,12 +18,14 @@ import { Badge, PassengerBadge } from './Badges';
 
 import { CloseIcon, RightArrow } from '@/components/Icons';
 
-import type { TicketType } from '@/type';
+import type { GETResponse, TicketType } from '@/type';
 
 import { PassengerTypes, SeatInfo } from '@/data';
 
 import { formatTimeTo12Hour } from '@/lib/misc';
 import { typeLabels } from '../type';
+
+import { PUT } from '@/lib/api';
 
 interface PassengerModalType {
   open: boolean;
@@ -34,6 +36,7 @@ interface PassengerModalType {
 const PassengerModal = (props: {
   passengerModal: PassengerModalType;
   setPassengerModal: (arg: PassengerModalType) => void;
+  fetchData: () => Promise<void>;
 }) => {
   const { passengerModal, setPassengerModal } = props;
 
@@ -45,25 +48,58 @@ const PassengerModal = (props: {
     });
   };
 
-  const handleEdit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleEdit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const passengerType = formData.get('passengerType') as string;
-    const seat = formData.get('seat') as string;
-    const paymentStatus = formData.get('paymentStatus') as string;
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const passengerType = formData.get('passengerType') as string;
+      const seat = formData.get('seat') as string;
+      const paymentStatus = formData.get('paymentStatus') as string | undefined;
 
-    console.log('Editing Passenger:', {
-      passengerType: passengerType,
-      seat: seat,
-      paymentStatus: paymentStatus,
-    });
+      const ticket = {
+        passenger_category:
+          passengerType === passengerModal.ticket?.passenger_category
+            ? null
+            : passengerType,
+        seat_number: seat === passengerModal.ticket?.seat_number ? null : seat,
+        payment_status: paymentStatus === 'unpaid' ? null : paymentStatus,
+      };
 
-    // Add logic to update the passenger details in the backend
+      try {
+        const response = await PUT(
+          '/ticket/index.php?ticket_id=' + passengerModal.ticket?.ticket_id,
+          ticket
+        );
 
-    toast.info('Passenger details updated successfully!');
-  }, []);
+        const res = response as GETResponse;
+
+        console.log('Response:', res);
+
+        if (res.status !== 'success') {
+          toast.error('Failed to update passenger details.');
+          return;
+        }
+      } catch (error) {
+        toast.error(
+          'Network Error' +
+            (error instanceof Error ? error.message : 'Unknown error')
+        );
+        return;
+      }
+
+      setPassengerModal({
+        ...passengerModal,
+        edit: false,
+        open: false,
+      });
+
+      await props.fetchData();
+      toast.info('Passenger details updated successfully!');
+    },
+    [passengerModal]
+  );
 
   return (
     <Dialog
@@ -192,22 +228,25 @@ const PassengerModal = (props: {
                       ))}
                     </Select>
                   </Field>
-                  <Field>
-                    <Label htmlFor="paymentStatus" required>
-                      Payment:
-                    </Label>
-                    <Select
-                      id="paymentStatus"
-                      name="paymentStatus"
-                      defaultValue={
-                        passengerModal.ticket.payment['payment_status']
-                      }
-                      required
-                    >
-                      <option value="unpaid">Unpaid</option>
-                      <option value="paid">Paid</option>
-                    </Select>
-                  </Field>
+                  {passengerModal.ticket.payment['payment_status'] ===
+                    'pending' && (
+                    <Field>
+                      <Label htmlFor="paymentStatus" required>
+                        Payment:
+                      </Label>
+                      <Select
+                        id="paymentStatus"
+                        name="paymentStatus"
+                        defaultValue={
+                          passengerModal.ticket.payment['payment_status']
+                        }
+                        required
+                      >
+                        <option value="unpaid">Unpaid</option>
+                        <option value="paid">Paid</option>
+                      </Select>
+                    </Field>
+                  )}
                 </form>
               </Container>
             )}
