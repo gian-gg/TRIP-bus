@@ -54,11 +54,6 @@ const Home = () => {
               Conductor Dashboard
             </Button>
           </Link>
-          <Link to="/operator" className="w-full">
-            <Button variant="outline" className="w-full">
-              Operator Dashboard
-            </Button>
-          </Link>
           <Link to="/404" className="w-full">
             <Button variant="outline" className="w-full">
               404 Page

@@ -38,7 +38,7 @@ const PassengerModal = (props: {
   setPassengerModal: (arg: PassengerModalType) => void;
   fetchData: () => Promise<void>;
 }) => {
-  const { passengerModal, setPassengerModal } = props;
+  const { passengerModal, setPassengerModal, fetchData } = props;
 
   const handleClose = () => {
     setPassengerModal({
@@ -95,10 +95,10 @@ const PassengerModal = (props: {
         open: false,
       });
 
-      await props.fetchData();
+      await fetchData();
       toast.info('Passenger details updated successfully!');
     },
-    [passengerModal]
+    [passengerModal, setPassengerModal, fetchData]
   );
 
   return (

@@ -1,6 +1,6 @@
 type PassengerType = 'regular' | 'student' | 'pwd' | 'senior';
 type PaymentMethodType = 'cash' | 'online';
-type modeType = 'form' | 'complete' | 'pending' | 'success'; // Combined all mode types
+type modeType = 'form' | 'complete' | 'pending' | 'success';
 
 interface SessionResponse {
   status: string;
@@ -18,45 +18,13 @@ interface GETResponse {
   message?: string;
 }
 
-interface BusInformationType {
-  bus_id: number;
-  route_id: string;
-  driver_id: number;
-  conductor_id: number;
-  passenger_count: number;
-  curr_location: string;
-  status: 'active' | 'inactive' | 'in transit';
-}
-
 interface PassengerDetailsType {
   passenger_category: PassengerType;
+  paymentMethod?: PaymentMethodType;
   full_name: string;
   seat_number: string;
   contact_info?: string;
   destination_stop_id?: StopType['stop_id'];
-}
-
-interface passengerDetailsType {
-  passengerType: PassengerType;
-  paymentMethod: PaymentMethodType;
-  destination: string;
-  name: string;
-  contact: string;
-  seat: string;
-}
-
-interface TimelineInformationType {
-  timestamp: string;
-  status_code: number;
-}
-
-interface TripInformationType {
-  route_id: number;
-  bus_id: number;
-  conductor_name: string;
-  driver_name: string;
-  total_passenger: number;
-  total_revenue: number;
 }
 
 interface PaymentType {
@@ -101,27 +69,10 @@ interface StopType {
 interface CurrentBusInfoType {
   timestamp: string;
   current_stop: string;
-  current_stop_id?: string;
   bus_id: number;
   trip_id: number;
   stops?: StopType[];
-}
-
-interface DriverInformationType {
-  driver_id: number;
-  full_name: string;
-  license_number: string;
-  contact_number: string;
-  status: 'active' | 'inactive';
-  bus_id?: number;
-}
-
-interface ConductorInformationType {
-  conductor_id: number;
-  full_name: string;
-  contact_number: string;
-  status: 'active' | 'inactive';
-  bus_id?: number;
+  current_stop_id?: string;
 }
 
 export type {
@@ -131,15 +82,9 @@ export type {
   SessionResponse,
   GETResponse,
   CurrentBusInfoType,
-  BusInformationType,
   GeneralTripInfoType,
   PassengerDetailsType,
-  passengerDetailsType,
-  TimelineInformationType,
-  TripInformationType,
   TicketType,
   PaymentType,
   StopType,
-  DriverInformationType,
-  ConductorInformationType,
 };
