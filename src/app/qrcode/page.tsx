@@ -7,7 +7,7 @@ import Button from '@/components/Button';
 import PageBody from '@/components/PageBody';
 import Container from '@/components/Container';
 import { Input, Label, Field } from '@/components/Form';
-import { SettingsModal } from '@/components/Settings';
+import SettingsModal from '@/components/Settings';
 
 import { SpinnerIcon } from '@/components/Icons';
 
@@ -132,6 +132,7 @@ const QrCode = () => {
   return (
     <>
       <SettingsModal
+        buttonVariant="float"
         modalTitle="Bus Settings"
         handleSettingsModalState={setIsModalOpen}
         settingsModalState={isModalOpen}
