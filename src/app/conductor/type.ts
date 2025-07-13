@@ -1,3 +1,5 @@
+import type { TicketType } from '@/type';
+
 type LegendItemsProps =
   | 'paid'
   | 'pending'
@@ -65,5 +67,16 @@ const typeLabels: Record<LegendItemsProps, string> = {
   pwd: 'PWD',
 };
 
-export type { LegendItemsProps };
+interface AisleModalType {
+  open: boolean;
+  tickets: TicketType[] | undefined;
+}
+
+interface PassengerModalType {
+  open: boolean;
+  edit: boolean;
+  ticket: TicketType | undefined;
+}
+
+export type { LegendItemsProps, AisleModalType, PassengerModalType };
 export { legendConfig, typeLabels };

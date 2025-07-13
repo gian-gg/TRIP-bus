@@ -18,20 +18,14 @@ import { Badge, PassengerBadge } from './Badges';
 
 import { CloseIcon, RightArrow } from '@/components/Icons';
 
-import type { GETResponse, TicketType } from '@/type';
+import type { GETResponse } from '@/type';
 
 import { PassengerTypes, SeatInfo } from '@/data';
 
 import { formatTimeTo12Hour } from '@/lib/misc';
-import { typeLabels } from '../type';
+import { typeLabels, type PassengerModalType } from '../type';
 
 import { PUT } from '@/lib/api';
-
-interface PassengerModalType {
-  open: boolean;
-  edit: boolean;
-  ticket: TicketType | undefined;
-}
 
 const PassengerModal = (props: {
   passengerModal: PassengerModalType;

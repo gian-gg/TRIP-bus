@@ -3,7 +3,7 @@ import clsx from 'clsx';
 
 import { SeatInfo } from '@/data';
 import type { TicketType } from '@/type';
-import { legendConfig } from '@/app/conductor/type';
+import { legendConfig, type AisleModalType } from '../type';
 
 const SeatButton = (props: {
   label: string;
@@ -54,6 +54,7 @@ const SeatButton = (props: {
 
 const SeatingGrid = (props: {
   handleClick: (arg: TicketType) => void;
+  handleAisleClick: (arg: AisleModalType) => void;
   passengerData: TicketType[];
 }) => {
   return (
@@ -84,14 +85,23 @@ const SeatingGrid = (props: {
               }
               // Render one big button for the rest of the aisle
               if (rowNumber === 10) {
+                const aisleTickets = props.passengerData.filter(
+                  (p) => p.seat_number === 'Aisle'
+                );
                 return (
                   <Button
+                    onClick={() =>
+                      props.handleAisleClick({
+                        open: true,
+                        tickets: aisleTickets,
+                      })
+                    }
                     key="aisle"
                     variant="outline"
                     className="!border-outline flex h-[calc(4rem*11)] w-16 flex-col items-center justify-center !border-2 font-extrabold md:h-[calc(4.5rem*10)] md:w-18 lg:h-[calc(5rem*10)] lg:w-20"
                   >
-                    <span className="rotate-270 text-lg font-semibold">
-                      Aisle
+                    <span className="flex rotate-270 gap-2 text-lg font-semibold">
+                      Aisle <span>({aisleTickets.length})</span>
                     </span>
                   </Button>
                 );

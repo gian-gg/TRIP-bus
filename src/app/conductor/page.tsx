@@ -7,15 +7,14 @@ import PageBody from '@/components/PageBody';
 import { Input, Label, Field } from '@/components/Form';
 import Container from '@/components/Container';
 import { SettingsModal } from '@/components/Settings';
-import SeatingGrid from './components/SeatingGrid';
-import LegendItems from './components/LegendItems';
-
-import PassengerModal from './components/PassengerModal';
-
 import { BusIcon, RefreshIcon } from '@/components/Icons';
 
-import { GET, PUT } from '@/lib/api';
+import SeatingGrid from './components/SeatingGrid';
+import LegendItems from './components/LegendItems';
+import PassengerModal from './components/PassengerModal';
+import AisleModal from './components/AisleModal';
 
+import { GET, PUT } from '@/lib/api';
 import type { GETResponse, TicketType } from '@/type';
 
 const Conductor = () => {
@@ -24,6 +23,10 @@ const Conductor = () => {
     open: false,
     edit: false,
     ticket: undefined as TicketType | undefined,
+  });
+  const [aisleModal, setAisleModal] = useState({
+    open: false,
+    tickets: undefined as TicketType[] | undefined,
   });
 
   const [currentBusInfo, setCurrentBusInfo] = useState({
@@ -193,7 +196,6 @@ const Conductor = () => {
   return (
     <>
       {/* // settings modal */}
-
       <SettingsModal
         modalTitle="Bus Settings"
         handleSettingsModalState={setIsSettingsModalOpen}
@@ -270,6 +272,13 @@ const Conductor = () => {
         fetchData={fetchData}
       />
 
+      {/* // aisle modal */}
+      <AisleModal
+        openAisleModal={aisleModal}
+        SetOpenAisleModal={setAisleModal}
+        setPassengerModal={setPassengerModal}
+      />
+
       {currentBusInfo.busID && (
         <PageBody className="!items-start">
           <CardContainer className="h-full w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
@@ -303,6 +312,7 @@ const Conductor = () => {
               <SeatingGrid
                 passengerData={passengerData}
                 handleClick={handleOpenPassengerModal}
+                handleAisleClick={setAisleModal}
               />
             </CardBody>
           </CardContainer>
