@@ -59,7 +59,7 @@ const PaymentMethod = [
   {
     id: 'online' as PaymentMethodType,
     label: 'Online Payment',
-    description: 'Use e-wallet or card.',
+    description: 'Scan QR to pay.',
   },
   {
     id: 'cash' as PaymentMethodType,

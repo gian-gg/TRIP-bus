@@ -51,17 +51,13 @@ const Success = (props: {
       return;
     }
 
-    if (paymentMethod === 'online') {
-      toast.info('Redirecting to online payment gateway...');
-    } else {
-      toast.info('Conductor will arrive shortly to collect your fare.');
-    }
-
+    toast.info('Conductor will arrive shortly.');
     setIsPaymentModalOpen(false);
   };
 
   return (
     <>
+      {/* bus actions modal */}
       <Dialog
         open={isConductorModalOpen}
         as="div"
@@ -69,7 +65,7 @@ const Success = (props: {
         className="w-96"
       >
         <CardContainer>
-          <CardHeader className="!bg-secondary flex h-full w-full items-start justify-between">
+          <CardHeader className="flex h-full w-full items-start justify-between">
             <h1 className="text-lg font-semibold text-white">
               Call Conductor/Stop Bus
             </h1>
@@ -82,29 +78,65 @@ const Success = (props: {
             </Button>
           </CardHeader>
           <CardBody>
-            <p className="mt-2 text-sm/6">
-              Are you sure you want to call the bus conductor or stop the bus?
-              Please confirm your action.
+            <p className="mt-2 text-center text-sm/6">
+              Are you sure you want to call the bus conductor
+              {props.mode !== 'pending' && ' or stop the bus'}? Please confirm
+              your action.
             </p>
-            <div className="mt-4 flex flex-col gap-2">
-              <Button
-                variant="outline"
-                className="!border-secondary !text-secondary w-full"
-                onClick={handleCallConductor}
-              >
-                Call Conductor
-              </Button>
+          </CardBody>
+          <CardFooter className="flex flex-col">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                if (props.mode === 'pending') {
+                  handleCallConductor();
+                  return;
+                }
+
+                setIsConductorModalOpen(false);
+                toast.warning('Are you Sure?', {
+                  action: {
+                    label: 'Call Conductor',
+                    onClick: handleCallConductor,
+                  },
+                  actionButtonStyle: {
+                    backgroundColor: '#DC7609',
+                    color: '#FEFCF1',
+                    padding: '1rem',
+                  },
+                });
+              }}
+            >
+              Call Conductor
+            </Button>
+            {props.mode !== 'pending' && (
               <Button
                 variant="solid"
                 className="!bg-error w-full"
-                onClick={handleStopBus}
+                onClick={() => {
+                  setIsConductorModalOpen(false);
+                  toast.error('Are you Sure?', {
+                    action: {
+                      label: 'Stop Bus',
+                      onClick: handleStopBus,
+                    },
+                    actionButtonStyle: {
+                      backgroundColor: '#E60100',
+                      color: '#FFF0F0',
+                      padding: '1rem',
+                    },
+                  });
+                }}
               >
                 Stop Bus
               </Button>
-            </div>
-          </CardBody>
+            )}
+          </CardFooter>
         </CardContainer>
       </Dialog>
+
+      {/* payment modal */}
       <Dialog
         open={isPaymentModalOpen}
         as="div"
@@ -162,7 +194,7 @@ const Success = (props: {
       </Dialog>
       <div className="flex flex-col">
         <h2 className="text-primary mb-4 text-center text-2xl font-bold">
-          Trip Details:
+          Trip Details
         </h2>
         <PassengerDetails
           generalTripInfo={props.generalTripInfo}
@@ -171,11 +203,11 @@ const Success = (props: {
         />
         <div className="mt-4 flex w-full flex-col items-center gap-2">
           <Button
-            variant="outline"
+            variant={props.mode !== 'pending' ? 'solid' : 'outline'}
             className="w-full"
             onClick={() => setIsConductorModalOpen(true)}
           >
-            Call Bus Conductor / Stop Bus
+            Call Bus Conductor {props.mode !== 'pending' && '/ Stop Bus'}
           </Button>
           {props.mode === 'pending' && (
             <Button

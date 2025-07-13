@@ -9,7 +9,6 @@ import Loading from '@/components/Loading';
 
 import Form from './Form';
 import Complete from './Pages/Complete';
-import CallConductor from './components/CallConductor';
 
 import { POST } from '@/lib/api';
 
@@ -211,11 +210,10 @@ const Passenger = () => {
 
   return (
     <>
-      <CallConductor />
       <PageBody className="!items-start">
         <CardContainer className="w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
           <CardHeader className="flex flex-col items-center justify-center py-6 sm:py-8 md:py-10">
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-center text-2xl font-bold">
               {mode === 'form'
                 ? 'Trip Details'
                 : 'Ticket has been booked successfully!'}

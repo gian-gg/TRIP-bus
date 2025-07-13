@@ -8,6 +8,8 @@ import Form1 from './Pages/Form1';
 import Form2 from './Pages/Form2';
 import Form3 from './Pages/Form3';
 
+import CallConductor from './components/CallConductor';
+
 import type {
   GeneralTripInfoType,
   PassengerDetailsType,
@@ -121,48 +123,51 @@ const Passenger = (props: {
   };
 
   return (
-    <div className="pt-8">
-      {(() => {
-        switch (currentFormPage) {
-          case 1:
-            return (
-              <Form1
-                generalTripInfo={generalTripInfo}
-                currentBusInfo={currentBusInfo}
-                OnSubmit={handleForm1Submit}
-                handleNextButton={handleNextButton}
-                stops={stops}
-              />
-            );
-          case 2:
-            return (
-              <Form2
-                generalTripInfo={generalTripInfo}
-                passengerDetails={passengerDetails}
-                OnSubmit={handleForm2Submit}
-                handleBackButton={handleBackButton}
-                handleNextButton={handleNextButton}
-              />
-            );
-          case NUMBER_OF_PAGES:
-            return (
-              <Form3
-                generalTripInfo={generalTripInfo}
-                passengerDetails={passengerDetails}
-                currentBusInfo={currentBusInfo}
-                handleBackButton={handleBackButton}
-                handleNextButton={handleNextButton}
-                OnSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-                  e.preventDefault();
-                  handleSubmit();
-                }}
-              />
-            );
-          default:
-            return null;
-        }
-      })()}
-    </div>
+    <>
+      <CallConductor />
+      <div className="pt-8">
+        {(() => {
+          switch (currentFormPage) {
+            case 1:
+              return (
+                <Form1
+                  generalTripInfo={generalTripInfo}
+                  currentBusInfo={currentBusInfo}
+                  OnSubmit={handleForm1Submit}
+                  handleNextButton={handleNextButton}
+                  stops={stops}
+                />
+              );
+            case 2:
+              return (
+                <Form2
+                  generalTripInfo={generalTripInfo}
+                  passengerDetails={passengerDetails}
+                  OnSubmit={handleForm2Submit}
+                  handleBackButton={handleBackButton}
+                  handleNextButton={handleNextButton}
+                />
+              );
+            case NUMBER_OF_PAGES:
+              return (
+                <Form3
+                  generalTripInfo={generalTripInfo}
+                  passengerDetails={passengerDetails}
+                  currentBusInfo={currentBusInfo}
+                  handleBackButton={handleBackButton}
+                  handleNextButton={handleNextButton}
+                  OnSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                    e.preventDefault();
+                    handleSubmit();
+                  }}
+                />
+              );
+            default:
+              return null;
+          }
+        })()}
+      </div>
+    </>
   );
 };
 
