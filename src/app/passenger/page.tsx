@@ -9,6 +9,7 @@ import Loading from '@/components/Loading';
 
 import Form from './Form';
 import Complete from './Pages/Complete';
+import CallConductor from './components/CallConductor';
 
 import { POST } from '@/lib/api';
 
@@ -209,42 +210,45 @@ const Passenger = () => {
   if (!currentBusInfo) return <Loading />;
 
   return (
-    <PageBody className="!items-start">
-      <CardContainer className="w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
-        <CardHeader className="flex flex-col items-center justify-center py-6 sm:py-8 md:py-10">
-          <h1 className="text-2xl font-bold">
-            {mode === 'form'
-              ? 'Trip Details'
-              : 'Ticket has been booked successfully!'}
-          </h1>
-          <p className="text-primary-light text-sm">
-            {mode === 'form'
-              ? 'Please fill out the form below to proceed with your trip.'
-              : 'Thank you for choosing our services. Enjoy your trip!'}
-          </p>
-        </CardHeader>
-        <CardBody className="!px-4 md:!px-8">
-          {mode === 'form' ? (
-            <Form
-              handleSubmit={handleSubmit}
-              currentBusInfo={currentBusInfo}
-              generalTripInfo={generalTripInfo}
-              setGeneralTripInfo={setGeneralTripInfo}
-              passengerDetails={passengerDetails}
-              setPassengerDetails={setPassengerDetails}
-              stops={stops}
-            />
-          ) : (
-            <Complete
-              currentBusInfo={currentBusInfo}
-              generalTripInfo={generalTripInfo}
-              passengerDetails={passengerDetails}
-              mode={mode}
-            />
-          )}
-        </CardBody>
-      </CardContainer>
-    </PageBody>
+    <>
+      <CallConductor />
+      <PageBody className="!items-start">
+        <CardContainer className="w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
+          <CardHeader className="flex flex-col items-center justify-center py-6 sm:py-8 md:py-10">
+            <h1 className="text-2xl font-bold">
+              {mode === 'form'
+                ? 'Trip Details'
+                : 'Ticket has been booked successfully!'}
+            </h1>
+            <p className="text-primary-light text-sm">
+              {mode === 'form'
+                ? 'Please fill out the form below to proceed with your trip.'
+                : 'Thank you for choosing our services. Enjoy your trip!'}
+            </p>
+          </CardHeader>
+          <CardBody className="!px-4 md:!px-8">
+            {mode === 'form' ? (
+              <Form
+                handleSubmit={handleSubmit}
+                currentBusInfo={currentBusInfo}
+                generalTripInfo={generalTripInfo}
+                setGeneralTripInfo={setGeneralTripInfo}
+                passengerDetails={passengerDetails}
+                setPassengerDetails={setPassengerDetails}
+                stops={stops}
+              />
+            ) : (
+              <Complete
+                currentBusInfo={currentBusInfo}
+                generalTripInfo={generalTripInfo}
+                passengerDetails={passengerDetails}
+                mode={mode}
+              />
+            )}
+          </CardBody>
+        </CardContainer>
+      </PageBody>
+    </>
   );
 };
 
