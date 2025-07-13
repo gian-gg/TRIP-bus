@@ -11,6 +11,7 @@ import {
 } from '@/components/Card';
 import { Label, Field, Input, Select, Description } from '@/components/Form';
 import { HandIcon } from '@/components/Icons';
+import FloatingButton from '@/components/FloatingButton';
 
 import { SeatInfo } from '@/data';
 
@@ -36,13 +37,9 @@ const CallConductor = () => {
 
   return (
     <>
-      <Button
-        variant="solid"
-        className="text-primary fixed bottom-10 left-10 z-10 flex h-12 w-12 items-center justify-center !rounded-full !border-2 bg-white shadow-lg"
-        onClick={() => setIsOpen(true)}
-      >
+      <FloatingButton onClick={() => setIsOpen(true)}>
         <HandIcon />
-      </Button>
+      </FloatingButton>
       <Dialog
         open={isOpen}
         onClose={() => setIsOpen(false)}

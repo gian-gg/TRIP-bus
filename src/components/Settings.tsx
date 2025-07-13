@@ -1,23 +1,10 @@
 import React from 'react';
 import { CloseIcon, GearIcon } from '@/components/Icons';
 import Button from '@/components/Button';
+import FloatingButton from '@/components/FloatingButton';
 
 import { CardContainer, CardHeader, CardBody } from '@/components/Card';
 import Dialog from '@/components/Dialog';
-
-const SettingsButton = React.memo(
-  (props: { handleOpenSettingsModal: (arg: boolean) => void }) => {
-    return (
-      <Button
-        variant="solid"
-        className="text-primary fixed bottom-10 left-10 z-10 flex h-12 w-12 items-center justify-center !rounded-full !border-2 bg-white shadow-lg"
-        onClick={() => props.handleOpenSettingsModal(true)}
-      >
-        <GearIcon />
-      </Button>
-    );
-  }
-);
 
 const SettingsModal = React.memo(
   (props: {
@@ -27,6 +14,7 @@ const SettingsModal = React.memo(
     State1: React.ElementType;
     State2: React.ElementType;
     modalTitle: string;
+    buttonVariant: 'float' | 'fixed';
   }) => {
     return (
       <>
@@ -56,14 +44,26 @@ const SettingsModal = React.memo(
             </CardBody>
           </CardContainer>
         </Dialog>
-        {props.state && (
-          <SettingsButton
-            handleOpenSettingsModal={props.handleSettingsModalState}
-          />
-        )}
+        {props.state &&
+          (props.buttonVariant === 'float' ? (
+            <FloatingButton
+              onClick={() => props.handleSettingsModalState(true)}
+            >
+              <GearIcon />
+            </FloatingButton>
+          ) : (
+            <Button
+              variant="glass"
+              className="flex items-center gap-2 px-2"
+              onClick={() => props.handleSettingsModalState(true)}
+            >
+              <GearIcon className="!h-4 !w-4" />{' '}
+              <p className="text-xs md:text-sm">Settings</p>
+            </Button>
+          ))}
       </>
     );
   }
 );
 
-export { SettingsModal, SettingsButton };
+export default SettingsModal;

@@ -6,13 +6,14 @@ import Button from '@/components/Button';
 import PageBody from '@/components/PageBody';
 import { Input, Label, Field } from '@/components/Form';
 import Container from '@/components/Container';
-import { SettingsModal } from '@/components/Settings';
+import SettingsModal from '@/components/Settings';
 import { BusIcon, RefreshIcon } from '@/components/Icons';
 
 import SeatingGrid from './components/SeatingGrid';
 import LegendItems from './components/LegendItems';
 import PassengerModal from './components/PassengerModal';
 import AisleModal from './components/AisleModal';
+import DepartingPassengersModal from './components/DepartingPassengersModal';
 
 import { GET, PUT } from '@/lib/api';
 import type { GETResponse, TicketType } from '@/type';
@@ -58,8 +59,6 @@ const Conductor = () => {
       );
       return;
     }
-
-    toast.info('Passenger data fetched successfully!');
   }, [currentBusInfo.busID]);
 
   useEffect(() => {
@@ -158,7 +157,6 @@ const Conductor = () => {
       return;
     }
 
-    // Logic to start the trip can be added here
     toast.info('Trip started successfully for Bus ID: ' + currentBusInfo.busID);
   }, [currentBusInfo.busID]);
 
@@ -188,83 +186,11 @@ const Conductor = () => {
       return;
     }
 
-    toast.warning(
-      'Trip ended successfully for Bus ID: ' + currentBusInfo.busID
-    );
+    toast.info('Trip ended successfully for Bus ID: ' + currentBusInfo.busID);
   }, [currentBusInfo.busID]);
 
   return (
     <>
-      {/* // settings modal */}
-      <SettingsModal
-        modalTitle="Bus Settings"
-        handleSettingsModalState={setIsSettingsModalOpen}
-        settingsModalState={isSettingsModalOpen}
-        state={!!currentBusInfo.busID}
-        State1={() => (
-          <>
-            <Button
-              type="button"
-              onClick={handleSignOut}
-              variant="outline"
-              className="w-full"
-            >
-              Sign Out
-            </Button>
-            <hr className="border-outline my-4 border-1" />
-            <div className="flex flex-col items-center gap-2">
-              <Button
-                onClick={handleStartTrip}
-                type="button"
-                variant="solid"
-                className="!bg-error w-full"
-              >
-                Start Trip
-              </Button>
-              <Button
-                onClick={handleEndTrip}
-                type="button"
-                variant="outline"
-                className="!border-error w-full"
-              >
-                End Trip
-              </Button>
-            </div>
-          </>
-        )}
-        State2={() => (
-          <form onSubmit={handleSignIn} className="flex flex-col gap-2">
-            <Field>
-              <Label htmlFor="busID" required>
-                Bus ID
-              </Label>
-              <Input
-                id="busID"
-                name="busID"
-                type="text"
-                placeholder="Enter Bus ID"
-                required
-              />
-            </Field>
-            <Field>
-              <Label htmlFor="conductorID" required>
-                Conductor ID
-              </Label>
-              <Input
-                id="conductorID"
-                name="conductorID"
-                type="text"
-                placeholder="Enter Conductor ID"
-                required
-              />
-            </Field>
-            <Button type="submit" variant="solid" className="mt-2 w-full">
-              Sign In
-            </Button>
-          </form>
-        )}
-      />
-
       {/* // passenger modal */}
       <PassengerModal
         passengerModal={passengerModal}
@@ -279,27 +205,149 @@ const Conductor = () => {
         setPassengerModal={setPassengerModal}
       />
 
-      {currentBusInfo.busID && (
-        <PageBody className="!items-start">
-          <CardContainer className="h-full w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
-            <CardHeader className="flex items-start justify-between">
-              <div>
+      <PageBody className="!items-start">
+        <CardContainer className="h-full w-full sm:w-4/5 lg:w-3/5 xl:w-2/5">
+          <CardHeader
+            className={`flex flex-col items-start justify-between gap-4 ${!currentBusInfo.busID && '!bg-background'}`}
+          >
+            {currentBusInfo.busID && (
+              <div className="flex w-full items-center justify-between gap-2">
                 <h1 className="text-2xl font-bold">
                   <BusIcon /> Bus #{currentBusInfo.busID}
                 </h1>
-                <p className="text-primary-light text-sm">
-                  Route: Lorem - Dolor
-                </p>
+                <p className="text-primary-light text-sm">Lorem - Dolor</p>
               </div>
-              <Button
-                variant="glass"
-                className="flex items-center gap-2"
-                onClick={fetchData}
-              >
-                <RefreshIcon className="!h-4 !w-4" />{' '}
-                <p className="hidden text-xs md:block md:text-sm">Refresh</p>
-              </Button>
-            </CardHeader>
+            )}
+            <div className="flex w-full items-center justify-between gap-2">
+              <SettingsModal
+                buttonVariant="fixed"
+                modalTitle="Bus Settings"
+                handleSettingsModalState={setIsSettingsModalOpen}
+                settingsModalState={isSettingsModalOpen}
+                state={!!currentBusInfo.busID}
+                State1={() => (
+                  <>
+                    <Button
+                      type="button"
+                      onClick={handleSignOut}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Sign Out
+                    </Button>
+                    <hr className="border-outline my-4 border-1" />
+                    <div className="flex flex-col items-center gap-2">
+                      <Button
+                        onClick={() => {
+                          setIsSettingsModalOpen(false);
+                          toast.warning('Are you Sure?', {
+                            action: {
+                              label: 'Start Trip',
+                              onClick: handleStartTrip,
+                            },
+                            actionButtonStyle: {
+                              backgroundColor: '#DC7609',
+                              color: '#FEFCF1',
+                              padding: '1rem',
+                            },
+                          });
+                        }}
+                        type="button"
+                        variant="solid"
+                        className="!bg-error w-full"
+                      >
+                        Start Trip
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setIsSettingsModalOpen(false);
+                          toast.warning('Are you Sure?', {
+                            action: {
+                              label: 'End Trip',
+                              onClick: handleEndTrip,
+                            },
+                            actionButtonStyle: {
+                              backgroundColor: '#DC7609',
+                              color: '#FEFCF1',
+                              padding: '1rem',
+                            },
+                          });
+                        }}
+                        type="button"
+                        variant="outline"
+                        className="!border-error w-full"
+                      >
+                        End Trip
+                      </Button>
+                      <p className="text-muted text-center text-xs">
+                        Ending trip will sync trip data to the server.
+                      </p>
+                    </div>
+                  </>
+                )}
+                State2={() => (
+                  <form onSubmit={handleSignIn} className="flex flex-col gap-2">
+                    <Field>
+                      <Label htmlFor="busID" required>
+                        Bus ID
+                      </Label>
+                      <Input
+                        id="busID"
+                        name="busID"
+                        type="text"
+                        placeholder="Enter Bus ID"
+                        required
+                      />
+                    </Field>
+                    <Field>
+                      <Label htmlFor="conductorID" required>
+                        Conductor ID
+                      </Label>
+                      <Input
+                        id="conductorID"
+                        name="conductorID"
+                        type="text"
+                        placeholder="Enter Conductor ID"
+                        required
+                      />
+                    </Field>
+                    <Button
+                      type="submit"
+                      variant="solid"
+                      className="mt-2 w-full"
+                    >
+                      Sign In
+                    </Button>
+                  </form>
+                )}
+              />
+              {currentBusInfo.busID && (
+                <>
+                  <DepartingPassengersModal />
+                  <Button
+                    variant="glass"
+                    className="flex items-center gap-2"
+                    onClick={() => {
+                      toast.promise(fetchData(), {
+                        loading: 'Refreshing...',
+                        success: () => {
+                          return {
+                            message: `Refreshed passenger data successfully!`,
+                          };
+                        },
+                        error:
+                          'Something went wrong while refreshing passenger data.',
+                      });
+                    }}
+                  >
+                    <RefreshIcon className="!h-4 !w-4" />{' '}
+                    <p className="text-xs md:text-sm">Refresh</p>
+                  </Button>
+                </>
+              )}
+            </div>
+          </CardHeader>
+          {currentBusInfo.busID && (
             <CardBody className="flex flex-col items-center justify-center gap-4 !px-4">
               <Container className="flex w-full flex-wrap items-center justify-center gap-4">
                 <LegendItems type="paid" />
@@ -315,9 +363,9 @@ const Conductor = () => {
                 handleAisleClick={setAisleModal}
               />
             </CardBody>
-          </CardContainer>
-        </PageBody>
-      )}
+          )}
+        </CardContainer>
+      </PageBody>
     </>
   );
 };
