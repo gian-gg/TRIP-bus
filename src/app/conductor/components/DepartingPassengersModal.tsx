@@ -14,7 +14,9 @@ const DepartingPassengersModal = () => {
         onClick={() => setIsOpen(true)}
       >
         <UsersIcon className="!h-4 !w-4" />{' '}
-        <p className="text-xs md:text-sm">Departing Passengers (5)</p>
+        <p className="flex items-center gap-1 text-xs md:text-sm">
+          Departing <span className="hidden md:block">Passengers</span> (5)
+        </p>
       </Button>
       <Dialog
         open={isOpen}
