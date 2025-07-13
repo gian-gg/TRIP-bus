@@ -40,10 +40,12 @@ const SeatButton = (props: {
       )}
       {props.ticket?.passenger_category && (
         <div
-          className={clsx(
-            'absolute -top-1 -left-1 h-3 w-3 rounded-full border-1',
-            `${legendConfig[props.ticket.passenger_category].bg} ${legendConfig[props.ticket.passenger_category].border}`
-          )}
+          style={{
+            backgroundColor:
+              legendConfig[props.ticket.passenger_category].borderColor,
+            borderColor: '#fff',
+          }}
+          className="absolute -top-1 -left-1 h-4 w-4 rounded-full border-2"
         />
       )}
     </div>
