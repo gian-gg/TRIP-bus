@@ -1,3 +1,4 @@
+// temp route for development purposes
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -22,13 +23,13 @@ const Home = () => {
       const ping = Math.round(performance.now() - start);
       const res = response as GETResponse;
       if (res.status === 'success') {
-        toast.success(`Backend connection successful! Ping: ${ping} ms`);
+        return ping;
       } else {
-        toast.error('Failed to connect to the backend.');
+        throw new Error(res.message);
       }
     } catch (error) {
-      toast.error(
-        'Error connecting to the backend. ' +
+      throw new Error(
+        'Network Error' +
           (error instanceof Error ? error.message : 'Unknown error')
       );
     }
@@ -63,7 +64,15 @@ const Home = () => {
           <Button
             variant="solid"
             className="w-full"
-            onClick={handleConnectionTest}
+            onClick={() => {
+              toast.promise(handleConnectionTest, {
+                loading: 'Loading...',
+                success: (ping) => {
+                  return `Backend connection successful! Ping: ${ping} ms`;
+                },
+                error: 'Error connecting to backend. Please try again.',
+              });
+            }}
           >
             Backend Connection Test
           </Button>

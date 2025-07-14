@@ -147,8 +147,7 @@ const Passenger = () => {
         !generalTripInfo.destination
     );
     if (hasEmptyFields) {
-      toast.error('Please fill out all required fields.');
-      return;
+      throw new Error('fill-fields');
     }
 
     const ticket = {
@@ -180,29 +179,15 @@ const Passenger = () => {
       console.log('Ticket booked successfully:', res);
 
       if (res.status !== 'success' || !res.status) {
-        toast.error('Failed to book ticket(s). Please try again later.');
-        return;
+        throw new Error('fail');
       }
 
       fetchData(); // Refresh data after booking
-      toast.success('Ticket/s booked successfully!');
     } catch (error) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'response' in error &&
-        error.response &&
-        typeof error.response === 'object' &&
-        'data' in error.response &&
-        error.response.data &&
-        typeof error.response.data === 'object' &&
-        'message' in error.response.data
-      ) {
-        toast.error('Error: ' + error.response.data.message);
-      } else {
-        toast.error('Network or server error');
-      }
-      console.log('Network or server error', error);
+      throw new Error(
+        'Network Error: ' +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
     }
   }, [currentBusInfo, passengerDetails, generalTripInfo, fetchData]);
 

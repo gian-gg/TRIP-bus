@@ -70,30 +70,26 @@ const PassengerModal = (props: {
         const res = response as GETResponse;
 
         if (res.status !== 'success') {
-          toast.error('Failed to update passenger details.');
-          return;
+          await fetchData();
+
+          setPassengerModal({
+            ...passengerModal,
+            edit: false,
+            open: false,
+          });
+
+          return 'success';
         }
 
         if (res.message === 'Occupied') {
-          toast.error('Seat is already occupied. Please choose another seat.');
-          return;
+          throw new Error('occupied');
         }
       } catch (error) {
-        toast.error(
+        throw new Error(
           'Network Error' +
             (error instanceof Error ? error.message : 'Unknown error')
         );
-        return;
       }
-
-      setPassengerModal({
-        ...passengerModal,
-        edit: false,
-        open: false,
-      });
-
-      await fetchData();
-      toast.info('Passenger details updated successfully!');
     },
     [passengerModal, setPassengerModal, fetchData]
   );
@@ -188,7 +184,20 @@ const PassengerModal = (props: {
                 </h1>
                 <form
                   id="editPassengerForm"
-                  onSubmit={handleEdit}
+                  onSubmit={(e) =>
+                    toast.promise(handleEdit(e), {
+                      loading: 'Editing passenger...',
+                      success: () => {
+                        return 'Passenger details updated successfully.';
+                      },
+                      error: (error) => {
+                        if (error === 'occupied') {
+                          return 'Seat is already occupied. Please choose another seat.';
+                        }
+                        return error;
+                      },
+                    })
+                  }
                   className="flex justify-between gap-2"
                 >
                   <Field>

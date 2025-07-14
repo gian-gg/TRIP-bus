@@ -79,18 +79,14 @@ const Conductor = () => {
         const response = await GET('/bus/index.php?id=' + busID);
         const res = response as GETResponse;
 
-        console.log('Sign in response:', res);
-
         if (res.status !== 'success') {
-          toast.error('Invalid Bus ID');
-          return;
+          throw new Error('Invalid Bus ID');
         }
       } catch (error) {
-        toast.error(
+        throw new Error(
           'Invalid Bus ID: ' +
             (error instanceof Error ? error.message : 'Unknown error')
         );
-        return;
       }
 
       localStorage.setItem('bus_id', busID);
@@ -99,7 +95,6 @@ const Conductor = () => {
         busID: busID,
         conductorID: conductorID,
       });
-      toast.success('Successfully signed in!');
       setIsSettingsModalOpen(false);
     },
     []
@@ -146,18 +141,14 @@ const Conductor = () => {
 
       if (res.message === '10') {
         // Trip already active
-        toast.error('Trip is already active for this bus ID.');
-        return;
+        throw new Error('Trip is already active for this bus ID.');
       }
     } catch (error) {
-      toast.error(
+      throw new Error(
         'Error starting trip: ' +
           (error instanceof Error ? error.message : 'Unknown error')
       );
-      return;
     }
-
-    toast.info('Trip started successfully for Bus ID: ' + currentBusInfo.busID);
   }, [currentBusInfo.busID]);
 
   const handleEndTrip = useCallback(async () => {
@@ -175,18 +166,14 @@ const Conductor = () => {
 
       if (res.message === '00') {
         // No active trip found
-        toast.error('No active trip found for this bus ID.');
-        return;
+        throw new Error('No active trip found for this bus ID.');
       }
     } catch (error) {
-      toast.error(
+      throw new Error(
         'Error ending trip: ' +
           (error instanceof Error ? error.message : 'Unknown error')
       );
-      return;
     }
-
-    toast.info('Trip ended successfully for Bus ID: ' + currentBusInfo.busID);
   }, [currentBusInfo.busID]);
 
   return (
@@ -243,7 +230,14 @@ const Conductor = () => {
                           toast.warning('Are you Sure?', {
                             action: {
                               label: 'Start Trip',
-                              onClick: handleStartTrip,
+                              onClick: () =>
+                                toast.promise(handleStartTrip, {
+                                  loading: 'Starting trip...',
+                                  success: () => {
+                                    return 'Sucessfully started trip!';
+                                  },
+                                  error: 'Trip already active for this bus.',
+                                }),
                             },
                             actionButtonStyle: {
                               backgroundColor: '#DC7609',
@@ -264,7 +258,14 @@ const Conductor = () => {
                           toast.warning('Are you Sure?', {
                             action: {
                               label: 'End Trip',
-                              onClick: handleEndTrip,
+                              onClick: () =>
+                                toast.promise(handleEndTrip, {
+                                  loading: 'Ending trip...',
+                                  success: () => {
+                                    return 'Sucessfully ended trip!';
+                                  },
+                                  error: 'No active trip found for this bus.',
+                                }),
                             },
                             actionButtonStyle: {
                               backgroundColor: '#DC7609',
@@ -286,7 +287,18 @@ const Conductor = () => {
                   </>
                 )}
                 State2={() => (
-                  <form onSubmit={handleSignIn} className="flex flex-col gap-2">
+                  <form
+                    onSubmit={(e) =>
+                      toast.promise(handleSignIn(e), {
+                        loading: 'Signing in...',
+                        success: () => {
+                          return 'Successfully signed in!';
+                        },
+                        error: 'Something went wrong while signing in.',
+                      })
+                    }
+                    className="flex flex-col gap-2"
+                  >
                     <Field>
                       <Label htmlFor="busID" required>
                         Bus ID

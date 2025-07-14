@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 import Button from '@/components/Button';
 import PassengerDetails from '../components/PassengerDetails';
 
@@ -11,12 +13,28 @@ const Form3 = (props: {
   generalTripInfo: GeneralTripInfoType;
   passengerDetails: PassengerDetailsType[];
   currentBusInfo: CurrentBusInfoType;
-  OnSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  OnSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   handleBackButton: () => void;
   handleNextButton: () => void;
 }) => {
   return (
-    <form onSubmit={props.OnSubmit} className="flex flex-col gap-4">
+    <form
+      onSubmit={(e) =>
+        toast.promise(props.OnSubmit(e), {
+          loading: 'Submitting trip details...',
+          success: () => {
+            return 'Trip details submitted successfully!';
+          },
+          error: (error) => {
+            if (error === 'fill-fields') {
+              return 'Please fill out all required fields.';
+            }
+            return 'Failed to submit trip details. Please try again later.';
+          },
+        })
+      }
+      className="flex flex-col gap-4"
+    >
       <h2 className="text-primary text-center text-2xl font-bold">
         Review Trip Info
       </h2>

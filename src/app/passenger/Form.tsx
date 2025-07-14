@@ -19,7 +19,7 @@ import type {
 } from '@/type';
 
 const Passenger = (props: {
-  handleSubmit: () => void;
+  handleSubmit: () => Promise<void>;
   currentBusInfo: CurrentBusInfoType;
   generalTripInfo: GeneralTripInfoType;
   setGeneralTripInfo: React.Dispatch<React.SetStateAction<GeneralTripInfoType>>;
@@ -156,9 +156,9 @@ const Passenger = (props: {
                   currentBusInfo={currentBusInfo}
                   handleBackButton={handleBackButton}
                   handleNextButton={handleNextButton}
-                  OnSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                  OnSubmit={async (e: React.FormEvent<HTMLFormElement>) => {
                     e.preventDefault();
-                    handleSubmit();
+                    return await handleSubmit();
                   }}
                 />
               );
