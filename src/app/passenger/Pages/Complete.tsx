@@ -196,6 +196,7 @@ const Success = (props: {
           </CardFooter>
         </CardContainer>
       </Dialog>
+
       <div className="flex flex-col">
         <h2 className="text-primary mb-4 text-center text-2xl font-bold">
           Trip Details

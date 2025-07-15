@@ -31,6 +31,7 @@ interface ResponseGETReponseType extends GETResponse {
       destination_id: StopType['stop_id'];
       contact_number: string;
       passengers: PassengerDetailsType[];
+      total_fare?: number;
     };
   };
 }
@@ -118,6 +119,7 @@ const Passenger = () => {
           destination: Number(
             res.data.passenger_details.passengers[0].destination_stop_id
           ) as StopType['stop_id'],
+          fare_amount: res.data.passenger_details.total_fare,
         });
       }
     } catch (error) {
@@ -162,7 +164,6 @@ const Passenger = () => {
         payment_id: localStorage.getItem('id')?.slice(-10),
         payment_mode: 'cash',
         payment_platform: null,
-        fare_amount: 40.5,
         payment_status: 'pending',
       },
     };
@@ -176,18 +177,22 @@ const Passenger = () => {
       const response = await POST('/ticket/index.php', ticket);
 
       const res = response as SessionResponse;
-      console.log('Ticket booked successfully:', res);
 
-      if (res.status !== 'success' || !res.status) {
+      if (res.status !== 'success') {
+        if (res.message === 'Occupied') {
+          throw new Error(
+            'Seats inputted are already occupied. Seats: ' +
+              (res.data.conflicting_seats
+                ? res.data.conflicting_seats.join(', ')
+                : 'None')
+          );
+        }
         throw new Error('fail');
       }
 
       fetchData(); // Refresh data after booking
     } catch (error) {
-      throw new Error(
-        'Network Error: ' +
-          (error instanceof Error ? error.message : 'Unknown error')
-      );
+      throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
   }, [currentBusInfo, passengerDetails, generalTripInfo, fetchData]);
 

@@ -96,7 +96,9 @@ const PassengerDetails = React.memo(
                 <strong>Seat:</strong> {detail.seat_number}
               </p>
             </div>
-            <p className="text-primary text-xl font-bold">₱20</p>
+            <p className="text-primary text-xl font-bold">
+              ₱{detail.fare_amount}
+            </p>
           </Container>
         ))}
         <Callout mode="primary" className="mx-4 mb-4 flex justify-between p-4">
@@ -105,7 +107,7 @@ const PassengerDetails = React.memo(
             <p className="text-xs">Regular (₱25) - 20% Discount (₱5)</p>
           </div>
           <span className="text-primary text-4xl font-bold">
-            ₱{20 * props.generalTripInfo.passengerCount}
+            ₱{props.generalTripInfo.fare_amount}
           </span>
         </Callout>
       </div>

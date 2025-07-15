@@ -9,7 +9,9 @@ interface SessionResponse {
     token: string;
     trip_id: number;
     stop_name: string;
+    conflicting_seats?: string[];
   };
+  message?: string;
 }
 
 interface GETResponse {
@@ -25,6 +27,7 @@ interface PassengerDetailsType {
   seat_number: string;
   contact_info?: string;
   destination_stop_id?: StopType['stop_id'];
+  fare_amount?: number;
 }
 
 interface PaymentType {
@@ -59,6 +62,7 @@ interface GeneralTripInfoType {
   contactNumber: string;
   destination: StopType['stop_id'] | undefined;
   trip_id: number;
+  fare_amount?: number;
 }
 
 interface StopType {

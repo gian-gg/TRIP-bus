@@ -26,10 +26,10 @@ const Form3 = (props: {
             return 'Trip details submitted successfully!';
           },
           error: (error) => {
-            if (error === 'fill-fields') {
+            if (error.message === 'fill-fields') {
               return 'Please fill out all required fields.';
             }
-            return 'Failed to submit trip details. Please try again later.';
+            return error.message;
           },
         })
       }
