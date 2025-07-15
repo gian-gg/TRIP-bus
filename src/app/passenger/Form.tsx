@@ -47,9 +47,7 @@ const Passenger = (props: {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const passengersCount = formData.get('passengersCount') as string;
-    const destination = Number(
-      formData.get('destinationInput')
-    ) as StopType['stop_id'];
+    const destination = formData.get('destinationInput');
     const contact = formData.get('contactInput') as string;
 
     if (!/^9\d{9}$/.test(contact)) {
@@ -59,9 +57,20 @@ const Passenger = (props: {
       return;
     }
 
+    if (!destination) {
+      toast.warning('Please select a destination.');
+      return;
+    }
+
+    console.log('Form 1 submitted:', {
+      passengersCount: passengersCount,
+      destination: destination,
+      contact: contact,
+    });
+
     setGeneralTripInfo({
       passengerCount: parseInt(passengersCount, 10),
-      destination: destination,
+      destination: Number(destination) as StopType['stop_id'],
       contactNumber: contact,
       trip_id: currentBusInfo.trip_id,
     });

@@ -210,6 +210,44 @@ const UsersIcon = React.memo(
   }
 );
 
+const DownIcon = React.memo((props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+  return (
+    <svg
+      {...props}
+      className={clsx('h-6 w-6', props.className)}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+});
+
+const CheckIcon = React.memo(
+  (props: React.HTMLAttributes<HTMLOrSVGElement>) => {
+    return (
+      <svg
+        {...props}
+        className={clsx('h-6 w-6', props.className)}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M20 6 9 17l-5-5" />
+      </svg>
+    );
+  }
+);
+
 export {
   PushPinIcon,
   BusIcon,
@@ -224,4 +262,6 @@ export {
   CircleIcon,
   HandIcon,
   UsersIcon,
+  DownIcon,
+  CheckIcon,
 };

@@ -29,7 +29,10 @@ const CallConductor = () => {
         return;
       }
 
-      toast.info(`Calling conductor for ${name} at seat ${seat}.`);
+      toast.info(
+        `Calling the conductor for ${name} at ${seat === 'Aisle' ? 'the aisle' : `seat ${seat}`}.`
+      );
+
       setIsOpen(false);
     },
     []

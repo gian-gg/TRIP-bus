@@ -1,9 +1,11 @@
+import React, { useState } from 'react';
 const MAX_PASSENGERS = 10;
 
 import Callout from '@/components/Callout';
 import { Field, Label, InputWithIcon, Select } from '@/components/Form';
 import Button from '@/components/Button';
 import { ClockIcon, PushPinIcon } from '@/components/Icons';
+import ComboBox from '../components/StopsComboBox';
 
 import { formatTimeDate } from '@/lib/misc';
 
@@ -16,6 +18,13 @@ const Form1 = (props: {
   handleNextButton: () => void;
   stops: StopType[];
 }) => {
+  const [selectedDestination, setSelectedDestination] =
+    useState<StopType | null>(
+      props.stops.find(
+        (stop) => stop.stop_id === props.generalTripInfo.destination
+      ) || null
+    );
+
   return (
     <>
       <Callout
@@ -51,29 +60,23 @@ const Form1 = (props: {
             ))}
           </Select>
         </Field>
+
         <Field>
           <Label htmlFor="destinationInput" required>
             Destination
           </Label>
-          <Select
-            id="destinationInput"
+          <ComboBox
+            data={props.stops}
+            selected={{
+              value: selectedDestination,
+              set: setSelectedDestination,
+            }}
+          />
+          <input
+            type="hidden"
+            defaultValue={selectedDestination?.stop_id}
             name="destinationInput"
-            defaultValue={
-              !props.generalTripInfo.destination
-                ? ''
-                : props.generalTripInfo.destination
-            }
-            required
-          >
-            <option value="" disabled defaultChecked>
-              Select destination
-            </option>
-            {props.stops.map((stop, index) => (
-              <option key={index} value={stop.stop_id}>
-                {stop.stop_name}
-              </option>
-            ))}
-          </Select>
+          />
         </Field>
         <Field>
           <Label htmlFor="contactInput" required>
