@@ -104,7 +104,7 @@ const PassengerDetails = React.memo(
         <Callout mode="primary" className="mx-4 mb-4 flex justify-between p-4">
           <div>
             <h3 className="text-primary text-sm font-bold">FARE TOTAL</h3>
-            <p className="text-xs">Regular (₱25) - 20% Discount (₱5)</p>
+            <p className="text-xs">20% off for Students, PWDs, & Seniors</p>
           </div>
           <span className="text-primary text-4xl font-bold">
             ₱{props.generalTripInfo.fare_amount}
