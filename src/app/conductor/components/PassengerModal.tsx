@@ -177,7 +177,7 @@ const PassengerModal = (props: {
             >
               <div>
                 <h1 className="font-bold">FARE AMOUNT</h1>
-                <p className="text-xs">(₱25) - 20% (₱5)</p>
+                <p className="text-xs">20% off for Students, PWDs, & Seniors</p>
               </div>
               <span className="text-primary text-2xl font-extrabold">
                 ₱{passengerModal.ticket['fare_amount']}
@@ -204,23 +204,29 @@ const PassengerModal = (props: {
                   }
                   className="flex justify-between gap-2"
                 >
-                  <Field>
-                    <Label htmlFor="passengerType" required>
-                      Type:
-                    </Label>
-                    <Select
-                      id="passengerType"
-                      name="passengerType"
-                      defaultValue={passengerModal.ticket['passenger_category']}
-                      required
-                    >
-                      {PassengerTypes.map((type) => (
-                        <option key={type} value={type}>
-                          {typeLabels[type]}
-                        </option>
-                      ))}
-                    </Select>
-                  </Field>
+                  {passengerModal.ticket.payment['payment_status'] ===
+                    'pending' && (
+                    <Field>
+                      <Label htmlFor="passengerType" required>
+                        Type:
+                      </Label>
+                      <Select
+                        id="passengerType"
+                        name="passengerType"
+                        defaultValue={
+                          passengerModal.ticket['passenger_category']
+                        }
+                        required
+                      >
+                        {PassengerTypes.map((type) => (
+                          <option key={type} value={type}>
+                            {typeLabels[type]}
+                          </option>
+                        ))}
+                      </Select>
+                    </Field>
+                  )}
+
                   <Field>
                     <Label htmlFor="seat" required>
                       Seat:
