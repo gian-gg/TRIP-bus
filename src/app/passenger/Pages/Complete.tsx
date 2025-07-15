@@ -86,7 +86,7 @@ const Success = (props: {
           </CardBody>
           <CardFooter className="flex flex-col">
             <Button
-              variant="outline"
+              variant={props.mode === 'pending' ? 'solid' : 'outline'}
               className="w-full"
               onClick={() => {
                 if (props.mode === 'pending') {
