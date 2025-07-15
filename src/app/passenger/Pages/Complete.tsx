@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 
 import Button from '@/components/Button';
 import Dialog from '@/components/Dialog';
-import { CloseIcon } from '@/components/Icons';
+import { CloseIcon, RefreshIcon } from '@/components/Icons';
 import {
   CardContainer,
   CardBody,
@@ -13,6 +13,7 @@ import {
 import { Field, Label, RadioGroup, Description } from '@/components/Form';
 import { PaymentMethodRadios } from '../components/Radios';
 import PassengerDetails from '../components/PassengerDetails';
+import FloatingButton from '@/components/FloatingButton';
 
 import { PaymentMethod } from '@/data';
 
@@ -57,6 +58,9 @@ const Success = (props: {
 
   return (
     <>
+      <FloatingButton onClick={() => window.location.reload()}>
+        <RefreshIcon className="!h-5 !w-5 hover:animate-spin" />
+      </FloatingButton>
       {/* bus actions modal */}
       <Dialog
         open={isConductorModalOpen}
