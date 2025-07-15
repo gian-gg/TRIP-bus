@@ -61,6 +61,14 @@ const PassengerModal = (props: {
         payment_status: paymentStatus === 'unpaid' ? null : paymentStatus,
       };
 
+      if (
+        !ticket.passenger_category &&
+        !ticket.seat_number &&
+        !ticket.payment_status
+      ) {
+        throw new Error('No changes made to the passenger details.');
+      }
+
       try {
         const response = await PUT(
           '/ticket/index.php?ticket_id=' + passengerModal.ticket?.ticket_id,
@@ -69,25 +77,24 @@ const PassengerModal = (props: {
 
         const res = response as GETResponse;
 
-        if (res.status !== 'success') {
-          await fetchData();
-
-          setPassengerModal({
-            ...passengerModal,
-            edit: false,
-            open: false,
-          });
-
-          return 'success';
-        }
-
         if (res.message === 'Occupied') {
           throw new Error('occupied');
         }
+
+        if (res.status !== 'success') {
+          throw new Error('Error in editing passenger, try again.');
+        }
+
+        await fetchData();
+
+        setPassengerModal({
+          ...passengerModal,
+          edit: false,
+          open: false,
+        });
       } catch (error) {
         throw new Error(
-          'Network Error' +
-            (error instanceof Error ? error.message : 'Unknown error')
+          error instanceof Error ? error.message : 'Unknown error'
         );
       }
     },
@@ -191,10 +198,10 @@ const PassengerModal = (props: {
                         return 'Passenger details updated successfully.';
                       },
                       error: (error) => {
-                        if (error === 'occupied') {
+                        if (error.message === 'occupied') {
                           return 'Seat is already occupied. Please choose another seat.';
                         }
-                        return error;
+                        return error.message;
                       },
                     })
                   }
