@@ -44,6 +44,8 @@ const Conductor = () => {
       );
       const res = response as GETResponse;
 
+      console.log('Passenger Data:', JSON.stringify(res, null, 2));
+
       if (res.status !== 'success') {
         toast.error('Invalid Bus ID');
         return;

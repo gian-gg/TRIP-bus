@@ -78,7 +78,7 @@ const PassengerModal = (props: {
         const res = response as GETResponse;
 
         if (res.message === 'Occupied') {
-          throw new Error('occupied');
+          throw new Error('Selected Seat is already occupied.');
         }
 
         if (res.status !== 'success') {
@@ -180,7 +180,7 @@ const PassengerModal = (props: {
                 <p className="text-xs">(₱25) - 20% (₱5)</p>
               </div>
               <span className="text-primary text-2xl font-extrabold">
-                ₱{passengerModal.ticket.payment['fare_amount']}
+                ₱{passengerModal.ticket['fare_amount']}
               </span>
             </Callout>
 
@@ -198,9 +198,6 @@ const PassengerModal = (props: {
                         return 'Passenger details updated successfully.';
                       },
                       error: (error) => {
-                        if (error.message === 'occupied') {
-                          return 'Seat is already occupied. Please choose another seat.';
-                        }
                         return error.message;
                       },
                     })

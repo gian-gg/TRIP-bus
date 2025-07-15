@@ -55,6 +55,7 @@ interface TicketType {
   contact_info?: string;
   destination_stop_name?: string;
   origin_stop_name?: string;
+  fare_amount?: number;
 }
 
 interface GeneralTripInfoType {
