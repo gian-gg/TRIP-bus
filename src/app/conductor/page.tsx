@@ -173,17 +173,21 @@ const Conductor = () => {
       });
       const res = response as GETResponse;
 
+      console.log('End Trip Response:', JSON.stringify(res, null, 2));
+
       if (res.message === '00') {
         // No active trip found
         throw new Error('No active trip found for this bus ID.');
+      } else if (res.message === '11') {
+        // Cannot end trip bcuz there is still passengers in bus
+        throw new Error(
+          'Please ensure all passengers have exited the bus before ending the trip.'
+        );
       }
 
       setIsTripSummaryModalOpen(true);
     } catch (error) {
-      throw new Error(
-        'Error ending trip: ' +
-          (error instanceof Error ? error.message : 'Unknown error')
-      );
+      throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
   }, [currentBusInfo.busID]);
 
@@ -253,7 +257,7 @@ const Conductor = () => {
                                   success: () => {
                                     return 'Sucessfully started trip!';
                                   },
-                                  error: 'Trip already active for this bus.',
+                                  error: (err) => err.message,
                                 }),
                             },
                             actionButtonStyle: {
@@ -281,7 +285,7 @@ const Conductor = () => {
                                   success: () => {
                                     return 'Sucessfully ended trip!';
                                   },
-                                  error: 'No active trip found for this bus.',
+                                  error: (err) => err.message,
                                 }),
                             },
                             actionButtonStyle: {
