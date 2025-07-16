@@ -56,6 +56,10 @@ interface TicketType {
   destination_stop_name?: string;
   origin_stop_name?: string;
   fare_amount?: number;
+  associate_ticket: {
+    total_fare_amount: number;
+    seat_number: string[];
+  };
 }
 
 interface GeneralTripInfoType {

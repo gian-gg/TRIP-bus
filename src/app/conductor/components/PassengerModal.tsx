@@ -183,9 +183,17 @@ const PassengerModal = (props: {
                 ₱{passengerModal.ticket['fare_amount']}
               </span>
             </Callout>
-            <p className="text-muted text-center text-xs md:text-sm">
-              Associated with Seats: A1, A2, A3 (Total: ₱300) {/* mock data */}
-            </p>
+            {passengerModal.ticket.associate_ticket['seat_number'].length >
+              0 && (
+              <p className="text-muted text-center text-xs md:text-sm">
+                Associated with:{' '}
+                {passengerModal.ticket.associate_ticket['seat_number'].join(
+                  ', '
+                )}{' '}
+                (Total: ₱
+                {passengerModal.ticket.associate_ticket['total_fare_amount']})
+              </p>
+            )}
 
             {passengerModal.edit && (
               <Container>
