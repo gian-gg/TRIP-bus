@@ -183,6 +183,9 @@ const PassengerModal = (props: {
                 ₱{passengerModal.ticket['fare_amount']}
               </span>
             </Callout>
+            <p className="text-muted text-center text-xs md:text-sm">
+              Associated with Seats: A1, A2, A3 (Total: ₱300) {/* mock data */}
+            </p>
 
             {passengerModal.edit && (
               <Container>
