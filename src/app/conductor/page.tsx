@@ -158,10 +158,11 @@ const Conductor = () => {
 
       const tripId = (res.data as { trip_id: string }).trip_id;
       localStorage.setItem('trip_id', tripId);
+      setCurrentBusInfo({ ...currentBusInfo, tripID: tripId });
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
-  }, [currentBusInfo.busID]);
+  }, [currentBusInfo]);
 
   const handleEndTrip = useCallback(async () => {
     if (!currentBusInfo.busID) {
@@ -226,7 +227,10 @@ const Conductor = () => {
                 <h1 className="text-2xl font-bold">
                   <BusIcon /> Bus #{currentBusInfo.busID}
                 </h1>
-                <p className="text-primary-light text-sm">Lorem - Dolor</p>
+                <p className="text-primary-light text-sm">
+                  {currentBusInfo.tripID &&
+                    `Active Trip ID: ${currentBusInfo.tripID}`}
+                </p>
               </div>
             )}
             <div className="flex w-full items-center justify-between gap-2">
