@@ -1,3 +1,4 @@
+import type { GETResponse } from '@/type';
 import type { TicketType } from '@/type';
 
 type LegendItemsProps =
@@ -78,5 +79,33 @@ interface PassengerModalType {
   ticket: TicketType | undefined;
 }
 
-export type { LegendItemsProps, AisleModalType, PassengerModalType };
+interface TicketSummaryType {
+  ticket_id: string;
+  passenger_category: 'regular' | 'student' | 'senior' | 'pwd';
+  fare_amount: number;
+  payment_mode: 'cash' | 'online';
+}
+
+interface TripSummaryType extends GETResponse {
+  data: {
+    trip_details: {
+      route_id: string;
+      bus_id: string;
+      driver_id: string;
+      conductor_id: string;
+      boarding_time: string;
+      arrival_time: string;
+      total_passengers: number;
+      total_revenue: string;
+    };
+    tickets: TicketSummaryType[];
+  };
+}
+
+export type {
+  LegendItemsProps,
+  AisleModalType,
+  PassengerModalType,
+  TripSummaryType,
+};
 export { legendConfig, typeLabels };

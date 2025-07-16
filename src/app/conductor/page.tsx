@@ -14,12 +14,14 @@ import LegendItems from './components/LegendItems';
 import PassengerModal from './components/PassengerModal';
 import AisleModal from './components/AisleModal';
 import DepartingPassengersModal from './components/DepartingPassengersModal';
+import TripSummaryModal from './components/TripSummaryModal';
 
 import { GET, PUT } from '@/lib/api';
 import type { GETResponse, TicketType } from '@/type';
 
 const Conductor = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isTripSummaryModalOpen, setIsTripSummaryModalOpen] = useState(false);
   const [passengerModal, setPassengerModal] = useState({
     open: false,
     edit: false,
@@ -141,10 +143,15 @@ const Conductor = () => {
       });
       const res = response as GETResponse;
 
+      console.log('Start Trip Response:', JSON.stringify(res, null, 2));
+
       if (res.message === '10') {
         // Trip already active
         throw new Error('Trip is already active for this bus ID.');
       }
+
+      const tripId = (res.data as { trip_id?: string })?.trip_id || '';
+      localStorage.setItem('trip_id', tripId);
     } catch (error) {
       throw new Error(
         'Error starting trip: ' +
@@ -170,6 +177,8 @@ const Conductor = () => {
         // No active trip found
         throw new Error('No active trip found for this bus ID.');
       }
+
+      setIsTripSummaryModalOpen(true);
     } catch (error) {
       throw new Error(
         'Error ending trip: ' +
@@ -192,6 +201,12 @@ const Conductor = () => {
         openAisleModal={aisleModal}
         SetOpenAisleModal={setAisleModal}
         setPassengerModal={setPassengerModal}
+      />
+
+      {/* Trip summary modal */}
+      <TripSummaryModal
+        isOpen={isTripSummaryModalOpen}
+        setIsOpen={setIsTripSummaryModalOpen}
       />
 
       <PageBody className="!items-start">
