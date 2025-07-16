@@ -297,8 +297,8 @@ const Conductor = () => {
                       >
                         End Trip
                       </Button>
-                      <p className="text-muted text-center text-xs">
-                        Ending trip will sync trip data to the server.
+                      <p className="text-muted mt-1 text-center text-xs">
+                        ⚠️ Please ensure Trip is completed before ending. ⚠️
                       </p>
                     </div>
                   </>
