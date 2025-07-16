@@ -16,6 +16,7 @@ import PassengerDetails from '../components/PassengerDetails';
 import FloatingButton from '@/components/FloatingButton';
 
 import { PaymentMethod } from '@/data';
+import { POST } from '@/lib/api';
 
 import type {
   GeneralTripInfoType,
@@ -23,6 +24,7 @@ import type {
   CurrentBusInfoType,
   PaymentMethodType,
   modeType,
+  GETResponse,
 } from '@/type';
 
 const Success = (props: {
@@ -34,16 +36,52 @@ const Success = (props: {
   const [isConductorModalOpen, setIsConductorModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>();
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType | null>(
+    null
+  );
 
-  const handleCallConductor = () => {
-    toast.info('Bus conductor has been notified.');
-    setIsConductorModalOpen(false);
-  };
+  const alertConductor = async (
+    mode: 'stop-bus' | 'call-conductor' | 'pay-cash' | 'pay-online'
+  ) => {
+    let message = '';
+    switch (mode) {
+      case 'stop-bus':
+        message = `${props.passengerDetails[0].full_name} at ${props.passengerDetails[0].seat_number} is requesting to stop the bus.`;
+        break;
+      case 'call-conductor':
+        message = `${props.passengerDetails[0].full_name} at ${props.passengerDetails[0].seat_number} is calling the conductor.`;
+        break;
+      case 'pay-cash':
+        message = `${props.passengerDetails[0].full_name} at ${props.passengerDetails[0].seat_number} wants to pay by cash.`;
+        break;
+      case 'pay-online':
+        message = `${props.passengerDetails[0].full_name} at ${props.passengerDetails[0].seat_number} wants to pay online.`;
+        break;
+      default:
+        message = 'Unknown action.';
+    }
 
-  const handleStopBus = () => {
-    toast.warning('Bus driver has been notified to stop the bus.');
-    setIsConductorModalOpen(false);
+    try {
+      const response = await POST(
+        `/alert/index.php?bus_id=${props.currentBusInfo.bus_id}&trip_id=${props.currentBusInfo.trip_id}`,
+        {
+          message: message,
+        }
+      );
+      const res = response as GETResponse;
+
+      console.log('Response:', JSON.stringify(res, null, 2));
+
+      if (res.status !== 'success') {
+        throw new Error(res.message);
+      }
+
+      setIsConductorModalOpen(false);
+      return message;
+    } catch (error) {
+      setIsConductorModalOpen(false);
+      throw new Error(error instanceof Error ? error.message : 'Unknown error');
+    }
   };
 
   const handlePayment = () => {
@@ -52,7 +90,11 @@ const Success = (props: {
       return;
     }
 
-    toast.info('Conductor will arrive shortly.');
+    toast.promise(alertConductor(`pay-${paymentMethod}`), {
+      loading: 'Calling conductor...',
+      success: (msg) => msg,
+      error: (err) => err.message,
+    });
     setIsPaymentModalOpen(false);
   };
 
@@ -61,6 +103,7 @@ const Success = (props: {
       <FloatingButton onClick={() => window.location.reload()}>
         <RefreshIcon className="!h-5 !w-5 hover:animate-spin" />
       </FloatingButton>
+
       {/* bus actions modal */}
       <Dialog
         open={isConductorModalOpen}
@@ -94,7 +137,11 @@ const Success = (props: {
               className="w-full"
               onClick={() => {
                 if (props.mode === 'pending') {
-                  handleCallConductor();
+                  toast.promise(alertConductor('call-conductor'), {
+                    loading: 'Calling conductor...',
+                    success: (msg) => msg,
+                    error: (err) => err.message,
+                  });
                   return;
                 }
 
@@ -102,7 +149,12 @@ const Success = (props: {
                 toast.warning('Are you Sure?', {
                   action: {
                     label: 'Call Conductor',
-                    onClick: handleCallConductor,
+                    onClick: () =>
+                      toast.promise(alertConductor('call-conductor'), {
+                        loading: 'Calling conductor...',
+                        success: (msg) => msg,
+                        error: (err) => err.message,
+                      }),
                   },
                   actionButtonStyle: {
                     backgroundColor: '#DC7609',
@@ -123,7 +175,12 @@ const Success = (props: {
                   toast.error('Are you Sure?', {
                     action: {
                       label: 'Stop Bus',
-                      onClick: handleStopBus,
+                      onClick: () =>
+                        toast.promise(alertConductor('stop-bus'), {
+                          loading: 'Loading...',
+                          success: (msg) => msg,
+                          error: (err) => err.message,
+                        }),
                     },
                     actionButtonStyle: {
                       backgroundColor: '#E60100',

@@ -25,12 +25,7 @@ const Form3 = (props: {
           success: () => {
             return 'Trip details submitted successfully!';
           },
-          error: (error) => {
-            if (error.message === 'fill-fields') {
-              return 'Please fill out all required fields.';
-            }
-            return error.message;
-          },
+          error: (error) => error.message,
         })
       }
       className="flex flex-col gap-4"

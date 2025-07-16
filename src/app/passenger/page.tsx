@@ -149,7 +149,7 @@ const Passenger = () => {
         !generalTripInfo.destination
     );
     if (hasEmptyFields) {
-      throw new Error('fill-fields');
+      throw new Error('Please fill out all required fields.');
     }
 
     const ticket = {
@@ -178,6 +178,8 @@ const Passenger = () => {
 
       const res = response as SessionResponse;
 
+      console.log('Response:', JSON.stringify(res, null, 2));
+
       if (res.status !== 'success') {
         if (res.message === 'Occupied') {
           throw new Error(
@@ -187,7 +189,7 @@ const Passenger = () => {
                 : 'None')
           );
         }
-        throw new Error('fail');
+        throw new Error(res.message);
       }
 
       fetchData(); // Refresh data after booking

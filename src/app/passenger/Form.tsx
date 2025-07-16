@@ -133,7 +133,12 @@ const Passenger = (props: {
 
   return (
     <>
-      <CallConductor />
+      <CallConductor
+        currentData={{
+          busID: currentBusInfo.bus_id,
+          tripID: currentBusInfo.trip_id,
+        }}
+      />
       <div className="pt-8">
         {(() => {
           switch (currentFormPage) {

@@ -13,9 +13,15 @@ import { Label, Field, Input, Select, Description } from '@/components/Form';
 import { HandIcon } from '@/components/Icons';
 import FloatingButton from '@/components/FloatingButton';
 
+import { POST } from '@/lib/api';
+
+import type { GETResponse } from '@/type';
+
 import { SeatInfo } from '@/data';
 
-const CallConductor = () => {
+const CallConductor = (props: {
+  currentData: { busID: number; tripID: number };
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = useCallback(
@@ -29,13 +35,33 @@ const CallConductor = () => {
         return;
       }
 
-      toast.info(
-        `Calling the conductor for ${name} at ${seat === 'Aisle' ? 'the aisle' : `seat ${seat}`}.`
-      );
+      const message = `Calling the conductor for ${name} at ${seat === 'Aisle' ? 'the aisle' : `seat ${seat}`}.`;
 
-      setIsOpen(false);
+      try {
+        const response = await POST(
+          `/alert/index.php?bus_id=${props.currentData.busID}&trip_id=${props.currentData.tripID}`,
+          {
+            message: message,
+          }
+        );
+        const res = response as GETResponse;
+
+        console.log('Response:', JSON.stringify(res, null, 2));
+
+        if (res.status !== 'success') {
+          throw new Error(res.message);
+        }
+
+        setIsOpen(false);
+        return message;
+      } catch (error) {
+        setIsOpen(false);
+        throw new Error(
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      }
     },
-    []
+    [props.currentData.busID, props.currentData.tripID]
   );
 
   return (
@@ -58,7 +84,13 @@ const CallConductor = () => {
           </CardHeader>
           <CardBody>
             <form
-              onSubmit={handleSubmit}
+              onSubmit={(e) =>
+                toast.promise(handleSubmit(e), {
+                  loading: 'Loading...',
+                  success: (msg) => msg,
+                  error: (err) => err.message,
+                })
+              }
               id="form"
               className="flex flex-col gap-4"
             >
