@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
 import Button from '@/components/Button';
-import { UsersIcon, CloseIcon } from '@/components/Icons';
+import { AlertIcon, CloseIcon } from '@/components/Icons';
 import Dialog from '@/components/Dialog';
 import { CardContainer, CardBody, CardHeader } from '@/components/Card';
 
-const DepartingPassengersModal = () => {
+const AlertsModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <Button
         variant="glass"
-        className="flex flex-1 items-center justify-center gap-2"
+        className="flex w-full items-center justify-center gap-2"
         onClick={() => setIsOpen(true)}
       >
-        <UsersIcon className="!h-4 !w-4" />{' '}
-        <p className="flex items-center gap-1 text-xs md:text-sm">
-          Departing <span className="hidden md:block">Passengers</span> (5)
-        </p>
+        <AlertIcon className="!h-4 !w-4" />{' '}
+        <p className="text-xs md:text-sm">Alerts (2)</p>
       </Button>
       <Dialog
         open={isOpen}
@@ -26,7 +24,7 @@ const DepartingPassengersModal = () => {
       >
         <CardContainer>
           <CardHeader className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold">Departing Passengers (5)</h1>
+            <h1 className="text-lg font-semibold">Alerts</h1>
             <Button
               type="button"
               variant="outline"
@@ -50,4 +48,4 @@ const DepartingPassengersModal = () => {
   );
 };
 
-export default React.memo(DepartingPassengersModal);
+export default React.memo(AlertsModal);

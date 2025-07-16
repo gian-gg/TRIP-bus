@@ -67,7 +67,11 @@ const AisleModal = (props: {
 
   return (
     <Dialog
-      open={props.openAisleModal.open}
+      open={
+        !!openAisleModal.tickets &&
+        openAisleModal.tickets.length > 0 &&
+        openAisleModal.open
+      }
       as="div"
       onClose={handleClose}
       className="w-[90%] lg:w-2/5"

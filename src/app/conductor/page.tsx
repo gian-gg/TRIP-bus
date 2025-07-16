@@ -13,8 +13,8 @@ import SeatingGrid from './components/SeatingGrid';
 import LegendItems from './components/LegendItems';
 import PassengerModal from './components/PassengerModal';
 import AisleModal from './components/AisleModal';
-import DepartingPassengersModal from './components/DepartingPassengersModal';
 import TripSummaryModal from './components/TripSummaryModal';
+import AlertsModal from './components/AlertsModal';
 
 import { GET, PUT } from '@/lib/api';
 import type { GETResponse, TicketType } from '@/type';
@@ -352,7 +352,7 @@ const Conductor = () => {
               />
               {currentBusInfo.busID && (
                 <>
-                  <DepartingPassengersModal />
+                  <AlertsModal />
                   <Button
                     variant="glass"
                     className="flex items-center gap-2"
