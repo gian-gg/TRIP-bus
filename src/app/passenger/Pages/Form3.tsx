@@ -1,7 +1,13 @@
+import { useEffect, useState } from 'react';
+
 import { toast } from 'sonner';
 
 import Button from '@/components/Button';
 import PassengerDetails from '../components/PassengerDetails';
+
+import { GET } from '@/lib/api';
+
+import type { GETResponse } from '@/type';
 
 import type {
   GeneralTripInfoType,
@@ -17,6 +23,31 @@ const Form3 = (props: {
   handleBackButton: () => void;
   handleNextButton: () => void;
 }) => {
+  const [basePrice, setBasePrice] = useState(0);
+
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const response = await GET(
+          `/amount/index.php?origin_id=${props.currentBusInfo.current_stop_id}&destination_id=${props.generalTripInfo.destination}`
+        );
+        const res = response as GETResponse;
+
+        console.log('Price fetched:', JSON.stringify(res, null, 2));
+
+        if (res.status !== 'success') {
+          throw new Error(res.message);
+        }
+
+        setBasePrice(Number((res.data as { fare_amount: string }).fare_amount));
+      } catch (error) {
+        throw new Error(
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      }
+    };
+    fetchPrice();
+  }, [props.generalTripInfo, props.currentBusInfo]);
   return (
     <form
       onSubmit={(e) =>
@@ -38,6 +69,7 @@ const Form3 = (props: {
         generalTripInfo={props.generalTripInfo}
         passengerDetails={props.passengerDetails}
         currentBusInfo={props.currentBusInfo}
+        basePrice={basePrice}
       />
 
       <div className="flex items-center justify-between gap-4">
