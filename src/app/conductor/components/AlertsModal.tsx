@@ -23,15 +23,15 @@ const AlertItem = ({
           ? 'bg-secondary-light border-secondary text-yellow-600'
           : 'bg-primary-light border-primary text-primary'
       }`}
-      {...(onMarkAsRead && alert.has_read
-        ? {}
-        : { onClick: () => onMarkAsRead?.(alert.id) })}
     >
       <p className="text-sm">{alert.message}</p>
       {!alert.has_read && (
         <Button
           variant="outline"
           className="ml-2 !px-2 !py-1 text-[10px] font-normal"
+          {...(onMarkAsRead && alert.has_read
+            ? {}
+            : { onClick: () => onMarkAsRead?.(alert.id) })}
         >
           Read
         </Button>
