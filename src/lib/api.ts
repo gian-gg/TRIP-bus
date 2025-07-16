@@ -34,7 +34,7 @@ async function GET<T = unknown, P = Record<string, unknown>>(
 
 async function PUT<T = unknown, D = Record<string, unknown>>(
   url: string,
-  data: D
+  data?: D
 ): Promise<T> {
   const response: AxiosResponse<T> = await Fetch.put<T>(url, data);
   return response.data;

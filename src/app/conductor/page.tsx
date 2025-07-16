@@ -64,7 +64,7 @@ const Conductor = () => {
       );
       return;
     }
-  }, [currentBusInfo.busID]);
+  }, [currentBusInfo.busID, currentBusInfo.tripID]);
 
   useEffect(() => {
     if (!currentBusInfo.busID) {
@@ -105,7 +105,7 @@ const Conductor = () => {
       });
       setIsSettingsModalOpen(false);
     },
-    []
+    [currentBusInfo]
   );
 
   const handleOpenPassengerModal = useCallback((ticket: TicketType) => {
@@ -357,9 +357,14 @@ const Conductor = () => {
                   </form>
                 )}
               />
-              {currentBusInfo.busID && (
+              {currentBusInfo.tripID && (
                 <>
-                  <AlertsModal />
+                  <AlertsModal
+                    currentData={{
+                      busID: currentBusInfo.busID,
+                      tripID: currentBusInfo.tripID,
+                    }}
+                  />
                   <Button
                     variant="glass"
                     className="flex items-center gap-2"

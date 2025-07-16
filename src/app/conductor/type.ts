@@ -102,10 +102,18 @@ interface TripSummaryType extends GETResponse {
   };
 }
 
+interface AlertType {
+  id: number;
+  message: string;
+  has_read: boolean;
+  created_at: string;
+}
+
 export type {
   LegendItemsProps,
   AisleModalType,
   PassengerModalType,
   TripSummaryType,
+  AlertType,
 };
 export { legendConfig, typeLabels };
