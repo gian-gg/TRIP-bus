@@ -33,6 +33,7 @@ const TripSummaryModal = (props: {
       }
 
       setTripSummary(res.data);
+      localStorage.removeItem('trip_id'); // Clear trip ID after fetching summary
     } catch (error) {
       console.error('Error fetching trip summary:', error);
     }

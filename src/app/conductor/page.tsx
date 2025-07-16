@@ -35,6 +35,7 @@ const Conductor = () => {
   const [currentBusInfo, setCurrentBusInfo] = useState({
     busID: localStorage.getItem('bus_id') || '',
     conductorID: localStorage.getItem('conductor_id') || '',
+    tripID: localStorage.getItem('trip_id') || '',
   });
 
   const [passengerData, setPassengerData] = useState<TicketType[]>([]);
@@ -42,7 +43,7 @@ const Conductor = () => {
   const fetchData = useCallback(async () => {
     try {
       const response = await GET(
-        '/ticket/index.php?bus_id=' + currentBusInfo.busID
+        `/ticket/index.php?bus_id=${currentBusInfo.busID}&trip_id=${currentBusInfo.tripID}&passenger_status=on_bus`
       );
       const res = response as GETResponse;
 
@@ -66,12 +67,14 @@ const Conductor = () => {
   }, [currentBusInfo.busID]);
 
   useEffect(() => {
-    if (currentBusInfo.busID) {
-      fetchData();
-    } else {
+    if (!currentBusInfo.busID) {
       setIsSettingsModalOpen(true);
     }
-  }, [currentBusInfo.busID, fetchData]);
+
+    if (currentBusInfo.tripID === localStorage.getItem('trip_id')) {
+      fetchData();
+    }
+  }, [currentBusInfo.busID, currentBusInfo.tripID, fetchData]);
 
   const handleSignIn = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -96,6 +99,7 @@ const Conductor = () => {
       localStorage.setItem('bus_id', busID);
       localStorage.setItem('conductor_id', conductorID);
       setCurrentBusInfo({
+        ...currentBusInfo,
         busID: busID,
         conductorID: conductorID,
       });
@@ -117,10 +121,12 @@ const Conductor = () => {
   const handleSignOut = useCallback(() => {
     localStorage.removeItem('bus_id');
     localStorage.removeItem('conductor_id');
+    localStorage.removeItem('trip_id');
 
     setCurrentBusInfo({
       busID: '',
       conductorID: '',
+      tripID: '',
     });
 
     toast.success('Signed out Succesfully!');
@@ -150,13 +156,10 @@ const Conductor = () => {
         throw new Error('Trip is already active for this bus ID.');
       }
 
-      const tripId = (res.data as { trip_id?: string })?.trip_id || '';
+      const tripId = (res.data as { trip_id: string }).trip_id;
       localStorage.setItem('trip_id', tripId);
     } catch (error) {
-      throw new Error(
-        'Error starting trip: ' +
-          (error instanceof Error ? error.message : 'Unknown error')
-      );
+      throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
   }, [currentBusInfo.busID]);
 
