@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Button from '@/components/Button';
-import { AlertIcon, CloseIcon } from '@/components/Icons';
+import { AlertIcon, CloseIcon, MailCheckIcon } from '@/components/Icons';
 import Dialog from '@/components/Dialog';
 import { CardContainer, CardBody, CardHeader } from '@/components/Card';
 
@@ -8,6 +8,8 @@ import { GET, PUT } from '@/lib/api';
 import { type GETResponse } from '@/type';
 
 import { type AlertType } from '../type';
+
+import { formatTimeTo12Hour } from '@/lib/misc';
 
 const AlertItem = ({
   alert,
@@ -25,17 +27,22 @@ const AlertItem = ({
       }`}
     >
       <p className="text-sm">{alert.message}</p>
-      {!alert.has_read && (
-        <Button
-          variant="outline"
-          className="ml-2 !px-2 !py-1 text-[10px] font-normal"
-          {...(onMarkAsRead && alert.has_read
-            ? {}
-            : { onClick: () => onMarkAsRead?.(alert.id) })}
-        >
-          Read
-        </Button>
-      )}
+      <div className="flex items-center gap-2">
+        <p className="text-xs opacity-80">
+          {formatTimeTo12Hour(alert.created_at.split(' ')[1])}
+        </p>
+        {!alert.has_read && (
+          <Button
+            variant="outline"
+            className="ml-2 !px-2 !py-1 text-[10px] font-normal"
+            {...(onMarkAsRead && alert.has_read
+              ? {}
+              : { onClick: () => onMarkAsRead?.(alert.id) })}
+          >
+            <MailCheckIcon className="text-primary" />
+          </Button>
+        )}
+      </div>
     </li>
   );
 };
