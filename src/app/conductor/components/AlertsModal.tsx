@@ -20,7 +20,7 @@ const AlertItem = ({
 }) => {
   return (
     <li
-      className={`flex w-full items-center justify-between rounded-md !border-1 !p-2 ${
+      className={`flex w-full items-center justify-between gap-2 rounded-md !border-1 !p-2 ${
         alert.has_read
           ? 'bg-secondary-light border-secondary text-yellow-600'
           : 'bg-primary-light border-primary text-primary'
@@ -126,9 +126,8 @@ const AlertsModal = (props: {
                 <CloseIcon className="text-white" />
               </Button>
             </CardHeader>
-            <CardBody>
-              <h2 className="mb-2 text-sm font-medium">Unread Alerts:</h2>
-              <ul className="flex flex-col gap-2">
+            <CardBody className="!p-2 !px-4">
+              <ul className="mt-4 flex flex-col gap-2">
                 {alertsData.filter((alert) => !alert.has_read).length > 0 && (
                   <>
                     {alertsData

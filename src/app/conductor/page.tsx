@@ -121,7 +121,7 @@ const Conductor = () => {
   const handleSignOut = useCallback(() => {
     localStorage.removeItem('bus_id');
     localStorage.removeItem('conductor_id');
-    localStorage.removeItem('trip_id');
+    // localStorage.removeItem('trip_id');
 
     setCurrentBusInfo({
       busID: '',
@@ -308,9 +308,6 @@ const Conductor = () => {
                       >
                         End Trip
                       </Button>
-                      <p className="text-muted mt-1 text-center text-xs">
-                        ⚠️ Please ensure Trip is completed before ending. ⚠️
-                      </p>
                     </div>
                   </>
                 )}

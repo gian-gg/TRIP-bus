@@ -30,7 +30,7 @@ const Form2 = (props: {
               <Label htmlFor={`nameInput-${idx}`} required>
                 Full Name
               </Label>
-              <Description>Last Name, First Name, M.I.</Description>
+              <Description>(e.g. Geri Gian C. Epanto)</Description>
               <Input
                 type="text"
                 id={`nameInput-${idx}`}

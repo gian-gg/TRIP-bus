@@ -45,7 +45,7 @@ function formatTimeTo12Hour(time: string): string {
   const minute = minuteStr;
   const period = hour >= 12 ? 'PM' : 'AM';
   hour = hour % 12 || 12;
-  return `${hour}:${minute} ${period}`;
+  return `${hour}:${minute}${period}`;
 }
 
 export {
