@@ -12,13 +12,21 @@ import {
 
 import APICall from '@/lib/api';
 
-import type { TicketType } from '@/type';
+interface TicketType {
+  ticket_id: string;
+  full_name: string;
+  seat_number: string;
+  passenger_category: string;
+  payment_status: 'paid' | 'pending';
+}
 
 const PassengerItem = (props: { ticket: TicketType }) => {
   return (
     <div className="group !border-outline !bg-background flex h-16 w-full items-center justify-between gap-4 rounded-md border-2 px-4 py-3 text-left sm:h-20 sm:px-6 sm:py-4">
       <div className="flex items-center gap-4">
-        <div className="text-primary bg-primary-light flex h-10 w-10 items-center justify-center rounded-full text-sm sm:h-12 sm:w-12">
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-full text-sm sm:h-12 sm:w-12 ${props.ticket.payment_status === 'paid' ? 'bg-primary-light text-primary' : 'bg-secondary-light text-secondary'}`}
+        >
           <span>{props.ticket.seat_number}</span>
         </div>
         <div className="flex flex-col">
