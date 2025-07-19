@@ -10,7 +10,7 @@ import Loading from '@/components/Loading';
 import Form from './Form';
 import Complete from './Pages/Complete';
 
-import { POST } from '@/lib/api';
+import APICall from '@/lib/api';
 
 import type {
   GeneralTripInfoType,
@@ -19,7 +19,6 @@ import type {
   PassengerType,
   CurrentBusInfoType,
   GETResponse,
-  SessionResponse,
   StopType,
 } from '@/type';
 
@@ -64,71 +63,62 @@ const Passenger = () => {
       localStorage.setItem('id', `${tokenFirst10Chars}-${nanoid(10)}`);
     }
 
-    // fetch current bus information
-    try {
-      const response = await POST('/session/index.php', {
+    await APICall<ResponseGETReponseType['data']>({
+      type: 'POST',
+      url: '/session/index.php',
+      body: {
         id: tokenRest,
         payment_id: localStorage.getItem('id')?.slice(-10),
-      });
+      },
+      consoleLabel: 'Session Data',
+      success: (data) => {
+        switch (data.passenger_details.state) {
+          case 'not_exist':
+            setMode('form');
+            setPassengerDetails([
+              {
+                passenger_category: '' as PassengerType,
+                full_name: '',
+                seat_number: '',
+              },
+            ]);
+            break;
+          case 'pending':
+            setMode('pending');
+            setPassengerDetails(data.passenger_details.passengers);
+            break;
+          case 'paid':
+            setMode('complete');
+            setPassengerDetails(data.passenger_details.passengers);
+            break;
+          default:
+            console.error(
+              'Unexpected passenger status:',
+              data.passenger_details.state
+            );
+            return;
+        }
 
-      const res = response as ResponseGETReponseType;
+        setCurrentBusInfo(data.trip_details);
+        setStops(data.trip_details.stops as StopType[]);
 
-      console.log('Fetched data:', JSON.stringify(res, null, 2));
-
-      if (res.status !== 'success') {
-        toast.error('Invalid token. Call the conductor for help.');
-        return;
-      }
-
-      switch (res.data.passenger_details.state) {
-        case 'not_exist':
-          setMode('form');
-          setPassengerDetails([
-            {
-              passenger_category: '' as PassengerType,
-              full_name: '',
-              seat_number: '',
-            },
-          ]);
-          break;
-        case 'pending':
-          setMode('pending');
-          setPassengerDetails(res.data.passenger_details.passengers);
-          break;
-        case 'paid':
-          setMode('complete');
-          setPassengerDetails(res.data.passenger_details.passengers);
-          break;
-        default:
-          console.error(
-            'Unexpected passenger status:',
-            res.data.passenger_details.state
-          );
-          return;
-      }
-
-      setCurrentBusInfo(res.data.trip_details);
-      setStops(res.data.trip_details.stops as StopType[]);
-
-      if (res.data.passenger_details.passengers) {
-        setGeneralTripInfo({
-          passengerCount: res.data.passenger_details.passengers.length,
-          contactNumber:
-            res.data.passenger_details.passengers[0].contact_info ?? '',
-          trip_id: res.data.trip_details.trip_id,
-          destination: Number(
-            res.data.passenger_details.passengers[0].destination_stop_id
-          ) as StopType['stop_id'],
-          fare_amount: res.data.passenger_details.total_fare,
-        });
-      }
-    } catch (error) {
-      toast.error(
-        `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Call the
-     conductor for help.`
-      );
-      console.error(error);
-    }
+        if (data.passenger_details.passengers) {
+          setGeneralTripInfo({
+            passengerCount: data.passenger_details.passengers.length,
+            contactNumber:
+              data.passenger_details.passengers[0].contact_info ?? '',
+            trip_id: data.trip_details.trip_id,
+            destination: Number(
+              data.passenger_details.passengers[0].destination_stop_id
+            ) as StopType['stop_id'],
+            fare_amount: data.passenger_details.total_fare,
+          });
+        }
+      },
+      error: (error) => {
+        toast.warning(error instanceof Error ? error.message : 'Unknown error');
+      },
+    });
   }, [token]);
 
   // Fetch current bus information when the component mounts using token
@@ -173,29 +163,20 @@ const Passenger = () => {
       JSON.stringify(ticket, null, 2)
     );
 
-    try {
-      const response = await POST('/ticket/index.php', ticket);
-
-      const res = response as SessionResponse;
-
-      console.log('Response:', JSON.stringify(res, null, 2));
-
-      if (res.status !== 'success') {
-        if (res.message === 'Occupied') {
-          throw new Error(
-            'Seats inputted are already occupied. Seats: ' +
-              (res.data.conflicting_seats
-                ? res.data.conflicting_seats.join(', ')
-                : 'None')
-          );
-        }
-        throw new Error(res.message);
-      }
-
-      fetchData(); // Refresh data after booking
-    } catch (error) {
-      throw new Error(error instanceof Error ? error.message : 'Unknown error');
-    }
+    await APICall({
+      type: 'POST',
+      url: '/ticket/index.php',
+      body: ticket,
+      consoleLabel: 'Booking Ticket',
+      success: async () => {
+        await fetchData(); // Refresh data after booking
+      },
+      error: (error) => {
+        throw new Error(
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      },
+    });
   }, [currentBusInfo, passengerDetails, generalTripInfo, fetchData]);
 
   if (!currentBusInfo) return <Loading />;

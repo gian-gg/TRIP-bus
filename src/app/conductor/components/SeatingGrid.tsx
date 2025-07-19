@@ -53,9 +53,9 @@ const SeatButton = (props: {
 };
 
 const SeatingGrid = (props: {
+  passengerData: TicketType[];
   handleClick: (arg: TicketType) => void;
   handleAisleClick: (arg: AisleModalType) => void;
-  passengerData: TicketType[];
 }) => {
   return (
     <div className="grid w-full grid-cols-5 gap-2">
@@ -68,16 +68,17 @@ const SeatingGrid = (props: {
             // Special handling for aisle column (C)
             if (col === 'C') {
               // Render C11 as a normal seat
-
               if (rowNumber === 11) {
                 return (
                   <SeatButton
                     key={cellId}
                     label={cellId}
                     ticket={
-                      props.passengerData.find(
-                        (p) => p.seat_number === cellId
-                      ) as TicketType
+                      props.passengerData
+                        ? (props.passengerData.find(
+                            (p) => p.seat_number === cellId
+                          ) as TicketType)
+                        : null
                     }
                     handleClick={props.handleClick}
                   />
@@ -85,9 +86,9 @@ const SeatingGrid = (props: {
               }
               // Render one big button for the rest of the aisle
               if (rowNumber === 10) {
-                const aisleTickets = props.passengerData.filter(
-                  (p) => p.seat_number === 'Aisle'
-                );
+                const aisleTickets = props.passengerData
+                  ? props.passengerData.filter((p) => p.seat_number === 'Aisle')
+                  : undefined;
                 return (
                   <Button
                     onClick={() =>
@@ -101,7 +102,8 @@ const SeatingGrid = (props: {
                     className="!border-outline flex h-[calc(4rem*11)] w-16 flex-col items-center justify-center !border-2 font-extrabold md:h-[calc(4.5rem*10)] md:w-18 lg:h-[calc(5rem*10)] lg:w-20"
                   >
                     <span className="flex rotate-270 gap-2 text-lg font-semibold">
-                      Aisle <span>({aisleTickets.length})</span>
+                      Aisle{' '}
+                      <span>({aisleTickets ? aisleTickets.length : '0'})</span>
                     </span>
                   </Button>
                 );
@@ -114,9 +116,11 @@ const SeatingGrid = (props: {
                 key={cellId}
                 label={cellId}
                 ticket={
-                  props.passengerData.find(
-                    (p) => p.seat_number === cellId
-                  ) as TicketType
+                  props.passengerData
+                    ? (props.passengerData.find(
+                        (p) => p.seat_number === cellId
+                      ) as TicketType)
+                    : null
                 }
                 handleClick={props.handleClick}
               />

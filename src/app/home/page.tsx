@@ -11,28 +11,23 @@ import {
 import Button from '@/components/Button';
 import PageBody from '@/components/PageBody';
 
-import { GET } from '@/lib/api';
-
-import type { GETResponse } from '@/type';
+import APICall from '@/lib/api';
 
 const Home = () => {
   const handleConnectionTest = async () => {
-    try {
-      const start = performance.now();
-      const response = await GET('/bus/index.php');
-      const ping = Math.round(performance.now() - start);
-      const res = response as GETResponse;
-      if (res.status === 'success') {
-        return ping;
-      } else {
-        throw new Error(res.message);
-      }
-    } catch (error) {
-      throw new Error(
-        'Network Error' +
-          (error instanceof Error ? error.message : 'Unknown error')
-      );
-    }
+    const start = performance.now();
+    let ping;
+    await APICall({
+      type: 'GET',
+      url: '/bus/index.php',
+      success: () => (ping = Math.round(performance.now() - start)),
+      error: (error) => {
+        throw new Error(
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      },
+    });
+    return ping;
   };
 
   return (
@@ -70,7 +65,7 @@ const Home = () => {
                 success: (ping) => {
                   return `Backend connection successful! Ping: ${ping} ms`;
                 },
-                error: 'Error connecting to backend. Please try again.',
+                error: (err) => err.message,
               });
             }}
           >

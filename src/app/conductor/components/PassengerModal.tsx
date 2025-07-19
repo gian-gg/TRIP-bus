@@ -18,14 +18,12 @@ import { Badge, PassengerBadge } from './Badges';
 
 import { CloseIcon, RightArrow } from '@/components/Icons';
 
-import type { GETResponse } from '@/type';
-
 import { PassengerTypes, SeatInfo } from '@/data';
 
 import { formatTimeTo12Hour } from '@/lib/misc';
 import { typeLabels, type PassengerModalType } from '../type';
 
-import { PUT } from '@/lib/api';
+import APICall from '@/lib/api';
 
 const PassengerModal = (props: {
   passengerModal: PassengerModalType;
@@ -69,34 +67,25 @@ const PassengerModal = (props: {
         throw new Error('No changes made to the passenger details.');
       }
 
-      try {
-        const response = await PUT(
-          '/ticket/index.php?ticket_id=' + passengerModal.ticket?.ticket_id,
-          ticket
-        );
+      await APICall({
+        type: 'PUT',
+        url: '/ticket/index.php?ticket_id=' + passengerModal.ticket?.ticket_id,
+        body: ticket,
+        success: async () => {
+          await fetchData();
 
-        const res = response as GETResponse;
-
-        if (res.message === 'Occupied') {
-          throw new Error('Selected Seat is already occupied.');
-        }
-
-        if (res.status !== 'success') {
-          throw new Error('Error in editing passenger, try again.');
-        }
-
-        await fetchData();
-
-        setPassengerModal({
-          ...passengerModal,
-          edit: false,
-          open: false,
-        });
-      } catch (error) {
-        throw new Error(
-          error instanceof Error ? error.message : 'Unknown error'
-        );
-      }
+          setPassengerModal({
+            ...passengerModal,
+            edit: false,
+            open: false,
+          });
+        },
+        error: (error) => {
+          throw new Error(
+            error instanceof Error ? error.message : 'Unknown error'
+          );
+        },
+      });
     },
     [passengerModal, setPassengerModal, fetchData]
   );

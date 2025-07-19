@@ -6,7 +6,7 @@ import Container from '@/components/Container';
 import Dialog from '@/components/Dialog';
 import Button from '@/components/Button';
 
-import { GET } from '@/lib/api';
+import APICall from '@/lib/api';
 import { type TripSummaryType } from '../type';
 
 const TripSummaryModal = (props: {
@@ -18,25 +18,24 @@ const TripSummaryModal = (props: {
   >(null);
 
   const fetchData = useCallback(async () => {
-    try {
-      const tripID = localStorage.getItem('trip_id');
-      if (!tripID) {
-        throw new Error('Trip ID not found in local storage');
-      }
-
-      const response = await GET('/trip/index.php?trip_id=' + tripID);
-
-      const res = response as TripSummaryType;
-
-      if (res.status !== 'success') {
-        throw new Error('Failed to fetch trip summary');
-      }
-
-      setTripSummary(res.data);
-      localStorage.removeItem('trip_id'); // Clear trip ID after fetching summary
-    } catch (error) {
-      console.error('Error fetching trip summary:', error);
+    const tripID = localStorage.getItem('trip_id');
+    if (!tripID) {
+      throw new Error('Trip ID not found in local storage');
     }
+
+    await APICall<TripSummaryType['data']>({
+      type: 'GET',
+      url: '/trip/index.php?trip_id=' + tripID,
+      success: (data) => {
+        setTripSummary(data);
+        localStorage.removeItem('trip_id'); // Clear trip ID after fetching summary
+      },
+      error: (error) => {
+        throw new Error(
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      },
+    });
   }, []);
 
   const handleDownloadTrip = useCallback(() => {

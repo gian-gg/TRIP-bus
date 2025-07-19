@@ -4,8 +4,7 @@ import { AlertIcon, CloseIcon, MailCheckIcon } from '@/components/Icons';
 import Dialog from '@/components/Dialog';
 import { CardContainer, CardBody, CardHeader } from '@/components/Card';
 
-import { GET, PUT } from '@/lib/api';
-import { type GETResponse } from '@/type';
+import APICall from '@/lib/api';
 
 import { type AlertType } from '../type';
 
@@ -55,45 +54,40 @@ const AlertsModal = (props: {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      try {
-        const response = await GET(
-          `/alert/index.php?bus_id=${props.currentData.busID}&trip_id=${props.currentData.tripID}`
-        );
-        const res = response as GETResponse;
-
-        if (res.status !== 'success') {
-          throw new Error(res.message);
-        }
-
-        setAlertsData(res.data as AlertType[]);
-      } catch (error) {
-        throw new Error(
-          error instanceof Error ? error.message : 'Unknown error'
-        );
-      }
+      await APICall<AlertType[]>({
+        type: 'GET',
+        url: `/alert/index.php?bus_id=${props.currentData.busID}&trip_id=${props.currentData.tripID}`,
+        consoleLabel: 'Get Alerts',
+        success: (data) => setAlertsData(data),
+        error: (error) => {
+          throw new Error(
+            error instanceof Error ? error.message : 'Unknown error'
+          );
+        },
+      });
     }, 5000);
     return () => clearInterval(interval);
   }, [props.currentData.busID, props.currentData.tripID]);
 
   const markAlertAsRead = useCallback(async (id: number) => {
-    try {
-      const response = await PUT(`/alert/index.php?id=${id}`);
-      const res = response as GETResponse;
-
-      if (res.status !== 'success') {
-        throw new Error(res.message);
-      }
-
-      setAlertsData((prev) =>
-        prev
-          ? prev.map((alert) =>
-              alert.id === id ? { ...alert, has_read: true } : alert
-            )
-          : null
-      );
-    } catch (error) {
-      throw new Error(error instanceof Error ? error.message : 'Unknown error');
-    }
+    await APICall({
+      type: 'PUT',
+      url: `/alert/index.php?id=${id}`,
+      consoleLabel: 'Update Alert:' + id,
+      success: () =>
+        setAlertsData((prev) =>
+          prev
+            ? prev.map((alert) =>
+                alert.id === id ? { ...alert, has_read: true } : alert
+              )
+            : null
+        ),
+      error: (error) => {
+        throw new Error(
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      },
+    });
   }, []);
 
   return (

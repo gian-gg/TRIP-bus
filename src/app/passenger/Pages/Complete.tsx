@@ -16,7 +16,7 @@ import PassengerDetails from '../components/PassengerDetails';
 import FloatingButton from '@/components/FloatingButton';
 
 import { PaymentMethod } from '@/data';
-import { POST } from '@/lib/api';
+import APICall from '@/lib/api';
 
 import type {
   GeneralTripInfoType,
@@ -24,7 +24,6 @@ import type {
   CurrentBusInfoType,
   PaymentMethodType,
   modeType,
-  GETResponse,
 } from '@/type';
 
 const Success = (props: {
@@ -61,27 +60,22 @@ const Success = (props: {
         message = 'Unknown action.';
     }
 
-    try {
-      const response = await POST(
-        `/alert/index.php?bus_id=${props.currentBusInfo.bus_id}&trip_id=${props.currentBusInfo.trip_id}`,
-        {
-          message: message,
-        }
-      );
-      const res = response as GETResponse;
+    await APICall({
+      type: 'POST',
+      url: `/alert/index.php?bus_id=${props.currentBusInfo.bus_id}&trip_id=${props.currentBusInfo.trip_id}`,
+      body: {
+        message: message,
+      },
+      success: () => {},
+      error: (error) => {
+        throw new Error(
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      },
+    });
 
-      console.log('Response:', JSON.stringify(res, null, 2));
-
-      if (res.status !== 'success') {
-        throw new Error(res.message);
-      }
-
-      setIsConductorModalOpen(false);
-      return message;
-    } catch (error) {
-      setIsConductorModalOpen(false);
-      throw new Error(error instanceof Error ? error.message : 'Unknown error');
-    }
+    setIsConductorModalOpen(false);
+    return message;
   };
 
   const handlePayment = () => {

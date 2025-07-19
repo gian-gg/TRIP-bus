@@ -11,9 +11,7 @@ import SettingsModal from '@/components/Settings';
 
 import { SpinnerIcon } from '@/components/Icons';
 
-import { GET, POST } from '@/lib/api';
-
-import type { SessionResponse, GETResponse } from '@/type';
+import APICall from '@/lib/api';
 
 const MAX_SECONDS = 30;
 
@@ -23,34 +21,35 @@ const QrCode = () => {
   );
   const [sessionURL, setSessionURL] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tripState, setTripState] = useState<'active' | 'inactive'>('inactive');
 
   const onRefresh = useCallback(async () => {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        POST('/session/', {
-          bus_id: currentBusID,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        }).then((response) => {
-          const res = response as SessionResponse;
-
-          if (res.status === 'success') {
+      async (position) => {
+        await APICall<{ token: string }>({
+          type: 'POST',
+          url: '/session/index.php',
+          body: {
+            bus_id: currentBusID,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          },
+          success: (data) => {
             const sessionID = nanoid(10);
             setSessionURL(
-              `${import.meta.env.VITE_URL}/passenger/${sessionID}-${res.data.token}`
+              `${import.meta.env.VITE_URL}/passenger/${sessionID}-${data.token}`
             );
-            setTripState('active');
-          } else if (res.status === 'error') {
-            toast.warning('No active trip found for this bus ID.');
-            setTripState('inactive');
-          } else {
-            toast.info('Failed to generate QR code session.');
-          }
+          },
+          error: (error) => {
+            throw new Error(
+              error instanceof Error ? error.message : 'Unknown error'
+            );
+          },
         });
       },
       (error) => {
-        console.error('Error getting location:', error.message);
+        throw new Error(
+          error instanceof Error ? error.message : 'Geolocation not available'
+        );
       }
     );
   }, [currentBusID]);
@@ -80,22 +79,6 @@ const QrCode = () => {
       const wifiSSID = e.currentTarget.wifiSSID.value;
       const wifiPassword = e.currentTarget.wifiPassword.value;
 
-      try {
-        const response = await GET('/bus/index.php?id=' + busID);
-        const res = response as GETResponse;
-
-        if (res.status !== 'success') {
-          toast.error('Invalid Bus ID');
-          return;
-        }
-      } catch (error) {
-        toast.error(
-          'Invalid Bus ID: ' +
-            (error instanceof Error ? error.message : 'Unknown error')
-        );
-        return;
-      }
-
       localStorage.setItem('bus_id', busID);
       localStorage.setItem('wifi_ssid', wifiSSID);
       localStorage.setItem('wifi_password', wifiPassword);
@@ -103,7 +86,6 @@ const QrCode = () => {
       setCurrentBusID(busID);
 
       toast.success('Successfully saved settings: ' + busID);
-
       setIsModalOpen(false);
     },
     []
@@ -116,7 +98,6 @@ const QrCode = () => {
 
     setCurrentBusID('');
     setSessionURL('');
-    setTripState('inactive');
 
     toast.success('Successfully detached bus ID.');
   }, []);
@@ -218,23 +199,17 @@ const QrCode = () => {
                   Step 2: Scan Form QR-Code.
                 </h2>
                 <div className="bg-base border-outline flex h-full items-center justify-center rounded-md border-2 p-8 shadow-md sm:p-12 lg:p-14">
-                  {tripState === 'active' ? (
-                    sessionURL ? (
-                      <QRCodeSVG
-                        className="h-68 w-68 lg:h-80 lg:w-80"
-                        value={sessionURL}
-                        bgColor="#ffffff"
-                        fgColor="#000000"
-                        level="H"
-                      />
-                    ) : (
-                      <div className="flex h-68 w-68 items-center justify-center lg:h-80 lg:w-80">
-                        <SpinnerIcon className="text-primary animate-spin text-9xl" />
-                      </div>
-                    )
+                  {sessionURL ? (
+                    <QRCodeSVG
+                      className="h-68 w-68 lg:h-80 lg:w-80"
+                      value={sessionURL}
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                      level="H"
+                    />
                   ) : (
                     <div className="flex h-68 w-68 items-center justify-center lg:h-80 lg:w-80">
-                      <p>No active trips for bus ID: {currentBusID}</p>
+                      <SpinnerIcon className="text-primary animate-spin text-9xl" />
                     </div>
                   )}
                 </div>

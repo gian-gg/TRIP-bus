@@ -6,19 +6,14 @@ import Badges from '@/components/Badges';
 
 import { RightArrow, SpinnerIcon } from '@/components/Icons';
 
-import { GET } from '@/lib/api';
+import APICall from '@/lib/api';
 
 import type {
   GeneralTripInfoType,
   PassengerDetailsType,
   CurrentBusInfoType,
-  GETResponse,
   StopType,
 } from '@/type';
-
-interface ResponseGETReponseType extends GETResponse {
-  data: StopType;
-}
 
 const PassengerDetails = React.memo(
   (props: {
@@ -30,24 +25,16 @@ const PassengerDetails = React.memo(
     const [destinationName, setDestinationName] = useState<string>('');
 
     const fetchDestinationName = useCallback(async () => {
-      try {
-        const response = await GET(
-          '/stop/index.php?id=' + props.generalTripInfo.destination
-        );
-
-        const res = response as ResponseGETReponseType;
-
-        setDestinationName(res.data.stop_name);
-
-        if (res.status !== 'success') {
-          toast.error('Failed to fetch destination name.');
-          return;
-        }
-      } catch (error) {
-        toast.error(
-          `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Call the conductor for help.`
-        );
-      }
+      await APICall<StopType>({
+        type: 'GET',
+        url: '/stop/index.php?id=' + props.generalTripInfo.destination,
+        success: (data) => {
+          setDestinationName(data.stop_name);
+        },
+        error: (error) => {
+          toast.error(error instanceof Error ? error.message : 'Unknown error');
+        },
+      });
     }, [props.generalTripInfo.destination]);
 
     useEffect(() => {

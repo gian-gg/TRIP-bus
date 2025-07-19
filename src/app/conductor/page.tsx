@@ -15,9 +15,10 @@ import PassengerModal from './components/PassengerModal';
 import AisleModal from './components/AisleModal';
 import TripSummaryModal from './components/TripSummaryModal';
 import AlertsModal from './components/AlertsModal';
+import ConfirmToast from '@/components/ConfirmToast';
 
-import { GET, PUT } from '@/lib/api';
-import type { GETResponse, TicketType } from '@/type';
+import APICall from '@/lib/api';
+import type { TicketType } from '@/type';
 
 const Conductor = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -41,82 +42,57 @@ const Conductor = () => {
   const [passengerData, setPassengerData] = useState<TicketType[]>([]);
 
   const fetchData = useCallback(async () => {
-    try {
-      const response = await GET(
-        `/ticket/index.php?bus_id=${currentBusInfo.busID}&trip_id=${currentBusInfo.tripID}&passenger_status=on_bus`
-      );
-      const res = response as GETResponse;
-
-      console.log('Passenger Data:', JSON.stringify(res, null, 2));
-
-      if (res.status !== 'success') {
-        toast.error('Invalid Bus ID');
-        return;
-      }
-
-      if (res.data) {
-        setPassengerData(res.data as TicketType[]);
-      }
-    } catch (error) {
-      toast.error(
-        'Invalid Bus ID: ' +
-          (error instanceof Error ? error.message : 'Unknown error')
-      );
-      return;
-    }
+    await APICall<TicketType[]>({
+      type: 'GET',
+      url: `/ticket/index.php?bus_id=${currentBusInfo.busID}&trip_id=${currentBusInfo.tripID}&passenger_status=on_bus`,
+      consoleLabel: 'Get Passenger By Bus ID',
+      success: (data) => {
+        setPassengerData(data);
+      },
+      error: (error) => {
+        toast.error(error instanceof Error ? error.message : 'Unknown error');
+      },
+    });
   }, [currentBusInfo.busID, currentBusInfo.tripID]);
 
-  useEffect(() => {
-    if (!currentBusInfo.busID) {
-      setIsSettingsModalOpen(true);
-    }
-
-    if (currentBusInfo.tripID === localStorage.getItem('trip_id')) {
-      fetchData();
-    }
-  }, [currentBusInfo.busID, currentBusInfo.tripID, fetchData]);
-
   const handleSignIn = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
+    (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       const busID = e.currentTarget.busID.value;
       const conductorID = e.currentTarget.conductorID.value;
 
-      try {
-        const response = await GET('/bus/index.php?id=' + busID);
-        const res = response as GETResponse;
-
-        if (res.status !== 'success') {
-          throw new Error('Invalid Bus ID');
+      toast.promise(
+        async () => {
+          await APICall({
+            type: 'GET',
+            url: '/bus/index.php?id=' + busID,
+            consoleLabel: 'Get Passenger By Bus ID',
+            success: () => {
+              localStorage.setItem('bus_id', busID);
+              localStorage.setItem('conductor_id', conductorID);
+              setCurrentBusInfo({
+                ...currentBusInfo,
+                busID: busID,
+                conductorID: conductorID,
+              });
+              setIsSettingsModalOpen(false);
+            },
+            error: (error) => {
+              throw new Error(
+                error instanceof Error ? error.message : 'Unknown error'
+              );
+            },
+          });
+        },
+        {
+          loading: 'Signing In...',
+          success: 'Successfully signed in!',
+          error: (err) => err.message,
         }
-      } catch (error) {
-        throw new Error(
-          'Invalid Bus ID: ' +
-            (error instanceof Error ? error.message : 'Unknown error')
-        );
-      }
-
-      localStorage.setItem('bus_id', busID);
-      localStorage.setItem('conductor_id', conductorID);
-      setCurrentBusInfo({
-        ...currentBusInfo,
-        busID: busID,
-        conductorID: conductorID,
-      });
-      setIsSettingsModalOpen(false);
+      );
     },
     [currentBusInfo]
   );
-
-  const handleOpenPassengerModal = useCallback((ticket: TicketType) => {
-    if (ticket) {
-      setPassengerModal({
-        open: true,
-        ticket: ticket,
-        edit: false,
-      });
-    }
-  }, []);
 
   const handleSignOut = useCallback(() => {
     localStorage.removeItem('bus_id');
@@ -142,26 +118,32 @@ const Conductor = () => {
       return;
     }
 
-    try {
-      const response = await PUT('/trip/index.php?', {
-        bus_id: currentBusInfo.busID,
-        status: 'active',
-      });
-      const res = response as GETResponse;
-
-      console.log('Start Trip Response:', JSON.stringify(res, null, 2));
-
-      if (res.message === '10') {
-        // Trip already active
-        throw new Error('Trip is already active for this bus ID.');
+    toast.promise(
+      APICall<{ trip_id: string }>({
+        type: 'PUT',
+        url: '/trip/index.php',
+        consoleLabel: 'handleStartTrip',
+        body: {
+          bus_id: currentBusInfo.busID,
+          status: 'active',
+        },
+        success: (data) => {
+          const tripId = data.trip_id;
+          localStorage.setItem('trip_id', tripId);
+          setCurrentBusInfo({ ...currentBusInfo, tripID: tripId });
+        },
+        error: (error) => {
+          throw new Error(
+            error instanceof Error ? error.message : 'Unknown error'
+          );
+        },
+      }),
+      {
+        loading: 'Loading...',
+        success: 'Successfully started trip!',
+        error: (err) => err.message,
       }
-
-      const tripId = (res.data as { trip_id: string }).trip_id;
-      localStorage.setItem('trip_id', tripId);
-      setCurrentBusInfo({ ...currentBusInfo, tripID: tripId });
-    } catch (error) {
-      throw new Error(error instanceof Error ? error.message : 'Unknown error');
-    }
+    );
   }, [currentBusInfo]);
 
   const handleEndTrip = useCallback(async () => {
@@ -170,48 +152,64 @@ const Conductor = () => {
       return;
     }
 
-    try {
-      const response = await PUT('/trip/index.php', {
-        bus_id: currentBusInfo.busID,
-        status: 'complete',
-      });
-      const res = response as GETResponse;
-
-      console.log('End Trip Response:', JSON.stringify(res, null, 2));
-
-      if (res.message === '00') {
-        // No active trip found
-        throw new Error('No active trip found for this bus ID.');
-      } else if (res.message === '11') {
-        // Cannot end trip bcuz there is still passengers in bus
-        throw new Error(
-          'Please ensure all passengers have exited the bus before ending the trip.'
-        );
+    toast.promise(
+      APICall({
+        type: 'PUT',
+        url: '/trip/index.php',
+        consoleLabel: 'Get Passenger By Bus ID',
+        body: {
+          bus_id: currentBusInfo.busID,
+          status: 'complete',
+        },
+        success: () => setIsTripSummaryModalOpen(true),
+        error: (error) => {
+          throw new Error(
+            error instanceof Error ? error.message : 'Unknown error'
+          );
+        },
+      }),
+      {
+        loading: 'Loading...',
+        success: 'Successfully ended trip!',
+        error: (err) => err.message,
       }
-
-      setIsTripSummaryModalOpen(true);
-    } catch (error) {
-      throw new Error(error instanceof Error ? error.message : 'Unknown error');
-    }
+    );
   }, [currentBusInfo.busID]);
+
+  useEffect(() => {
+    if (!currentBusInfo.busID) {
+      setIsSettingsModalOpen(true);
+    }
+
+    if (currentBusInfo.tripID === localStorage.getItem('trip_id')) {
+      fetchData();
+    }
+  }, [currentBusInfo.busID, currentBusInfo.tripID, fetchData]);
+
+  const handleOpenPassengerModal = useCallback((ticket: TicketType) => {
+    if (ticket) {
+      setPassengerModal({
+        open: true,
+        ticket: ticket,
+        edit: false,
+      });
+    }
+  }, []);
 
   return (
     <>
-      {/* // passenger modal */}
       <PassengerModal
         passengerModal={passengerModal}
         setPassengerModal={setPassengerModal}
         fetchData={fetchData}
       />
 
-      {/* // aisle modal */}
       <AisleModal
         openAisleModal={aisleModal}
         SetOpenAisleModal={setAisleModal}
         setPassengerModal={setPassengerModal}
       />
 
-      {/* Trip summary modal */}
       <TripSummaryModal
         isOpen={isTripSummaryModalOpen}
         setIsOpen={setIsTripSummaryModalOpen}
@@ -255,23 +253,10 @@ const Conductor = () => {
                       <Button
                         onClick={() => {
                           setIsSettingsModalOpen(false);
-                          toast.warning('Are you Sure?', {
-                            action: {
-                              label: 'Start Trip',
-                              onClick: () =>
-                                toast.promise(handleStartTrip, {
-                                  loading: 'Starting trip...',
-                                  success: () => {
-                                    return 'Sucessfully started trip!';
-                                  },
-                                  error: (err) => err.message,
-                                }),
-                            },
-                            actionButtonStyle: {
-                              backgroundColor: '#DC7609',
-                              color: '#FEFCF1',
-                              padding: '1rem',
-                            },
+                          ConfirmToast({
+                            handleFunc: handleStartTrip,
+                            label: 'Start Trip',
+                            loading: 'Starting trip...',
                           });
                         }}
                         type="button"
@@ -283,23 +268,10 @@ const Conductor = () => {
                       <Button
                         onClick={() => {
                           setIsSettingsModalOpen(false);
-                          toast.warning('Are you Sure?', {
-                            action: {
-                              label: 'End Trip',
-                              onClick: () =>
-                                toast.promise(handleEndTrip, {
-                                  loading: 'Ending trip...',
-                                  success: () => {
-                                    return 'Sucessfully ended trip!';
-                                  },
-                                  error: (err) => err.message,
-                                }),
-                            },
-                            actionButtonStyle: {
-                              backgroundColor: '#DC7609',
-                              color: '#FEFCF1',
-                              padding: '1rem',
-                            },
+                          ConfirmToast({
+                            handleFunc: handleEndTrip,
+                            label: 'End Trip',
+                            loading: 'Ending trip...',
                           });
                         }}
                         type="button"
@@ -312,18 +284,7 @@ const Conductor = () => {
                   </>
                 )}
                 State2={() => (
-                  <form
-                    onSubmit={(e) =>
-                      toast.promise(handleSignIn(e), {
-                        loading: 'Signing in...',
-                        success: () => {
-                          return 'Successfully signed in!';
-                        },
-                        error: 'Something went wrong while signing in.',
-                      })
-                    }
-                    className="flex flex-col gap-2"
-                  >
+                  <form onSubmit={handleSignIn} className="flex flex-col gap-2">
                     <Field>
                       <Label htmlFor="busID" required>
                         Bus ID
@@ -372,13 +333,8 @@ const Conductor = () => {
                     onClick={() => {
                       toast.promise(fetchData(), {
                         loading: 'Refreshing...',
-                        success: () => {
-                          return {
-                            message: `Refreshed passenger data successfully!`,
-                          };
-                        },
-                        error:
-                          'Something went wrong while refreshing passenger data.',
+                        success: 'Refreshed passenger data successfully!',
+                        error: (err) => err.message,
                       });
                     }}
                   >

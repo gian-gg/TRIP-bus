@@ -5,9 +5,7 @@ import { toast } from 'sonner';
 import Button from '@/components/Button';
 import PassengerDetails from '../components/PassengerDetails';
 
-import { GET } from '@/lib/api';
-
-import type { GETResponse } from '@/type';
+import APICall from '@/lib/api';
 
 import type {
   GeneralTripInfoType,
@@ -27,25 +25,20 @@ const Form3 = (props: {
 
   useEffect(() => {
     const fetchPrice = async () => {
-      try {
-        const response = await GET(
-          `/amount/index.php?origin_id=${props.currentBusInfo.current_stop_id}&destination_id=${props.generalTripInfo.destination}`
-        );
-        const res = response as GETResponse;
-
-        console.log('Price fetched:', JSON.stringify(res, null, 2));
-
-        if (res.status !== 'success') {
-          throw new Error(res.message);
-        }
-
-        setBasePrice(Number((res.data as { fare_amount: string }).fare_amount));
-      } catch (error) {
-        throw new Error(
-          error instanceof Error ? error.message : 'Unknown error'
-        );
-      }
+      await APICall<{ fare_amount: string }>({
+        type: 'GET',
+        url: `/amount/index.php?origin_id=${props.currentBusInfo.current_stop_id}&destination_id=${props.generalTripInfo.destination}`,
+        success: (data) => {
+          setBasePrice(Number(data.fare_amount));
+        },
+        error: (error) => {
+          throw new Error(
+            error instanceof Error ? error.message : 'Unknown error'
+          );
+        },
+      });
     };
+
     fetchPrice();
   }, [props.generalTripInfo, props.currentBusInfo]);
   return (
@@ -53,9 +46,7 @@ const Form3 = (props: {
       onSubmit={(e) =>
         toast.promise(props.OnSubmit(e), {
           loading: 'Submitting trip details...',
-          success: () => {
-            return 'Trip details submitted successfully!';
-          },
+          success: 'Trip details submitted successfully!',
           error: (error) => error.message,
         })
       }
