@@ -27,7 +27,7 @@ const CallConductor = (props: { tripID: number }) => {
       const seat = formData.get('seat') as string;
 
       if (!name || !seat) {
-        return;
+        throw new Error('Name and Seat are required fields.');
       }
 
       const message = `Calling the conductor for ${name} at ${seat === 'Aisle' ? 'the aisle' : `seat ${seat}`}.`;
