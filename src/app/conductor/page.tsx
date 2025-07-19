@@ -8,6 +8,7 @@ import Container from '@/components/Container';
 import SettingsModal from '@/components/Settings';
 import { BusIcon, RefreshIcon } from '@/components/Icons';
 import { Field, Label, Input } from '@/components/Form';
+import ConfirmToast from '@/components/ConfirmToast';
 
 import SeatingGrid from './components/SeatingGrid';
 import LegendItems from './components/LegendItems';
@@ -15,7 +16,7 @@ import PassengerModal from './components/PassengerModal';
 import AisleModal from './components/AisleModal';
 import TripSummaryModal from './components/TripSummaryModal';
 import AlertsModal from './components/AlertsModal';
-import ConfirmToast from '@/components/ConfirmToast';
+import DepartingPassengers from './components/DepartingPassengers';
 
 import APICall from '@/lib/api';
 import type { TicketType } from '@/type';
@@ -219,6 +220,7 @@ const Conductor = () => {
               />
               {currentTrip.tripID && (
                 <>
+                  <DepartingPassengers fetchData={fetchData} />
                   <AlertsModal tripID={currentTrip.tripID} />
                   <Button
                     variant="glass"
