@@ -146,7 +146,6 @@ const Passenger = () => {
       trip_id: generalTripInfo.trip_id,
       origin_stop_id: currentBusInfo.current_stop_id,
       destination_stop_id: generalTripInfo.destination,
-      bus_id: currentBusInfo.bus_id,
       boarding_time: currentBusInfo.timestamp,
       contact_info: generalTripInfo.contactNumber,
       passengers: passengerDetails,

@@ -19,7 +19,7 @@ const AlertItem = ({
 }) => {
   return (
     <li
-      className={`flex w-full items-center justify-between gap-2 rounded-md !border-1 !p-2 ${
+      className={`flex w-full items-center justify-between gap-2 rounded-md !border-1 !p-2 !px-4 ${
         alert.has_read
           ? 'bg-secondary-light border-secondary text-yellow-600'
           : 'bg-primary-light border-primary text-primary'
@@ -46,9 +46,7 @@ const AlertItem = ({
   );
 };
 
-const AlertsModal = (props: {
-  currentData: { busID: string; tripID: string };
-}) => {
+const AlertsModal = (props: { tripID: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [alertsData, setAlertsData] = useState<AlertType[] | null>(null);
 
@@ -56,7 +54,7 @@ const AlertsModal = (props: {
     const interval = setInterval(async () => {
       await APICall<AlertType[]>({
         type: 'GET',
-        url: `/alert/index.php?bus_id=${props.currentData.busID}&trip_id=${props.currentData.tripID}`,
+        url: `/alert/index.php?trip_id=${props.tripID}`,
         consoleLabel: 'Get Alerts',
         success: (data) => setAlertsData(data),
         error: (error) => {
@@ -67,7 +65,7 @@ const AlertsModal = (props: {
       });
     }, 5000);
     return () => clearInterval(interval);
-  }, [props.currentData.busID, props.currentData.tripID]);
+  }, [props.tripID]);
 
   const markAlertAsRead = useCallback(async (id: number) => {
     await APICall({

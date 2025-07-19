@@ -17,9 +17,7 @@ import APICall from '@/lib/api';
 
 import { SeatInfo } from '@/data';
 
-const CallConductor = (props: {
-  currentData: { busID: number; tripID: number };
-}) => {
+const CallConductor = (props: { tripID: number }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = useCallback(
@@ -37,7 +35,7 @@ const CallConductor = (props: {
 
       await APICall({
         type: 'POST',
-        url: `/alert/index.php?bus_id=${props.currentData.busID}&trip_id=${props.currentData.tripID}`,
+        url: `/alert/index.php?&trip_id=${props.tripID}`,
         body: {
           message: message,
         },
@@ -52,7 +50,7 @@ const CallConductor = (props: {
       setIsOpen(false);
       return message;
     },
-    [props.currentData.busID, props.currentData.tripID]
+    [props.tripID]
   );
 
   return (

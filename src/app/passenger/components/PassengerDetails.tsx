@@ -20,7 +20,10 @@ const PassengerDetails = React.memo(
     generalTripInfo: GeneralTripInfoType;
     passengerDetails: PassengerDetailsType[];
     currentBusInfo: CurrentBusInfoType;
-    basePrice?: number;
+    fareInfo?: {
+      basePrice: number;
+      breakdown: string;
+    };
   }) => {
     const [destinationName, setDestinationName] = useState<string>('');
 
@@ -85,8 +88,8 @@ const PassengerDetails = React.memo(
               </p>
             </div>
             <p className="text-primary text-xl font-bold">
-              {props.basePrice
-                ? `₱${detail.passenger_category === 'regular' ? props.basePrice.toFixed(2) : (props.basePrice * 0.8).toFixed(2)}`
+              {props.fareInfo
+                ? `₱${detail.passenger_category === 'regular' ? props.fareInfo.basePrice.toFixed(2) : (props.fareInfo.basePrice * 0.8).toFixed(2)}`
                 : `₱${detail.fare_amount}`}
             </p>
           </Container>
@@ -97,11 +100,14 @@ const PassengerDetails = React.memo(
             <p className="text-xs">20% off for Students, PWDs, & Seniors</p>
           </div>
           <span className="text-primary text-4xl font-bold">
-            {props.basePrice
-              ? `₱${(props.basePrice * props.passengerDetails.filter((detail) => detail.passenger_category === 'regular').length + props.basePrice * 0.8 * props.passengerDetails.filter((detail) => detail.passenger_category !== 'regular').length).toFixed(2)}`
+            {props.fareInfo
+              ? `₱${(props.fareInfo.basePrice * props.passengerDetails.filter((detail) => detail.passenger_category === 'regular').length + props.fareInfo.basePrice * 0.8 * props.passengerDetails.filter((detail) => detail.passenger_category !== 'regular').length).toFixed(2)}`
               : `₱${props.generalTripInfo.fare_amount}`}
           </span>
         </Callout>
+        <p className="text-muted text-center text-sm">
+          {props.fareInfo?.breakdown}
+        </p>
       </div>
     );
   }

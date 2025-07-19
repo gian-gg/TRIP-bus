@@ -21,15 +21,22 @@ const Form3 = (props: {
   handleBackButton: () => void;
   handleNextButton: () => void;
 }) => {
-  const [basePrice, setBasePrice] = useState(0);
+  const [fareInfo, setFareInfo] = useState({
+    basePrice: 0,
+    breakdown: '',
+  });
 
   useEffect(() => {
     const fetchPrice = async () => {
-      await APICall<{ fare_amount: string }>({
+      await APICall<{ total_fare: string; breakdown: string }>({
         type: 'GET',
-        url: `/amount/index.php?origin_id=${props.currentBusInfo.current_stop_id}&destination_id=${props.generalTripInfo.destination}`,
+        url: `/fare/index.php?origin_id=${props.currentBusInfo.current_stop_id}&destination_id=${props.generalTripInfo.destination}`,
+        consoleLabel: 'Fare Calculation',
         success: (data) => {
-          setBasePrice(Number(data.fare_amount));
+          setFareInfo({
+            basePrice: parseFloat(data.total_fare),
+            breakdown: data.breakdown,
+          });
         },
         error: (error) => {
           throw new Error(
@@ -60,7 +67,7 @@ const Form3 = (props: {
         generalTripInfo={props.generalTripInfo}
         passengerDetails={props.passengerDetails}
         currentBusInfo={props.currentBusInfo}
-        basePrice={basePrice}
+        fareInfo={fareInfo}
       />
 
       <div className="flex items-center justify-between gap-4">

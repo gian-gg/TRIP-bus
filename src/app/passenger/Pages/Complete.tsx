@@ -62,7 +62,7 @@ const Success = (props: {
 
     await APICall({
       type: 'POST',
-      url: `/alert/index.php?bus_id=${props.currentBusInfo.bus_id}&trip_id=${props.currentBusInfo.trip_id}`,
+      url: `/alert/index.php?&trip_id=${props.currentBusInfo.trip_id}`,
       body: {
         message: message,
       },

@@ -78,7 +78,6 @@ interface StopType {
 interface CurrentBusInfoType {
   timestamp: string;
   current_stop: string;
-  bus_id: number;
   trip_id: number;
   stops?: StopType[];
   current_stop_id?: string;

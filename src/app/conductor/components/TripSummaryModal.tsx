@@ -18,7 +18,7 @@ const TripSummaryModal = (props: {
   >(null);
 
   const fetchData = useCallback(async () => {
-    const tripID = localStorage.getItem('trip_id');
+    const tripID = localStorage.getItem('conductor_trip_id');
     if (!tripID) {
       throw new Error('Trip ID not found in local storage');
     }
@@ -28,7 +28,9 @@ const TripSummaryModal = (props: {
       url: '/trip/index.php?trip_id=' + tripID,
       success: (data) => {
         setTripSummary(data);
-        localStorage.removeItem('trip_id'); // Clear trip ID after fetching summary
+        // Clear trip info after fetching summary
+        localStorage.removeItem('conductor_trip_id');
+        localStorage.removeItem('conductor_route_id');
       },
       error: (error) => {
         throw new Error(
@@ -45,7 +47,16 @@ const TripSummaryModal = (props: {
         encodeURIComponent(JSON.stringify(tripSummary, null, 2));
       const downloadAnchorNode = document.createElement('a');
       downloadAnchorNode.setAttribute('href', dataStr);
-      downloadAnchorNode.setAttribute('download', 'trip-summary.json');
+
+      const now = new Date();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const yyyy = now.getFullYear();
+
+      downloadAnchorNode.setAttribute(
+        'download',
+        `trip-${mm}${dd}${yyyy}.json`
+      );
       document.body.appendChild(downloadAnchorNode);
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
