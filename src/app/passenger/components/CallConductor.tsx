@@ -13,8 +13,7 @@ import { Label, Field, Input, Select, Description } from '@/components/Form';
 import { HandIcon } from '@/components/Icons';
 import FloatingButton from '@/components/FloatingButton';
 
-import APICall from '@/lib/api';
-
+import createAlert from '@/lib/createAlert';
 import { SeatInfo } from '@/data';
 
 const CallConductor = (props: { tripID: number }) => {
@@ -33,19 +32,7 @@ const CallConductor = (props: { tripID: number }) => {
 
       const message = `Calling the conductor for ${name} at ${seat === 'Aisle' ? 'the aisle' : `seat ${seat}`}.`;
 
-      await APICall({
-        type: 'POST',
-        url: `/alert/index.php?&trip_id=${props.tripID}`,
-        body: {
-          message: message,
-        },
-        success: () => {},
-        error: (error) => {
-          throw new Error(
-            error instanceof Error ? error.message : 'Unknown error'
-          );
-        },
-      });
+      await createAlert(message, props.tripID);
 
       setIsOpen(false);
       return message;

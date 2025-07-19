@@ -16,7 +16,7 @@ import PassengerDetails from '../components/PassengerDetails';
 import FloatingButton from '@/components/FloatingButton';
 
 import { PaymentMethod } from '@/data';
-import APICall from '@/lib/api';
+import createAlert from '@/lib/createAlert';
 
 import type {
   GeneralTripInfoType,
@@ -60,19 +60,7 @@ const Success = (props: {
         message = 'Unknown action.';
     }
 
-    await APICall({
-      type: 'POST',
-      url: `/alert/index.php?&trip_id=${props.currentBusInfo.trip_id}`,
-      body: {
-        message: message,
-      },
-      success: () => {},
-      error: (error) => {
-        throw new Error(
-          error instanceof Error ? error.message : 'Unknown error'
-        );
-      },
-    });
+    await createAlert(message, props.currentBusInfo.trip_id);
 
     setIsConductorModalOpen(false);
     return message;
