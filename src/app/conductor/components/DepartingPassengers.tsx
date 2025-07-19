@@ -10,8 +10,6 @@ import {
   CardFooter,
 } from '@/components/Card';
 
-import Callout from '@/components/Callout';
-
 import APICall from '@/lib/api';
 
 import type { TicketType } from '@/type';
@@ -48,7 +46,9 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
   const [passengersInfo, setPassengersInfo] = useState<
     | {
         currentStop: string;
-        passengers: TicketType[];
+        currentStopPassengers: TicketType[];
+        nextStop: string;
+        nextStopPassengers: TicketType[];
       }
     | undefined
   >();
@@ -110,14 +110,13 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
         }>({
           type: 'GET',
           url: `/ticket/index.php?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`,
+          consoleLabel: 'Get Passengers By Location',
           success: (data) => {
             setPassengersInfo({
-              currentStop: data.current_stop,
-              passengers: data.tickets_per_stop[1].tickets,
-            });
-            console.log('Passengers Info:', {
-              currentStop: data.current_stop,
-              passengers: data.tickets_per_stop[1].tickets,
+              currentStop: data.tickets_per_stop[0].destination,
+              currentStopPassengers: data.tickets_per_stop[0].tickets,
+              nextStop: data.tickets_per_stop[1].destination,
+              nextStopPassengers: data.tickets_per_stop[1].tickets,
             });
           },
           error: (error) => {
@@ -135,6 +134,19 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
     );
   }, []);
 
+  const getPassengerLength = useCallback(() => {
+    if (
+      passengersInfo?.currentStopPassengers &&
+      passengersInfo.currentStopPassengers
+    ) {
+      return (
+        passengersInfo.currentStopPassengers.length +
+        passengersInfo.nextStopPassengers.length
+      );
+    }
+    return 0;
+  }, [passengersInfo]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       onRefresh();
@@ -148,17 +160,12 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
       <Button
         variant="glass"
         className="flex w-full items-center justify-center gap-2"
-        onClick={() => passengersInfo?.passengers && setIsOpen(true)}
+        onClick={() => passengersInfo?.currentStopPassengers && setIsOpen(true)}
       >
         <UsersIcon className="!h-4 !w-4" />{' '}
-        <p className="text-xs md:text-sm">
-          Departing{' '}
-          {passengersInfo?.passengers && (
-            <span>({passengersInfo.passengers.length})</span>
-          )}
-        </p>
+        <p className="text-xs md:text-sm">Departing ({getPassengerLength()})</p>
       </Button>
-      {passengersInfo?.passengers && (
+      {passengersInfo?.currentStopPassengers && (
         <Dialog
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -167,14 +174,9 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
         >
           <CardContainer>
             <CardHeader className="flex items-center justify-between">
-              <div>
-                <h1 className="text-lg font-semibold">
-                  Departing ({passengersInfo.passengers.length})
-                </h1>
-                <p className="text-primary-light text-sm">
-                  Current Stop: {passengersInfo.currentStop}
-                </p>
-              </div>
+              <h1 className="text-lg font-semibold">
+                Departing({getPassengerLength()})
+              </h1>
               <Button
                 type="button"
                 variant="outline"
@@ -189,14 +191,27 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-2"
               >
-                {passengersInfo.passengers.length ? (
-                  passengersInfo.passengers.map((passenger, idx) => (
-                    <PassengerItem key={idx} ticket={passenger} />
-                  ))
-                ) : (
-                  <Callout className="!text-center">
-                    No passengers in this aisle.
-                  </Callout>
+                {passengersInfo?.currentStopPassengers.length > 0 && (
+                  <>
+                    <h2 className="mt-2 ml-4 font-bold">
+                      {passengersInfo?.currentStop}
+                    </h2>
+                    {passengersInfo.currentStopPassengers.map(
+                      (passenger, idx) => (
+                        <PassengerItem key={idx} ticket={passenger} />
+                      )
+                    )}
+                  </>
+                )}
+                {passengersInfo?.nextStopPassengers.length > 0 && (
+                  <>
+                    <h2 className="mt-2 ml-4 font-bold">
+                      {passengersInfo?.nextStop}
+                    </h2>
+                    {passengersInfo.nextStopPassengers.map((passenger, idx) => (
+                      <PassengerItem key={idx} ticket={passenger} />
+                    ))}
+                  </>
                 )}
               </form>
             </CardBody>
