@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardFooter,
 } from '@/components/Card';
+import { formatPassengerType } from '@/lib/misc';
 
 import APICall from '@/lib/api';
 
@@ -25,7 +26,7 @@ const PassengerItem = (props: { ticket: TicketType }) => {
     <div className="group !border-outline !bg-background flex h-16 w-full items-center justify-between gap-4 rounded-md border-2 px-4 py-3 text-left sm:h-20 sm:px-6 sm:py-4">
       <div className="flex items-center gap-4">
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-full text-sm sm:h-12 sm:w-12 ${props.ticket.payment_status === 'paid' ? 'bg-primary-light text-primary' : 'bg-secondary-light text-secondary'}`}
+          className={`flex h-10 w-10 items-center justify-center rounded-full text-sm sm:h-12 sm:w-12 ${props.ticket.payment_status === 'paid' ? 'bg-primary-light text-primary' : 'bg-secondary-light text-yellow-600'}`}
         >
           <span>{props.ticket.seat_number}</span>
         </div>
@@ -34,7 +35,7 @@ const PassengerItem = (props: { ticket: TicketType }) => {
             {props.ticket.full_name}
           </h1>
           <p className="text-muted text-xs sm:text-sm">
-            {props.ticket.passenger_category}
+            {formatPassengerType(props.ticket.passenger_category)}
           </p>
         </div>
       </div>
@@ -69,38 +70,24 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
       const selectedPassengerIds = formData.getAll('passenger');
 
       if (selectedPassengerIds.length === 0) {
-        toast.error('Please select at least one passenger to depart.');
-        return;
+        throw new Error('Please select at least one passenger to depart.');
       }
 
-      console.log('Selected Passenger IDs:', selectedPassengerIds);
-
-      toast.promise(
-        APICall({
-          type: 'PUT',
-          url: '/ticket/index.php',
-          body: selectedPassengerIds,
-          consoleLabel: 'Departing Passengers',
-          success: async () => {
-            await props.fetchData();
-            setIsOpen(false);
-          },
-          error: (error) => {
-            throw new Error(
-              error instanceof Error ? error.message : 'Unknown error'
-            );
-          },
-        }),
-        {
-          loading: 'Departing passengers...',
-          success: 'Passengers departed successfully!',
-          error: (error) => {
-            throw new Error(
-              error instanceof Error ? error.message : 'Unknown error'
-            );
-          },
-        }
-      );
+      await APICall({
+        type: 'PUT',
+        url: '/ticket/index.php',
+        body: selectedPassengerIds,
+        consoleLabel: 'Departing Passengers',
+        success: async () => {
+          await props.fetchData();
+          setIsOpen(false);
+        },
+        error: (error) => {
+          throw new Error(
+            error instanceof Error ? error.message : 'Unknown error'
+          );
+        },
+      });
     },
     [props]
   );
@@ -183,7 +170,7 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
           <CardContainer>
             <CardHeader className="flex items-center justify-between">
               <h1 className="text-lg font-semibold">
-                Departing({getPassengerLength()})
+                Departing ({getPassengerLength()})
               </h1>
               <Button
                 type="button"
@@ -196,7 +183,15 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
             <CardBody className="flex flex-col gap-2 !p-2 !px-4">
               <form
                 id="form"
-                onSubmit={handleSubmit}
+                onSubmit={(e) => {
+                  e.preventDefault();
+
+                  toast.promise(handleSubmit(e), {
+                    loading: 'Loading...',
+                    success: 'Successfully departed passenger/s',
+                    error: (err) => err.message,
+                  });
+                }}
                 className="flex flex-col gap-2"
               >
                 {passengersInfo?.currentStopPassengers.length > 0 && (

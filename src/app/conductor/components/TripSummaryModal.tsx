@@ -75,7 +75,7 @@ const TripSummaryModal = (props: {
       open={props.isOpen}
       as="div"
       onClose={() => null}
-      className="w-[90%] lg:w-2/5"
+      className="w-full lg:w-2/5"
     >
       <CardContainer className="h-full w-full">
         <CardHeader className="flex items-center justify-between">

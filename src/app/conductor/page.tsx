@@ -234,7 +234,7 @@ const Conductor = () => {
                     }}
                   >
                     <RefreshIcon className="!h-4 !w-4" />{' '}
-                    <p className="text-xs md:text-sm">Refresh</p>
+                    <p className="hidden md:block md:text-sm">Refresh</p>
                   </Button>
                 </>
               )}
