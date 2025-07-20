@@ -13,9 +13,10 @@ const TripSummaryModal = (props: {
   isOpen: boolean;
   setIsOpen: (arg: boolean) => void;
 }) => {
-  const [tripSummary, setTripSummary] = useState<
-    TripSummaryType['data'] | null
-  >(null);
+  const [tripSummary, setTripSummary] = useState<{
+    encrypted_data: string;
+    trip_summary: TripSummaryType;
+  } | null>(null);
 
   const fetchData = useCallback(async () => {
     const tripID = localStorage.getItem('conductor_trip_id');
@@ -23,7 +24,10 @@ const TripSummaryModal = (props: {
       throw new Error('Trip ID not found in local storage');
     }
 
-    await APICall<TripSummaryType['data']>({
+    await APICall<{
+      encrypted_data: string;
+      trip_summary: TripSummaryType;
+    }>({
       type: 'GET',
       url: '/trip/index.php?trip_id=' + tripID,
       success: (data) => {
@@ -41,28 +45,26 @@ const TripSummaryModal = (props: {
   }, []);
 
   const handleDownloadTrip = useCallback(() => {
-    if (tripSummary) {
-      const dataStr =
-        'data:text/json;charset=utf-8,' +
-        encodeURIComponent(JSON.stringify(tripSummary, null, 2));
-      const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.setAttribute('href', dataStr);
-
+    if (tripSummary?.encrypted_data) {
+      const blob = new Blob([tripSummary.encrypted_data], {
+        type: 'application/octet-stream',
+      });
       const now = new Date();
       const mm = String(now.getMonth() + 1).padStart(2, '0');
       const dd = String(now.getDate()).padStart(2, '0');
       const yyyy = now.getFullYear();
+      const filename = `trip_summary_${mm}${dd}${yyyy}.enc`;
 
-      downloadAnchorNode.setAttribute(
-        'download',
-        `trip-${mm}${dd}${yyyy}.json`
-      );
-      document.body.appendChild(downloadAnchorNode);
-      downloadAnchorNode.click();
-      downloadAnchorNode.remove();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
     }
     toast.success('Trip summary downloaded successfully!');
-  }, [tripSummary]);
+  }, [tripSummary?.encrypted_data]);
 
   useEffect(() => {
     if (props.isOpen) {
@@ -84,7 +86,7 @@ const TripSummaryModal = (props: {
         <CardBody className="flex flex-col gap-4 !p-6 !text-sm">
           <Container className="mt-4">
             {tripSummary ? (
-              <pre>{JSON.stringify(tripSummary, null, 2)}</pre>
+              <pre>{JSON.stringify(tripSummary.trip_summary, null, 2)}</pre>
             ) : (
               <p>No trip summary available</p>
             )}

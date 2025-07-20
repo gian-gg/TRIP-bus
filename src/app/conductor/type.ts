@@ -87,19 +87,17 @@ interface TicketSummaryType {
 }
 
 interface TripSummaryType extends GETResponse {
-  data: {
-    trip_details: {
-      route_id: string;
-      bus_id: string;
-      driver_id: string;
-      conductor_id: string;
-      boarding_time: string;
-      arrival_time: string;
-      total_passengers: number;
-      total_revenue: string;
-    };
-    tickets: TicketSummaryType[];
+  trip_details: {
+    route_id: string;
+    bus_id: string;
+    driver_id: string;
+    conductor_id: string;
+    boarding_time: string;
+    arrival_time: string;
+    total_passengers: number;
+    total_revenue: string;
   };
+  tickets: TicketSummaryType[];
 }
 
 interface AlertType {
