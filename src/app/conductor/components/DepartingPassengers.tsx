@@ -62,36 +62,6 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
     | undefined
   >();
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const formData = new FormData(e.currentTarget);
-
-      const selectedPassengerIds = formData.getAll('passenger');
-
-      if (selectedPassengerIds.length === 0) {
-        throw new Error('Please select at least one passenger to depart.');
-      }
-
-      await APICall({
-        type: 'PUT',
-        url: '/ticket/index.php',
-        body: selectedPassengerIds,
-        consoleLabel: 'Departing Passengers',
-        success: async () => {
-          await props.fetchData();
-          setIsOpen(false);
-        },
-        error: (error) => {
-          throw new Error(
-            error instanceof Error ? error.message : 'Unknown error'
-          );
-        },
-      });
-    },
-    [props]
-  );
-
   const onRefresh = useCallback(async () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -128,6 +98,38 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
       }
     );
   }, []);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const formData = new FormData(e.currentTarget);
+
+      const selectedPassengerIds = formData.getAll('passenger');
+
+      if (selectedPassengerIds.length === 0) {
+        throw new Error('Please select at least one passenger to depart.');
+      }
+
+      await APICall({
+        type: 'PUT',
+        url: '/ticket/index.php',
+        body: selectedPassengerIds,
+        consoleLabel: 'Departing Passengers',
+        success: async () => {
+          await props.fetchData();
+          await onRefresh();
+
+          setIsOpen(false);
+        },
+        error: (error) => {
+          throw new Error(
+            error instanceof Error ? error.message : 'Unknown error'
+          );
+        },
+      });
+    },
+    [props, onRefresh]
+  );
 
   const getPassengerLength = useCallback(() => {
     if (
