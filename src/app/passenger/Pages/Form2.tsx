@@ -21,6 +21,11 @@ const Form2 = (props: {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={props.OnSubmit}>
+      {props.generalTripInfo.passengerCount > 1 && (
+        <p className="text-muted text-center text-xs">
+          Passenger 1 should be the one making the booking.
+        </p>
+      )}
       {Array.from(
         { length: props.generalTripInfo.passengerCount },
         (_, idx) => (
