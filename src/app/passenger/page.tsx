@@ -52,6 +52,7 @@ const Passenger = () => {
     { passenger_category: '' as PassengerType, full_name: '', seat_number: '' },
   ]);
   const [stops, setStops] = useState<StopType[]>([]);
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
     const tokenFirst10Chars = token?.toString().slice(0, 10);
@@ -142,6 +143,7 @@ const Passenger = () => {
       throw new Error('Please fill out all required fields.');
     }
 
+    setIsFormLoading(true);
     const ticket = {
       trip_id: generalTripInfo.trip_id,
       origin_stop_id: currentBusInfo.current_stop_id,
@@ -169,8 +171,10 @@ const Passenger = () => {
       consoleLabel: 'Booking Ticket',
       success: async () => {
         await fetchData(); // Refresh data after booking
+        setIsFormLoading(false);
       },
       error: (error) => {
+        setIsFormLoading(false);
         throw new Error(
           error instanceof Error ? error.message : 'Unknown error'
         );
@@ -178,7 +182,7 @@ const Passenger = () => {
     });
   }, [currentBusInfo, passengerDetails, generalTripInfo, fetchData]);
 
-  if (!currentBusInfo) return <Loading />;
+  if (!currentBusInfo || isFormLoading) return <Loading />;
 
   return (
     <>

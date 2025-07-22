@@ -100,7 +100,7 @@ const Conductor = () => {
 
     toast.promise(
       APICall({
-        type: 'GET',
+        type: 'PUT',
         url: '/trip/index.php?route_id=' + currentTrip.routeID,
         consoleLabel: 'handleEndTrip',
         success: () => setIsTripSummaryModalOpen(true),
