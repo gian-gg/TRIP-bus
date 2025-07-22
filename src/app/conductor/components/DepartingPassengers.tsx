@@ -162,77 +162,80 @@ const DepartingModal = (props: { fetchData: () => Promise<void> }) => {
         <UsersIcon className="!h-4 !w-4" />{' '}
         <p className="text-xs md:text-sm">Departing ({getPassengerLength()})</p>
       </Button>
-      {passengersInfo?.currentStopPassengers && (
-        <Dialog
-          open={isOpen}
-          onClose={() => setIsOpen(false)}
-          as="div"
-          className="w-[90%] lg:w-2/5"
-        >
-          <CardContainer>
-            <CardHeader className="flex items-center justify-between">
-              <h1 className="text-lg font-semibold">
-                Departing ({getPassengerLength()})
-              </h1>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsOpen(false)}
-              >
-                <CloseIcon className="text-white" />
-              </Button>
-            </CardHeader>
-            <CardBody className="flex flex-col gap-2 !p-2 !px-4">
-              <form
-                id="form"
-                onSubmit={(e) => {
-                  e.preventDefault();
+      {passengersInfo?.currentStopPassengers &&
+        passengersInfo.currentStopPassengers.length > 0 && (
+          <Dialog
+            open={isOpen}
+            onClose={() => setIsOpen(false)}
+            as="div"
+            className="w-[90%] lg:w-2/5"
+          >
+            <CardContainer>
+              <CardHeader className="flex items-center justify-between">
+                <h1 className="text-lg font-semibold">
+                  Departing ({getPassengerLength()})
+                </h1>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <CloseIcon className="text-white" />
+                </Button>
+              </CardHeader>
+              <CardBody className="flex flex-col gap-2 !p-2 !px-4">
+                <form
+                  id="form"
+                  onSubmit={(e) => {
+                    e.preventDefault();
 
-                  toast.promise(handleSubmit(e), {
-                    loading: 'Loading...',
-                    success: 'Successfully departed passenger/s',
-                    error: (err) => err.message,
-                  });
-                }}
-                className="flex flex-col gap-2"
-              >
-                {passengersInfo?.currentStopPassengers.length > 0 && (
-                  <>
-                    <h2 className="mt-2 ml-4 font-bold">
-                      {passengersInfo?.currentStop}
-                    </h2>
-                    {passengersInfo.currentStopPassengers.map(
-                      (passenger, idx) => (
-                        <PassengerItem key={idx} ticket={passenger} />
-                      )
-                    )}
-                  </>
-                )}
-                {passengersInfo?.nextStopPassengers.length > 0 && (
-                  <>
-                    <h2 className="mt-2 ml-4 font-bold">
-                      {passengersInfo?.nextStop}
-                    </h2>
-                    {passengersInfo.nextStopPassengers.map((passenger, idx) => (
-                      <PassengerItem key={idx} ticket={passenger} />
-                    ))}
-                  </>
-                )}
-              </form>
-            </CardBody>
-            <CardFooter className="flex justify-between">
-              <Button
-                variant="solid"
-                className="!px-4"
-                type="submit"
-                form="form"
-              >
-                Depart Passengers
-              </Button>
-            </CardFooter>
-          </CardContainer>
-        </Dialog>
-      )}
+                    toast.promise(handleSubmit(e), {
+                      loading: 'Loading...',
+                      success: 'Successfully departed passenger/s',
+                      error: (err) => err.message,
+                    });
+                  }}
+                  className="flex flex-col gap-2"
+                >
+                  {passengersInfo?.currentStopPassengers.length > 0 && (
+                    <>
+                      <h2 className="mt-2 ml-4 font-bold">
+                        {passengersInfo?.currentStop}
+                      </h2>
+                      {passengersInfo.currentStopPassengers.map(
+                        (passenger, idx) => (
+                          <PassengerItem key={idx} ticket={passenger} />
+                        )
+                      )}
+                    </>
+                  )}
+                  {passengersInfo?.nextStopPassengers.length > 0 && (
+                    <>
+                      <h2 className="mt-2 ml-4 font-bold">
+                        {passengersInfo?.nextStop}
+                      </h2>
+                      {passengersInfo.nextStopPassengers.map(
+                        (passenger, idx) => (
+                          <PassengerItem key={idx} ticket={passenger} />
+                        )
+                      )}
+                    </>
+                  )}
+                </form>
+              </CardBody>
+              <CardFooter className="flex justify-between">
+                <Button
+                  variant="solid"
+                  className="!px-4"
+                  type="submit"
+                  form="form"
+                >
+                  Depart Passengers
+                </Button>
+              </CardFooter>
+            </CardContainer>
+          </Dialog>
+        )}
     </>
   );
 };
