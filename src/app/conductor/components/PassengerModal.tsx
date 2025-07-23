@@ -49,6 +49,7 @@ const PassengerModal = (props: {
       const passengerType = formData.get('passengerType') as string;
       const seat = formData.get('seat') as string;
       const paymentStatus = formData.get('paymentStatus') as string | undefined;
+      const paymentMode = formData.get('paymentMode') as string | undefined;
 
       const ticket = {
         passenger_category:
@@ -57,12 +58,14 @@ const PassengerModal = (props: {
             : passengerType,
         seat_number: seat === passengerModal.ticket?.seat_number ? null : seat,
         payment_status: paymentStatus === 'unpaid' ? null : paymentStatus,
+        payment_mode: paymentMode === 'unpaid' ? null : paymentMode,
       };
 
       if (
         !ticket.passenger_category &&
         !ticket.seat_number &&
-        !ticket.payment_status
+        !ticket.payment_status &&
+        !ticket.payment_mode
       ) {
         throw new Error('No changes made to the passenger details.');
       }
@@ -71,6 +74,7 @@ const PassengerModal = (props: {
         type: 'PUT',
         url: '/ticket/index.php?ticket_id=' + passengerModal.ticket?.ticket_id,
         body: ticket,
+        consoleLabel: 'Edit Passenger',
         success: async () => {
           await fetchData();
 
@@ -202,7 +206,7 @@ const PassengerModal = (props: {
                       },
                     })
                   }
-                  className="flex justify-between gap-2"
+                  className="grid grid-cols-2 gap-2"
                 >
                   {passengerModal.ticket.payment['payment_status'] ===
                     'pending' && (
@@ -246,22 +250,38 @@ const PassengerModal = (props: {
                   </Field>
                   {passengerModal.ticket.payment['payment_status'] ===
                     'pending' && (
-                    <Field>
-                      <Label htmlFor="paymentStatus" required>
-                        Payment:
-                      </Label>
-                      <Select
-                        id="paymentStatus"
-                        name="paymentStatus"
-                        defaultValue={
-                          passengerModal.ticket.payment['payment_status']
-                        }
-                        required
-                      >
-                        <option value="unpaid">Unpaid</option>
-                        <option value="paid">Paid</option>
-                      </Select>
-                    </Field>
+                    <>
+                      <Field>
+                        <Label htmlFor="paymentMode" required>
+                          Payment Mode:
+                        </Label>
+                        <Select
+                          id="paymentMode"
+                          name="paymentMode"
+                          defaultValue="cash"
+                          required
+                        >
+                          <option value="cash">Cash</option>
+                          <option value="online">Online</option>
+                        </Select>
+                      </Field>
+                      <Field>
+                        <Label htmlFor="paymentStatus" required>
+                          Payment:
+                        </Label>
+                        <Select
+                          id="paymentStatus"
+                          name="paymentStatus"
+                          defaultValue={
+                            passengerModal.ticket.payment['payment_status']
+                          }
+                          required
+                        >
+                          <option value="unpaid">Unpaid</option>
+                          <option value="paid">Paid</option>
+                        </Select>
+                      </Field>
+                    </>
                   )}
                 </form>
               </Container>
