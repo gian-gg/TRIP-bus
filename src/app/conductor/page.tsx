@@ -20,6 +20,7 @@ import DepartingPassengers from './components/DepartingPassengers';
 
 import APICall from '@/lib/api';
 import type { TicketType } from '@/type';
+import { nanoid } from 'nanoid';
 
 const Conductor = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -61,10 +62,14 @@ const Conductor = () => {
       const formData = new FormData(e.currentTarget);
       const routeID = formData.get('routeID') as string;
 
+      // Generate a trip ID without certain characters (e.g., exclude "-" and "_")
+      const rawTripId = nanoid(20);
+      const tripId = rawTripId.replace(/[-_]/g, '');
+
       toast.promise(
         APICall<{ trip_id: string }>({
           type: 'GET',
-          url: '/trip/index.php?route_id=' + routeID,
+          url: `/trip/index.php?route_id=${routeID}&trip_id=${tripId}`,
           consoleLabel: 'handleStartTrip',
           success: (data) => {
             localStorage.setItem('conductor_route_id', routeID);
@@ -101,7 +106,7 @@ const Conductor = () => {
     toast.promise(
       APICall({
         type: 'PUT',
-        url: '/trip/index.php?route_id=' + currentTrip.routeID,
+        url: '/trip/index.php',
         consoleLabel: 'handleEndTrip',
         success: () => setIsTripSummaryModalOpen(true),
         error: (error) => {
@@ -166,8 +171,7 @@ const Conductor = () => {
                   <BusIcon /> Route ID: {currentTrip.routeID}
                 </h1>
                 <p className="text-primary-light text-sm">
-                  {currentTrip.tripID &&
-                    `Active Trip ID: ${currentTrip.tripID}`}
+                  {currentTrip.tripID && `${currentTrip.tripID}`}
                 </p>
               </div>
             )}

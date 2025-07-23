@@ -21,6 +21,7 @@ async function createAlert(message: string, tripID: number) {
   await APICall({
     type: 'POST',
     url: `/alert/index.php?&trip_id=${tripID}`,
+    consoleLabel: 'createAlert',
     body: {
       message: message,
     },

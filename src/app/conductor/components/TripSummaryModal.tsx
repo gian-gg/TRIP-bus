@@ -16,6 +16,7 @@ const TripSummaryModal = (props: {
   const [tripSummary, setTripSummary] = useState<{
     encrypted_data: string;
     trip_summary: TripSummaryType;
+    total_cash_revenue: string;
   } | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -27,6 +28,7 @@ const TripSummaryModal = (props: {
     await APICall<{
       encrypted_data: string;
       trip_summary: TripSummaryType;
+      total_cash_revenue: string;
     }>({
       type: 'GET',
       url: '/trip/index.php?trip_id=' + tripID,
@@ -84,6 +86,12 @@ const TripSummaryModal = (props: {
           <h1 className="text-lg font-semibold text-white">Trip Summary</h1>
         </CardHeader>
         <CardBody className="flex flex-col gap-4 !p-6 !text-sm">
+          <p className="text-primary text-center text-lg font-bold">
+            Turn-over amount:{' '}
+            <span className="underline">
+              ₱{tripSummary?.total_cash_revenue}
+            </span>
+          </p>
           <Container className="mt-4">
             {tripSummary ? (
               <pre>{JSON.stringify(tripSummary.trip_summary, null, 2)}</pre>
