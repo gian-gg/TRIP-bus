@@ -58,7 +58,7 @@ const SeatingGrid = (props: {
   handleAisleClick: (arg: AisleModalType) => void;
 }) => {
   return (
-    <div className="grid w-full grid-cols-5 gap-2">
+    <div className="grid w-full grid-cols-5 items-start justify-items-center gap-2">
       {SeatInfo.cols.map((col) => (
         <div key={col} className="flex flex-col gap-2">
           {[...Array(SeatInfo.row)].map((_, i) => {
