@@ -121,7 +121,7 @@ const Conductor = () => {
         error: (err) => err.message,
       }
     );
-  }, [currentTrip.tripID, currentTrip.routeID]);
+  }, [currentTrip.tripID]);
 
   useEffect(() => {
     if (currentTrip.tripID && currentTrip.routeID) {
