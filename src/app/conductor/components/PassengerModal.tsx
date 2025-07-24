@@ -57,9 +57,11 @@ const PassengerModal = (props: {
             ? null
             : passengerType,
         seat_number: seat === passengerModal.ticket?.seat_number ? null : seat,
-        payment_status: paymentStatus === 'unpaid' ? null : paymentStatus,
-        payment_mode: paymentMode === 'unpaid' ? null : paymentMode,
+        payment_status: paymentStatus === 'unpaid' ? 'pending' : 'paid',
+        payment_mode: paymentMode,
       };
+
+      console.log('Ticket to be updated:', ticket);
 
       if (
         !ticket.passenger_category &&
