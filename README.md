@@ -32,10 +32,8 @@
 
 ### 👨 Conductor View
 
-<div align="center"> 
-  <img src="/docs/conductor1.png" alt="Trip Conductor Demo 1" />
-  <img src="/docs/conductor2.png" alt="Trip Conductor Demo 1" />
-</div>
+| <img src="/docs/conductor1.png" alt="Trip Conductor Demo 1" /> | <img src="/docs/conductor2.png" alt="Trip Conductor Demo 2" /> |
+| -------------------------------------------------------------- | -------------------------------------------------------------- |
 
 ### 🔍 QR-Code View
 
