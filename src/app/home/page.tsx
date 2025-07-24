@@ -19,7 +19,8 @@ const Home = () => {
     let ping;
     await APICall({
       type: 'GET',
-      url: '/bus/index.php',
+      url: '/stop/index.php?id=1',
+      consoleLabel: 'Connection Test',
       success: () => (ping = Math.round(performance.now() - start)),
       error: (error) => {
         throw new Error(
