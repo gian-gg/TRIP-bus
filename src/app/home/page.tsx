@@ -38,7 +38,7 @@ const Home = () => {
           <h1 className="text-2xl font-extrabold sm:text-3xl md:text-4xl">
             TRIP
           </h1>
-          <p className="text-primary mt-1 text-sm sm:mt-2 sm:text-base">
+          <p className="text-primary mt-1 text-sm sm:mt-2">
             Transit Routing & Integrated Payments
           </p>
           <p className="mt-3 text-xs leading-relaxed text-slate-600 sm:mt-4 sm:text-sm">
