@@ -1,4 +1,3 @@
-// temp route for development purposes
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
